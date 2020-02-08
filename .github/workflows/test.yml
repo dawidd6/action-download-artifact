@@ -1,0 +1,21 @@
+name: Test action
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Test
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: test.yml
+          commit: ${{github.sha}}
+          name: artifact
+          path: artifact

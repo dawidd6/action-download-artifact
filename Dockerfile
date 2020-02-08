@@ -1,7 +1,5 @@
-FROM alpine:3.10
+FROM ruby:2.6-alpine
 
-COPY LICENSE README.md /
+COPY *.rb /
 
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/main.rb"]

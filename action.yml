@@ -1,12 +1,26 @@
-name: 'Container Action Template'
-description: 'Get started with Container actions'
-author: 'GitHub'
-inputs: 
-  myInput:
-    description: 'Input to use'
-    default: 'world'
+name: Download artifact
+description: Download and extract an artifact associated with given commit
+author: dawidd6
+branding:
+  icon: download
+  color: blue
+inputs:
+  github_token:
+    description: Github token
+    required: true
+  workflow:
+    description: Workflow name
+    required: true
+  commit:
+    description: Commit SHA
+    required: true
+  name:
+    description: Artifact name
+    required: true
+  path:
+    description: Where to unpack the artifact
+    required: false
+    default: './'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.myInput }}
+  using: docker
+  image: Dockerfile
