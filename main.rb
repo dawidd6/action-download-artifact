@@ -36,6 +36,8 @@ artifact = artifacts['artifacts'].find do |a|
   a['name'] == name
 end
 
+puts "==> Artifacts: #{artifacts['total_count']}"
+
 archive = api(token, artifact['archive_download_url'])
 filename = "#{name}.zip"
 File.write(filename, archive)
