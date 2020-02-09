@@ -1,23 +1,11 @@
-name: Test action
+name: Download
 
 on:
-  push:
-    branches:
-      - master
+  check_suite:
+    types:
+      - completed
 
 jobs:
-  upload:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create
-        run: |
-          mkdir package
-          echo content > package/file.txt
-      - name: Upload
-        uses: actions/upload-artifact@v1
-        with:
-          name: package
-          path: package
   download:
     runs-on: ubuntu-latest
     needs:
@@ -29,7 +17,7 @@ jobs:
         uses: ./
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: test.yml
+          workflow: upload.yml
           commit: ${{github.sha}}
           name: package
           path: ./
