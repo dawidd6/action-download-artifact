@@ -1,6 +1,6 @@
-# Download artifact Github Action
+# Download workflow artifact Github Action
 
-An action that downloads and extracts uploaded artifact associated with given commit.
+An action that downloads and extracts uploaded artifact associated with given workflow and commit.
 
 ## Usage
 
