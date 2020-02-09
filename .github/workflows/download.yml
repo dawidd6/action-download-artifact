@@ -1,7 +1,7 @@
 name: Download
 
 on:
-  check_run:
+  check_suite:
     types:
       - completed
 
