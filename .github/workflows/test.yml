@@ -30,7 +30,7 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: test.yml
-          commit: ${{github.sha}}
+          commit: edde24e4c35cb50ac3ff0c730785b9d6bf6df4d4
           name: package
           path: ./
       - name: Test
