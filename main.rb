@@ -26,7 +26,7 @@ path = ENV['INPUT_PATH'] || './'
 url = 'https://api.github.com'
 
 if pr
-  puts "==> Commit: #{commit}"
+  puts "==> PR: #{pr}"
 
   pull = api(token, "#{url}/repos/#{repo}/pulls/#{pr}")
   commit = pull['head']['sha']
