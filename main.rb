@@ -29,6 +29,7 @@ if pr
   puts "==> PR: #{pr}"
 
   pull = api(token, "#{url}/repos/#{repo}/pulls/#{pr}")
+  pull = JSON.parse(pull)
   commit = pull['head']['sha']
 end
 
