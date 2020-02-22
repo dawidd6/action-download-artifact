@@ -26,9 +26,13 @@ path = ENV['INPUT_PATH'] || './'
 url = 'https://api.github.com'
 
 if pr
+  puts "==> Commit: #{commit}"
+
   pull = api(token, "#{url}/repos/#{repo}/pulls/#{pr}")
   commit = pull['head']['sha']
 end
+
+puts "==> Commit: #{commit}"
 
 runs = api(token, "#{url}/repos/#{repo}/actions/workflows/#{workflow}/runs")
 runs = JSON.parse(runs)
@@ -36,7 +40,7 @@ run = runs['workflow_runs'].find do |r|
   r['head_sha'] == commit
 end
 
-puts "==> Run: #{run['id']}"
+puts "==> Run: #{run}"
 
 artifacts = api(token, run['artifacts_url'])
 artifacts = JSON.parse(artifacts)
@@ -44,7 +48,7 @@ artifact = artifacts['artifacts'].find do |a|
   a['name'] == name
 end
 
-puts "==> Artifacts: #{artifacts['total_count']}"
+puts "==> Artifact: #{artifact}"
 
 archive = api(token, artifact['archive_download_url'])
 filename = "#{name}.zip"
