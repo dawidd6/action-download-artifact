@@ -1,0 +1,24 @@
+name: Download
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Download
+        uses: ./
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: upload.yml
+          pr: 1
+          name: package
+          path: ./
+      - name: Test
+        run: |
+          grep content file.txt
