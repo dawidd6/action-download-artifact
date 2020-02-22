@@ -18,13 +18,19 @@ end
 repo = ENV['GITHUB_REPOSITORY']
 token = ENV['INPUT_GITHUB_TOKEN']
 workflow = ENV['INPUT_WORKFLOW']
+pr = ENV['INPUT_PR']
 commit = ENV['INPUT_COMMIT']
 name = ENV['INPUT_NAME']
 path = ENV['INPUT_PATH'] || './'
 
-api = 'https://api.github.com'
+url = 'https://api.github.com'
 
-runs = api(token, "#{api}/repos/#{repo}/actions/workflows/#{workflow}/runs")
+if pr
+  pull = api(token, "#{url}/repos/#{repo}/pulls/#{pr}")
+  commit = pull['head']['sha']
+end
+
+runs = api(token, "#{url}/repos/#{repo}/actions/workflows/#{workflow}/runs")
 runs = JSON.parse(runs)
 run = runs['workflow_runs'].find do |r|
   r['head_sha'] == commit
