@@ -11,9 +11,12 @@ inputs:
   workflow:
     description: Workflow name
     required: true
+  pr:
+    description: Pull request number
+    required: false
   commit:
     description: Commit SHA
-    required: true
+    required: false
   name:
     description: Artifact name
     required: true
