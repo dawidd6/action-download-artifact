@@ -12,6 +12,9 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
   with:
     github_token: ${{secrets.GITHUB_TOKEN}}
     workflow: workflow_name.yml
+    # Optional, will get head commit SHA
+    pr: ${{github.event.pull_request.number}}
+    # Optional, no need to specify if PR is
     commit: ${{github.event.pull_request.head.sha}}
     name: artifact_name
     path: extract_here
