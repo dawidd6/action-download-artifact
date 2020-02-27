@@ -41,7 +41,12 @@ run = runs['workflow_runs'].find do |r|
   r['head_sha'] == commit
 end
 
-puts "==> Run: #{run['id']}"
+if run
+  puts "==> Run: #{run['id']}"
+else
+  puts "==> Run: NOT FOUND"
+  exit 1
+end
 
 artifacts = api(token, run['artifacts_url'])
 artifacts = JSON.parse(artifacts)
@@ -49,7 +54,12 @@ artifact = artifacts['artifacts'].find do |a|
   a['name'] == name
 end
 
-puts "==> Artifact: #{artifact['id']}"
+if artifact
+  puts "==> Artifact: #{artifact['id']}"
+else
+  puts "==> Artifact: NOT FOUND"
+  exit 1
+end
 
 archive = api(token, artifact['archive_download_url'])
 filename = "#{name}.zip"
