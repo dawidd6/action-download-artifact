@@ -7,7 +7,7 @@ async function main() {
         token = core.getInput("github_token", { required: true })
         workflow = core.getInput("workflow", { required: true })
         name = core.getInput("name", { required: true })
-        path = core.getInput("path") || "./"
+        path = core.getInput("path")
         pr = core.getInput("pr")
         commit = core.getInput("commit")
 
