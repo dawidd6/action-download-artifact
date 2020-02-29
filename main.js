@@ -2,16 +2,6 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const decompress = require('decompress');
 
-function wait(name, seconds) {
-    return new Promise((resolve, _) => {
-        console.log(`start ==> ${name}`)
-        setTimeout(() => {
-            console.log(`stop ==> ${name}`)
-            resolve()
-        }, seconds * 1000)
-    });
-}
-
 async function main() {
     token = core.getInput("token", { required: true })
     workflow = core.getInput("workflow", { required: true })
