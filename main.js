@@ -50,7 +50,7 @@ async function main() {
             console.log(files);
         });
     } catch (error) {
-        core.setFailed(error)
+        core.setFailed(error.message)
     }
 }
 
