@@ -14,12 +14,16 @@ async function main() {
         const client = new github.GitHub(token)
 
         if (pr) {
+            console.log("==> PR:", pr)
+
             const pull = await client.pulls.get({
                 ...github.context.repo,
                 pull_number: pr,
             })
             commit = pull.data.head.sha
         }
+
+        console.log("==> Commit:", commit)
 
         // https://github.com/octokit/routes/issues/665
         const runs = await client.actions.listWorkflowRuns({
@@ -31,6 +35,8 @@ async function main() {
             run.head_sha == commit
         })
 
+        console.log("==> Run:", run.id)
+
         const artifacts = await client.actions.listWorkflowRunArtifacts({
             ...github.context.repo,
             run_id: run.id,
@@ -40,13 +46,15 @@ async function main() {
             artifact.name == name
         })
 
-        const artifact = await client.actions.downloadArtifact({
+        console.log("==> Artifact:", artifact.id)
+
+        const zip = await client.actions.downloadArtifact({
             ...github.context.repo,
             artifact_id: artifact.id,
             archive_format: "zip",
         })
 
-        decompress(artifact, path).then(files => {
+        decompress(zip, path).then(files => {
             console.log(files);
         });
     } catch (error) {
