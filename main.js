@@ -4,17 +4,17 @@ const decompress = require('decompress')
 
 async function main() {
     try {
-        token = core.getInput("github_token", { required: true })
-        workflow = core.getInput("workflow", { required: true })
-        name = core.getInput("name", { required: true })
-        path = core.getInput("path")
-        pr = core.getInput("pr")
-        commit = core.getInput("commit")
+        const token = core.getInput("github_token", { required: true })
+        const workflow = core.getInput("workflow", { required: true })
+        const name = core.getInput("name", { required: true })
+        const path = core.getInput("path")
+        const pr = core.getInput("pr")
+        let commit = core.getInput("commit")
 
-        client = new github.GitHub(token)
+        const client = new github.GitHub(token)
 
         if (pr) {
-            pull = await client.pulls.get({
+            const pull = await client.pulls.get({
                 ...github.context.repo,
                 pull_number: pr,
             })
@@ -22,25 +22,25 @@ async function main() {
         }
 
         // https://github.com/octokit/routes/issues/665
-        runs = await client.actions.listWorkflowRuns({
+        const runs = await client.actions.listWorkflowRuns({
             ...github.context.repo,
             workflow_id: workflow,
         })
 
-        run = runs.data.find((run) => {
+        const run = runs.data.find((run) => {
             run.head_sha == commit
         })
 
-        artifacts = await client.actions.listWorkflowRunArtifacts({
+        const artifacts = await client.actions.listWorkflowRunArtifacts({
             ...github.context.repo,
             run_id: run.id,
         })
 
-        artifact = artifacts.data.find((artifact) => {
+        const artifact = artifacts.data.find((artifact) => {
             artifact.name == name
         })
 
-        artifact = await client.actions.downloadArtifact({
+        const artifact = await client.actions.downloadArtifact({
             ...github.context.repo,
             artifact_id: artifact.id,
             archive_format: "zip",
