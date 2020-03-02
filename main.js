@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const decompress = require('decompress')
+const ab2b = require('arraybuffer-to-buffer')
 
 async function main() {
     try {
@@ -54,9 +55,8 @@ async function main() {
             archive_format: "zip",
         })
 
-        decompress(zip, path).then(files => {
-            console.log(files);
-        });
+        const files = await decompress(ab2b(zip.data), path)
+        console.log(files);
     } catch (error) {
         core.setFailed(error.message)
     }
