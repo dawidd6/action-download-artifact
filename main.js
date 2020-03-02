@@ -14,6 +14,32 @@ async function main() {
 
         const client = new github.GitHub(token)
 
+        client.registerEndpoints({
+            actions: {
+                listWorkflowRunsFixed: {
+                    method: "GET",
+                    url: "/repos/:owner/:repo/actions/workflows/:workflow_id/runs",
+                    headers: {
+                        accept: "application/vnd.github.groot-preview+json"
+                    },
+                    params: {
+                        owner: {
+                            required: true,
+                            type: "string"
+                        },
+                        repo: {
+                            required: true,
+                            type: "string"
+                        },
+                        workflow_id: {
+                            required: true,
+                            type: "string",
+                        }
+                    }
+                }
+            }
+        })
+
         if (pr) {
             console.log("==> PR:", pr)
 
@@ -27,7 +53,7 @@ async function main() {
         console.log("==> Commit:", commit)
 
         // https://github.com/octokit/routes/issues/665
-        const runs = await client.actions.listWorkflowRuns({
+        const runs = await client.actions.listWorkflowRunsFixed({
             ...github.context.repo,
             workflow_id: workflow,
         })
