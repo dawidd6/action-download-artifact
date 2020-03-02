@@ -31,8 +31,8 @@ async function main() {
             workflow_id: workflow,
         })
 
-        const run = runs.data.find((run) => {
-            run.head_sha == commit
+        const run = runs.data.workflow_runs.find((run) => {
+            return run.head_sha == commit
         })
 
         console.log("==> Run:", run.id)
@@ -42,8 +42,8 @@ async function main() {
             run_id: run.id,
         })
 
-        const artifact = artifacts.data.find((artifact) => {
-            artifact.name == name
+        const artifact = artifacts.data.artifacts.find((artifact) => {
+            return artifact.name == name
         })
 
         console.log("==> Artifact:", artifact.id)
