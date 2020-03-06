@@ -1,0 +1,14 @@
+{
+  "name": "action-download-artifact",
+  "version": "2.0.0",
+  "description": "Action",
+  "main": "main.js",
+  "author": "dawidd6",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.2",
+    "@actions/github": "^2.1.1",
+    "arraybuffer-to-buffer": "0.0.7",
+    "decompress": "^4.2.0"
+  }
+}
