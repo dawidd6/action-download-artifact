@@ -81,8 +81,14 @@ async function main() {
             archive_format: "zip",
         })
 
+
         const files = await decompress(ab2b(zip.data), path)
-        console.log(files);
+
+        console.log("==> Files:")
+
+        files.forEach((file) => {
+            console.log(" ", file.path);
+        })
     } catch (error) {
         core.setFailed(error.message)
     }
