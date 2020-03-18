@@ -6,12 +6,10 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-      - name: Create
-        run: |
-          mkdir package
-          echo content > package/file.txt
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Upload
         uses: actions/upload-artifact@v1
         with:
-          name: package
-          path: package
+          name: artifact
+          path: ./
