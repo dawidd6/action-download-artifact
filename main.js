@@ -1,7 +1,8 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
-const decompress = require('decompress')
 const ab2b = require('arraybuffer-to-buffer')
+const stream = require('stream')
+const unzip = require('unzipper');
 
 async function main() {
     try {
@@ -75,20 +76,17 @@ async function main() {
 
         console.log("==> Artifact:", artifact.id)
 
+        const format = "zip"
+
         const zip = await client.actions.downloadArtifact({
             ...github.context.repo,
             artifact_id: artifact.id,
-            archive_format: "zip",
+            archive_format: format,
         })
 
-
-        const files = await decompress(ab2b(zip.data), path)
-
-        console.log("==> Files:")
-
-        files.forEach((file) => {
-            console.log(" ", file.path);
-        })
+        new stream.PassThrough()
+            .end(ab2b(zip.data))
+            .pipe(unzip.Extract({path: path}))
     } catch (error) {
         core.setFailed(error.message)
     }

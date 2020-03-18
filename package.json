@@ -2,9 +2,9 @@
   "name": "action-download-artifact",
   "main": "main.js",
   "dependencies": {
-    "@actions/core": "^1.2.2",
+    "@actions/core": "^1.2.3",
     "@actions/github": "^2.1.1",
     "arraybuffer-to-buffer": "0.0.7",
-    "decompress": "^4.2.0"
+    "unzipper": "^0.10.10"
   }
 }
