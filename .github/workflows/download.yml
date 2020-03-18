@@ -1,6 +1,9 @@
 name: Download
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   download:
