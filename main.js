@@ -9,6 +9,8 @@ async function main() {
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
         const name = core.getInput("name", { required: true })
+        const owner = core.getInput("owner") || github.context.repo.owner
+        const repo = core.getInput("repo") || github.context.repo.repo
         const path = core.getInput("path") || "./"
         const pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -45,7 +47,8 @@ async function main() {
             console.log("==> PR:", pr)
 
             const pull = await client.pulls.get({
-                ...github.context.repo,
+                owner: owner,
+                repo: repo,
                 pull_number: pr,
             })
             commit = pull.data.head.sha
@@ -55,7 +58,8 @@ async function main() {
 
         // https://github.com/octokit/routes/issues/665
         const runs = await client.actions.listWorkflowRunsFixed({
-            ...github.context.repo,
+            owner: owner,
+            repo: repo,
             workflow_id: workflow,
         })
 
@@ -66,7 +70,8 @@ async function main() {
         console.log("==> Run:", run.id)
 
         const artifacts = await client.actions.listWorkflowRunArtifacts({
-            ...github.context.repo,
+            owner: owner,
+            repo: repo,
             run_id: run.id,
         })
 
@@ -79,14 +84,15 @@ async function main() {
         const format = "zip"
 
         const zip = await client.actions.downloadArtifact({
-            ...github.context.repo,
+            owner: owner,
+            repo: repo,
             artifact_id: artifact.id,
             archive_format: format,
         })
 
         new stream.PassThrough()
             .end(ab2b(zip.data))
-            .pipe(unzip.Extract({path: path}))
+            .pipe(unzip.Extract({ path: path }))
     } catch (error) {
         core.setFailed(error.message)
     }
