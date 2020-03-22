@@ -63,7 +63,7 @@ async function main() {
             workflow_id: workflow,
         })
 
-        const run = () => {
+        const run = async () => {
             for await (const response of client.paginate.iterator(runs)) {
                 const run = response.data.workflow_runs.find((run) => {
                     return run.head_sha == commit
