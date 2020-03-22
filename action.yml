@@ -11,11 +11,17 @@ inputs:
   workflow:
     description: Workflow name
     required: true
+  owner:
+    description: Repository owner (defaults to current repo owner)
+    required: false
+  repo:
+    description: Repository name (defaults to current repo name)
+    required: false
   pr:
     description: Pull request number
     required: false
   commit:
-    description: Commit SHA
+    description: Commit SHA1
     required: false
   name:
     description: Artifact name
