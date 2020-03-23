@@ -7,16 +7,15 @@ branding:
 inputs:
   github_token:
     description: Github token
-    required: true
+    required: false
+    default: ${{github.token}}
   workflow:
     description: Workflow name
     required: true
-  owner:
-    description: Repository owner (defaults to current repo owner)
-    required: false
   repo:
-    description: Repository name (defaults to current repo name)
+    description: Repository name with owner (like actions/checkout)
     required: false
+    default: ${{github.repository}}
   pr:
     description: Pull request number
     required: false
