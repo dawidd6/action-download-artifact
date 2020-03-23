@@ -10,7 +10,7 @@ async function main() {
         const workflow = core.getInput("workflow", { required: true })
         const name = core.getInput("name", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
-        const path = core.getInput("path") || "./"
+        const path = core.getInput("path", {required: true})
         const pr = core.getInput("pr")
         let commit = core.getInput("commit")
 
