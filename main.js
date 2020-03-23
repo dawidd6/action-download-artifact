@@ -9,8 +9,7 @@ async function main() {
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
         const name = core.getInput("name", { required: true })
-        const owner = core.getInput("owner") || github.context.repo.owner
-        const repo = core.getInput("repo") || github.context.repo.repo
+        const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path") || "./"
         const pr = core.getInput("pr")
         let commit = core.getInput("commit")
