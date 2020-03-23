@@ -14,7 +14,6 @@ jobs:
       - name: Download
         uses: ./
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: upload.yml
           pr: 1
           name: artifact
