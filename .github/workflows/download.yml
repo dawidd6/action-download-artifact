@@ -13,7 +13,7 @@ jobs:
           - ubuntu-latest
           - macos-latest
         repo:
-          - ${{github.repository}}
+          - ''
           - homebrew/linuxbrew-core
         include:
           - repo: homebrew/linuxbrew-core
@@ -21,7 +21,7 @@ jobs:
             pr: 19869
             name: bottles
             path: bottles
-          - repo: ${{github.repository}}
+          - repo: ''
             workflow: upload.yml
             pr: 1
             name: artifact
