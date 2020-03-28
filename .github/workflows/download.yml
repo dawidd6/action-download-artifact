@@ -13,15 +13,15 @@ jobs:
           - ubuntu-latest
           - macos-latest
         repo:
-          - ''
           - homebrew/linuxbrew-core
+          - dawidd6/action-download-artifact
         include:
           - repo: homebrew/linuxbrew-core
             workflow: build-bottles.yml
             pr: 19869
             name: bottles
             path: bottles
-          - repo: ''
+          - repo: dawidd6/action-download-artifact
             workflow: upload.yml
             pr: 1
             name: artifact
