@@ -8,7 +8,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 ```yaml
 - name: Download artifact
-  uses: dawidd6/action-download-artifact@master
+  uses: dawidd6/action-download-artifact@v2
   with:
     github_token: ${{secrets.GITHUB_TOKEN}}
     workflow: workflow_name.yml
