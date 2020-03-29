@@ -1,7 +1,6 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
-const exec = require('@actions/exec')
-const fs = require('fs')
+const AdmZip = require('adm-zip')
 
 async function main() {
     try {
@@ -95,9 +94,12 @@ async function main() {
             archive_format: format,
         })
 
-        const file = `/tmp/${artifact.id}.${format}`
-        fs.writeFileSync(file, Buffer.from(zip.data))
-        await exec.exec("unzip", ["-d", path, file])
+        const adm = new AdmZip(Buffer.from(zip.data))
+        adm.getEntries().forEach((entry) => {
+            const action = entry.isDirectory ? "creating" : "inflating"
+            console.log(`  ${action}: ${path}/${entry.entryName}`)
+        })
+        adm.extractAllTo(path, true)
     } catch (error) {
         core.setFailed(error.message)
     }
