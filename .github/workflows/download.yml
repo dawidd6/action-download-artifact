@@ -6,38 +6,22 @@ on:
       - master
 
 jobs:
-  download:
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-        repo:
-          - homebrew/linuxbrew-core
-          - dawidd6/action-download-artifact
-        include:
-          - repo: homebrew/linuxbrew-core
-            workflow: build-bottles.yml
-            pr: 19869
-            name: bottles
-            path: bottles
-          - repo: dawidd6/action-download-artifact
-            workflow: upload.yml
-            pr: 1
-            name: artifact
-            path: artifact
-    runs-on: ${{matrix.os}}
+  download-runner:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Download
         uses: ./
         with:
-          repo: ${{matrix.repo}}
-          workflow: ${{matrix.workflow}}
-          pr: ${{matrix.pr}}
-          name: ${{matrix.name}}
-          path: ${{matrix.path}}
+          repo: homebrew/linuxbrew-core
+          workflow: build-bottles.yml
+          pr: 19869
+          name: bottles
+          path: ./
+      - name: Test
+        run: |
+          ls joplin--*
   download-container:
     runs-on: ubuntu-latest
     container:
@@ -52,3 +36,6 @@ jobs:
           pr: 1
           name: artifact
           path: artifact
+      - name: Test
+        run: |
+          ls artifact/.git/HEAD
