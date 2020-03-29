@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const AdmZip = require('adm-zip')
+const filesize = require('filesize')
 
 async function main() {
     try {
@@ -85,13 +86,15 @@ async function main() {
 
         console.log("==> Artifact:", artifact.id)
 
-        const format = "zip"
+        const size = filesize(artifact.size_in_bytes, { base: 10 })
+
+        console.log("==> Downloading:", name + ".zip", `(${size})`)
 
         const zip = await client.actions.downloadArtifact({
             owner: owner,
             repo: repo,
             artifact_id: artifact.id,
-            archive_format: format,
+            archive_format: "zip",
         })
 
         const adm = new AdmZip(Buffer.from(zip.data))

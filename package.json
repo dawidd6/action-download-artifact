@@ -4,6 +4,7 @@
   "dependencies": {
     "@actions/core": "^1.2.3",
     "@actions/github": "^2.1.1",
-    "adm-zip": "^0.4.14"
+    "adm-zip": "^0.4.14",
+    "filesize": "^6.1.0"
   }
 }
