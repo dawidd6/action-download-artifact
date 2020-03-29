@@ -38,3 +38,17 @@ jobs:
           pr: ${{matrix.pr}}
           name: ${{matrix.name}}
           path: ${{matrix.path}}
+  download-container:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:xenial
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          pr: 1
+          name: artifact
+          path: artifact
