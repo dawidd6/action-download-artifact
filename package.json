@@ -3,7 +3,7 @@
   "main": "main.js",
   "dependencies": {
     "@actions/core": "^1.2.4",
-    "@actions/github": "^2.2.0",
+    "@actions/github": "^3.0.0",
     "adm-zip": "^0.4.14",
     "filesize": "^6.1.0"
   }
