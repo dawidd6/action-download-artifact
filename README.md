@@ -6,6 +6,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 ## Usage
 
+> You need to specify `commit` or `pr` input.
+
 ```yaml
 - name: Download artifact
   uses: dawidd6/action-download-artifact@v2
