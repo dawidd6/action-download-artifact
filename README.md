@@ -6,7 +6,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 ## Usage
 
-> If `commit` or `pr` is not specified then the artifact from the most recent run will be downloaded.
+> If `commit` or `pr` is not specified then the artifact from the most recent completed workflow run will be downloaded.
 
 ```yaml
 - name: Download artifact
