@@ -13,7 +13,7 @@ async function main() {
         const pr = core.getInput("pr")
         let commit = core.getInput("commit")
 
-        const client = new github.GitHub(token)
+        const client = new github.getOctokit(token)
 
         client.registerEndpoints({
             actions: {
