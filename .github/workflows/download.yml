@@ -1,31 +1,15 @@
 name: Download
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
-  download-runner:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Download
-        uses: ./
-        with:
-          repo: homebrew/linuxbrew-core
-          workflow: build-bottles.yml
-          pr: 19869
-          name: bottles
-          path: ./
-      - name: Test
-        run: |
-          ls joplin--*
-  download-container:
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:xenial
+  download:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{matrix.os}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -33,7 +17,6 @@ jobs:
         uses: ./
         with:
           workflow: upload.yml
-          pr: 1
           name: artifact
           path: artifact
       - name: Test
