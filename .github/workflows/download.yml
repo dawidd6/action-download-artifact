@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Wait
         run: |
-          sleep 30s
+          sleep 60s
       - name: Checkout
         uses: actions/checkout@v2
       - name: Download
