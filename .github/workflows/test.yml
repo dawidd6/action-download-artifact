@@ -1,9 +1,20 @@
-name: Download
+name: Test
 
 on: push
 
 jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Upload
+        uses: actions/upload-artifact@v1
+        with:
+          name: artifact
+          path: ./
   download:
+    needs: upload
     strategy:
       matrix:
         os:
@@ -16,9 +27,9 @@ jobs:
       - name: Download
         uses: ./
         with:
-          workflow: upload.yml
+          workflow: test.yml
           name: artifact
           path: artifact
       - name: Test
         run: |
-          ls artifact/.git/HEAD
+          git -C artifact rev-parse HEAD | grep ${{github.sha}}
