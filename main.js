@@ -55,9 +55,6 @@ async function main() {
         if (commit) {
             console.log("==> Commit:", commit)
         }
-        else {
-            console.log("==> No Commit or PR specified - fetching artifact from most recent run")
-        }
 
         // https://github.com/octokit/routes/issues/665
         const options = await client.actions.listWorkflowRunsFixed.endpoint.merge({
