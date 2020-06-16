@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const AdmZip = require('adm-zip')
 const filesize = require('filesize')
+const pathname = require('path')
 
 async function main() {
     try {
@@ -83,7 +84,8 @@ async function main() {
         const adm = new AdmZip(Buffer.from(zip.data))
         adm.getEntries().forEach((entry) => {
             const action = entry.isDirectory ? "creating" : "inflating"
-            console.log(`  ${action}: ${path}/${entry.entryName}`)
+            const filepath = pathname.join(path, entry.entryName)
+            console.log(`  ${action}: ${filepath}`)
         })
         adm.extractAllTo(path, true)
     } catch (error) {
