@@ -1,20 +1,9 @@
-name: Test
+name: Download
 
 on: push
 
 jobs:
-  upload:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Upload
-        uses: actions/upload-artifact@v1
-        with:
-          name: artifact
-          path: ./
   download:
-    needs: upload
     strategy:
       matrix:
         os:
@@ -22,14 +11,17 @@ jobs:
           - macos-latest
     runs-on: ${{matrix.os}}
     steps:
+      - name: Wait
+        run: |
+          sleep 30s
       - name: Checkout
         uses: actions/checkout@v2
       - name: Download
         uses: ./
         with:
-          workflow: test.yml
+          workflow: upload.yml
           name: artifact
           path: artifact
       - name: Test
         run: |
-          git -C artifact rev-parse HEAD | grep ${{github.sha}}
+          cat artifact/sha | grep ${{github.sha}}
