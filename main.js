@@ -68,15 +68,15 @@ async function main() {
 
         let run
         for await (const response of client.paginate.iterator(options)) {
-            
             run = response.data.workflow_runs.find((workflow_run) => {
                 if (commit) {
                     return workflow_run.head_sha == commit
                 }
                 else {
-                    // No PR or commit was specified just return the first one. The results appear to be sorted
-                    // so the most recent is first.
-                    return true
+                    // No PR or commit was specified just return the first one.
+                    // The results appear to be sorted from API, so the most recent is first.
+                    // Just check if workflow run completed.
+                    return workflow_run.status == "completed"
                 }
             })
 
