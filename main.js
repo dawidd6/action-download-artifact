@@ -69,17 +69,16 @@ async function main() {
         let run
         for await (const response of client.paginate.iterator(options)) {
             
-            if (commit) {
-                const matching_run = response.data.workflow_runs.find((workflow_run) => {
+            run = response.data.workflow_runs.find((workflow_run) => {
+                if (commit) {
                     return workflow_run.head_sha == commit
-                })
-            }
-            else {
-                const matching_run = response.data.workflow_runs[0]
-            }
+                }
+                else {
+                    return true
+                }
+            })
 
-            if (matching_run) {
-                run = matching_run
+            if (run) {
                 break
             }
         }
