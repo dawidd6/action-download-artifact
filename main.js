@@ -15,32 +15,6 @@ async function main() {
 
         const client = new github.getOctokit(token)
 
-        client.registerEndpoints({
-            actions: {
-                listWorkflowRunsFixed: {
-                    method: "GET",
-                    url: "/repos/:owner/:repo/actions/workflows/:workflow_id/runs",
-                    headers: {
-                        accept: "application/vnd.github.groot-preview+json"
-                    },
-                    params: {
-                        owner: {
-                            required: true,
-                            type: "string"
-                        },
-                        repo: {
-                            required: true,
-                            type: "string"
-                        },
-                        workflow_id: {
-                            required: true,
-                            type: "string",
-                        }
-                    }
-                }
-            }
-        })
-
         if (pr) {
             console.log("==> PR:", pr)
 
@@ -56,24 +30,23 @@ async function main() {
             console.log("==> Commit:", commit)
         }
 
-        // https://github.com/octokit/routes/issues/665
-        const options = await client.actions.listWorkflowRunsFixed.endpoint.merge({
+        let run
+        const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs"
+        const params = {
             owner: owner,
             repo: repo,
-            workflow_id: workflow,
-        })
-
-        let run
-        for await (const response of client.paginate.iterator(options)) {
-            run = response.data.workflow_runs.find((workflow_run) => {
+            id: workflow,
+        }
+        for await (const runs of client.paginate.iterator(endpoint, params)) {
+            run = runs.data.find((run) => {
                 if (commit) {
-                    return workflow_run.head_sha == commit
+                    return run.head_sha == commit
                 }
                 else {
                     // No PR or commit was specified just return the first one.
                     // The results appear to be sorted from API, so the most recent is first.
                     // Just check if workflow run completed.
-                    return workflow_run.status == "completed"
+                    return run.status == "completed"
                 }
             })
 
