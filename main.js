@@ -52,7 +52,12 @@ async function main() {
             commit = pull.data.head.sha
         }
 
-        console.log("==> Commit:", commit)
+        if (commit) {
+            console.log("==> Commit:", commit)
+        }
+        else {
+            console.log("==> No Commit or PR specified - fetching artifact from most recent run")
+        }
 
         // https://github.com/octokit/routes/issues/665
         const options = await client.actions.listWorkflowRunsFixed.endpoint.merge({
@@ -63,11 +68,19 @@ async function main() {
 
         let run
         for await (const response of client.paginate.iterator(options)) {
-            const matching_run = response.data.workflow_runs.find((workflow_run) => {
-                return workflow_run.head_sha == commit
+            
+            run = response.data.workflow_runs.find((workflow_run) => {
+                if (commit) {
+                    return workflow_run.head_sha == commit
+                }
+                else {
+                    // No PR or commit was specified just return the first one. The results appear to be sorted
+                    // so the most recent is first.
+                    return true
+                }
             })
-            if (matching_run) {
-                run = matching_run
+
+            if (run) {
                 break
             }
         }
