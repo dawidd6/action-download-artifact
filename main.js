@@ -74,6 +74,8 @@ async function main() {
                     return workflow_run.head_sha == commit
                 }
                 else {
+                    // No PR or commit was specified just return the first one. The results appear to be sorted
+                    // so the most recent is first.
                     return true
                 }
             })
