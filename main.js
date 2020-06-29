@@ -14,7 +14,7 @@ async function main() {
         const pr = core.getInput("pr")
         let commit = core.getInput("commit")
 
-        const client = new github.getOctokit(token)
+        const client = github.getOctokit(token)
 
         if (pr) {
             console.log("==> PR:", pr)
