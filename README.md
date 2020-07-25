@@ -6,14 +6,16 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 ## Usage
 
-> If `commit` or `pr` is not specified then the artifact from the most recent completed workflow run will be downloaded.
+> If `commit` or `pr` or `branch` is not specified then the artifact from the most recent completed workflow run will be downloaded.
 > If `branch` is specified, it will ignore any value set for `commit` and `pr`.
 
 ```yaml
 - name: Download artifact
   uses: dawidd6/action-download-artifact@v2
   with:
+    # Optional, GitHub token
     github_token: ${{secrets.GITHUB_TOKEN}}
+    # Required, workflow file name or ID
     workflow: workflow_name.yml
     # Optional, will get head commit SHA
     pr: ${{github.event.pull_request.number}}
@@ -21,7 +23,9 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     commit: ${{github.event.pull_request.head.sha}}
     # Optional, will use the branch
     branch: master
+    # Required, uploaded artifact name
     name: artifact_name
+    # Optional, directory where to extract artifact
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
