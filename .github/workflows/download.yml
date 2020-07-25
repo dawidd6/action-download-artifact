@@ -25,3 +25,19 @@ jobs:
       - name: Test
         run: |
           cat artifact/sha | grep ${{github.sha}}
+  download-homebrew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: tests.yml
+          repo: Homebrew/homebrew-core
+          name: bottles
+          path: bottles
+          pr: 58588
+      - name: Test
+        run: |
+          ls bottles/gofish--0.13.0*.bottle.*
