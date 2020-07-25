@@ -11,10 +11,23 @@ async function main() {
         const name = core.getInput("name", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
-        const pr = core.getInput("pr")
+        const branch = core.getInput("branch")
+        let pr = core.getInput("pr")
         let commit = core.getInput("commit")
 
         const client = github.getOctokit(token)
+
+        if (branch) {
+            console.log("==> Branch:", branch)
+            if (pr) {
+                console.log("==> Branch and PR can not be defined at the same time, ignoring PR:", pr)
+                pr = undefined
+            }
+            if (commit) {
+                console.log("==> Branch and Commit can not be defined at the same time, ignoring Commit:", commit)
+                commit = undefined
+            }
+        }
 
         if (pr) {
             console.log("==> PR:", pr)
@@ -37,6 +50,7 @@ async function main() {
             owner: owner,
             repo: repo,
             id: workflow,
+            branch: branch
         }
         for await (const runs of client.paginate.iterator(endpoint, params)) {
             run = runs.data.find((run) => {

@@ -29,6 +29,9 @@ inputs:
     description: Where to unpack the artifact
     required: false
     default: "./"
+  branch:
+    description: Branch
+    required: false
 runs:
   using: node12
   main: main.js
