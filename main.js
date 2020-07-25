@@ -11,7 +11,7 @@ async function main() {
         const name = core.getInput("name", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
-        const branch = core.getInput("branch")
+        let branch = core.getInput("branch")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
 
@@ -19,10 +19,12 @@ async function main() {
 
         if (branch) {
             console.log("==> Branch:", branch)
+
             if (pr) {
                 console.log("==> Branch and PR can not be defined at the same time, ignoring PR:", pr)
                 pr = undefined
             }
+
             if (commit) {
                 console.log("==> Branch and Commit can not be defined at the same time, ignoring Commit:", commit)
                 commit = undefined
