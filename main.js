@@ -17,6 +17,8 @@ async function main() {
 
         const client = github.getOctokit(token)
 
+        console.log("==> Repo:", owner + "/" + repo)
+
         if (branch) {
             console.log("==> Branch:", branch)
 
