@@ -22,6 +22,9 @@ inputs:
   commit:
     description: Commit SHA1
     required: false
+  branch:
+    description: Branch name
+    required: false
   name:
     description: Artifact name
     required: true
@@ -29,9 +32,6 @@ inputs:
     description: Where to unpack the artifact
     required: false
     default: "./"
-  branch:
-    description: Branch
-    required: false
 runs:
   using: node12
   main: main.js
