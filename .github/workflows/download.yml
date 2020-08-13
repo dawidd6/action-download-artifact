@@ -1,16 +1,15 @@
 name: Download
 
-on: push
+on:
+  workflow_run:
+    workflows:
+      - Upload
+    types: 
+      - completed
 
 jobs:
-  wait:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait
-        run: sleep 30s
   download:
     runs-on: ubuntu-latest
-    needs: wait
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,7 +23,6 @@ jobs:
         run: cat artifact/sha | grep ${{github.sha}}
   download-branch:
     runs-on: ubuntu-latest
-    needs: wait
     steps:
       - name: Checkout
         uses: actions/checkout@v2
