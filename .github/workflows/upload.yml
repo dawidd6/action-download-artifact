@@ -9,7 +9,7 @@ jobs:
       - name: Dump
         run: |
           mkdir artifact
-          echo ${{github.sha}} > artifact/sha
+          echo $GITHUB_SHA > artifact/sha
       - name: Upload
         uses: actions/upload-artifact@v1
         with:
