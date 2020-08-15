@@ -26,7 +26,7 @@ inputs:
     description: Branch name
     required: false
   name:
-    description: Artifact name
+    description: Artifact name (download all artifacts in not specified)
     required: false
   path:
     description: Where to unpack the artifact
