@@ -23,7 +23,10 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     commit: ${{github.event.pull_request.head.sha}}
     # Optional, will use the branch
     branch: master
-    # Required, uploaded artifact name
+    # Optional, uploaded artifact name,
+    # will download all artifacts if not specified
+    # and extract them in respective subdirectories
+    # https://github.com/actions/download-artifact#download-all-artifacts
     name: artifact_name
     # Optional, directory where to extract artifact
     path: extract_here
