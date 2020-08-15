@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const AdmZip = require('adm-zip')
+const fs = require("fs")
 const filesize = require('filesize')
 const pathname = require('path')
 
@@ -8,9 +9,9 @@ async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
-        const name = core.getInput("name", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
+        const name = core.getInput("name")
         let branch = core.getInput("branch")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -82,30 +83,54 @@ async function main() {
             run_id: run.id,
         })
 
-        const artifact = artifacts.data.artifacts.find((artifact) => {
-            return artifact.name == name
-        })
+        let atfs;
+        if (name) {
+            atfs = artifacts.data.artifacts.filter((artifact) => {
+                return artifact.name == name
+            }) 
+        }
+        else {
+            artfs = artifacts.data.artifacts
+            // If we download all, it puts under each artifact name.
+            artfs.forEach(function (artifact) {
+                dirpath = pathname.join(path, artifact.name)
+                fs.mkdirSync(dirpath, { recursive: true })
+            })
+        }
 
-        console.log("==> Artifact:", artifact.id)
+        for (const artifact of artfs) {
+            console.log("==> Artifact:", artifact.id)
 
-        const size = filesize(artifact.size_in_bytes, { base: 10 })
+            const size = filesize(artifact.size_in_bytes, { base: 10 })
 
-        console.log("==> Downloading:", name + ".zip", `(${size})`)
+            console.log("==> Downloading:", name + ".zip", `(${size})`)
 
-        const zip = await client.actions.downloadArtifact({
-            owner: owner,
-            repo: repo,
-            artifact_id: artifact.id,
-            archive_format: "zip",
-        })
+            const zip = await client.actions.downloadArtifact({
+                owner: owner,
+                repo: repo,
+                artifact_id: artifact.id,
+                archive_format: "zip",
+            })
 
-        const adm = new AdmZip(Buffer.from(zip.data))
-        adm.getEntries().forEach((entry) => {
-            const action = entry.isDirectory ? "creating" : "inflating"
-            const filepath = pathname.join(path, entry.entryName)
-            console.log(`  ${action}: ${filepath}`)
-        })
-        adm.extractAllTo(path, true)
+            const adm = new AdmZip(Buffer.from(zip.data))
+            adm.getEntries().forEach((entry) => {
+                const action = entry.isDirectory ? "creating" : "inflating"
+                let filepath;
+                if (name) {
+                    filepath = pathname.join(path, entry.entryName)
+                }
+                else {
+                    filepath = pathname.join(path, artifact.name, entry.entryName)
+                }
+                console.log(`  ${action}: ${filepath}`)
+            })
+            if (name) {
+                adm.extractAllTo(path, true)
+            }
+            else {
+                adm.extractAllTo(pathname.join(path, artifact.name), true)
+            }
+        }
     } catch (error) {
         core.setFailed(error.message)
     }
