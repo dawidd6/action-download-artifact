@@ -1,9 +1,9 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const AdmZip = require('adm-zip')
-const fs = require("fs")
 const filesize = require('filesize')
 const pathname = require('path')
+const fs = require("fs")
 
 async function main() {
     try {
@@ -77,28 +77,22 @@ async function main() {
 
         console.log("==> Run:", run.id)
 
-        const artifacts = await client.actions.listWorkflowRunArtifacts({
+        let artifacts = await client.actions.listWorkflowRunArtifacts({
             owner: owner,
             repo: repo,
             run_id: run.id,
         })
 
-        let atfs;
+        // One artifact or all if `name` input is not specified.
         if (name) {
-            atfs = artifacts.data.artifacts.filter((artifact) => {
+            artifacts = artifacts.data.artifacts.find((artifact) => {
                 return artifact.name == name
-            }) 
-        }
-        else {
-            artfs = artifacts.data.artifacts
-            // If we download all, it puts under each artifact name.
-            artfs.forEach(function (artifact) {
-                dirpath = pathname.join(path, artifact.name)
-                fs.mkdirSync(dirpath, { recursive: true })
             })
+        } else {
+            artifacts = allArtifacts.data.artifacts
         }
 
-        for (const artifact of artfs) {
+        for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
@@ -112,24 +106,20 @@ async function main() {
                 archive_format: "zip",
             })
 
+            const dir = name ? path : pathname.join(path, artifact.name)
+
+            fs.mkdirSync(dir, { recursive: true })
+
             const adm = new AdmZip(Buffer.from(zip.data))
+
             adm.getEntries().forEach((entry) => {
                 const action = entry.isDirectory ? "creating" : "inflating"
-                let filepath;
-                if (name) {
-                    filepath = pathname.join(path, entry.entryName)
-                }
-                else {
-                    filepath = pathname.join(path, artifact.name, entry.entryName)
-                }
+                const filepath = pathname.join(dir, entry.entryName)
+
                 console.log(`  ${action}: ${filepath}`)
             })
-            if (name) {
-                adm.extractAllTo(path, true)
-            }
-            else {
-                adm.extractAllTo(pathname.join(path, artifact.name), true)
-            }
+
+            adm.extractAllTo(dir, true)
         }
     } catch (error) {
         core.setFailed(error.message)
