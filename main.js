@@ -97,7 +97,7 @@ async function main() {
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
 
-            console.log("==> Downloading:", name + ".zip", `(${size})`)
+            console.log("==> Downloading:", artifact.name + ".zip", `(${size})`)
 
             const zip = await client.actions.downloadArtifact({
                 owner: owner,
