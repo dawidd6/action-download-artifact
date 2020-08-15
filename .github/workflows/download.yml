@@ -35,3 +35,16 @@ jobs:
           branch: master
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
+  download-multiple:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+      - name: Test
+        run: |
+          cat artifact1/sha1 | grep $GITHUB_SHA
+          cat artifact2/sha2 | grep $GITHUB_SHA
