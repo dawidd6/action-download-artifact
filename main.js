@@ -85,11 +85,11 @@ async function main() {
 
         // One artifact or all if `name` input is not specified.
         if (name) {
-            artifacts = artifacts.data.artifacts.find((artifact) => {
+            artifacts = artifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == name
             })
         } else {
-            artifacts = allArtifacts.data.artifacts
+            artifacts = artifacts.data.artifacts
         }
 
         for (const artifact of artifacts) {
