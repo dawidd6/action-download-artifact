@@ -25,6 +25,9 @@ inputs:
   branch:
     description: Branch name
     required: false
+  run_id:
+    description: Workflow run id
+    required: false
   name:
     description: Artifact name (download all artifacts in not specified)
     required: false
