@@ -92,6 +92,9 @@ async function main() {
             artifacts = artifacts.data.artifacts
         }
 
+        if (artifacts.length == 0)
+          throw new Error("no artifacts found")
+
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
 
