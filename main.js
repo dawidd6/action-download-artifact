@@ -12,27 +12,18 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
-        let branch = core.getInput("branch")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
+        let branch = core.getInput("branch")
+        let runID = core.getInput("run_id")
 
         const client = github.getOctokit(token)
 
-        console.log("==> Repo:", owner + "/" + repo)
-
-        if (branch) {
-            console.log("==> Branch:", branch)
-
-            if (pr) {
-                console.log("==> Branch and PR can not be defined at the same time, ignoring PR:", pr)
-                pr = undefined
-            }
-
-            if (commit) {
-                console.log("==> Branch and Commit can not be defined at the same time, ignoring Commit:", commit)
-                commit = undefined
-            }
+        if ([runID, branch, pr, commit].filter(elem => elem).length > 1) {
+            throw new Error("don't specify `run_id`, `branch`, `pr`, and `commit` together")
         }
+
+        console.log("==> Repo:", owner + "/" + repo)
 
         if (pr) {
             console.log("==> PR:", pr)
@@ -49,38 +40,40 @@ async function main() {
             console.log("==> Commit:", commit)
         }
 
-        let run
-        const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs"
-        const params = {
-            owner: owner,
-            repo: repo,
-            id: workflow,
-            branch: branch
-        }
-        for await (const runs of client.paginate.iterator(endpoint, params)) {
-            run = runs.data.find((run) => {
-                if (commit) {
-                    return run.head_sha == commit
-                }
-                else {
-                    // No PR or commit was specified just return the first one.
-                    // The results appear to be sorted from API, so the most recent is first.
-                    // Just check if workflow run completed.
-                    return run.status == "completed"
-                }
-            })
+        if (!runID) {
+            const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs"
+            const params = {
+                owner: owner,
+                repo: repo,
+                id: workflow,
+                branch: branch
+            }
+            for await (const runs of client.paginate.iterator(endpoint, params)) {
+                const run = runs.data.find(r => {
+                    if (commit) {
+                        return r.head_sha == commit
+                    }
+                    else {
+                        // No PR or commit was specified just return the first one.
+                        // The results appear to be sorted from API, so the most recent is first.
+                        // Just check if workflow run completed.
+                        return r.status == "completed"
+                    }
+                })
 
-            if (run) {
-                break
+                if (run) {
+                    runID = run.id
+                    break
+                }
             }
         }
 
-        console.log("==> Run:", run.id)
+        console.log("==> RunID:", runID)
 
         let artifacts = await client.actions.listWorkflowRunArtifacts({
             owner: owner,
             repo: repo,
-            run_id: run.id,
+            run_id: runID,
         })
 
         // One artifact or all if `name` input is not specified.
@@ -93,7 +86,7 @@ async function main() {
         }
 
         if (artifacts.length == 0)
-          throw new Error("no artifacts found")
+            throw new Error("no artifacts found")
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
