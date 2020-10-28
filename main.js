@@ -86,9 +86,11 @@ async function main() {
         }
 
         if (artifacts.length == 0)
-            throw new Error("no artifacts found")
+            throw new warning("no artifacts found")
+        core.setOutput("download_successful", false);
 
         for (const artifact of artifacts) {
+            core.setOutput("download_successful", true);
             console.log("==> Artifact:", artifact.id)
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })

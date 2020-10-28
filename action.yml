@@ -35,6 +35,9 @@ inputs:
     description: Where to unpack the artifact
     required: false
     default: "./"
+outputs:
+  download_successful:
+    description: "boolean if download if artifacts was succesful"
 runs:
   using: node12
   main: main.js
