@@ -85,9 +85,10 @@ async function main() {
             artifacts = artifacts.data.artifacts
         }
 
-        if (artifacts.length == 0)
-            throw new warning("no artifacts found")
-        core.setOutput("download_successful", false);
+        if (artifacts.length == 0) {
+            console.warn("No artifacts found!");
+            core.setOutput("download_successful", false);
+        }
 
         for (const artifact of artifacts) {
             core.setOutput("download_successful", true);
