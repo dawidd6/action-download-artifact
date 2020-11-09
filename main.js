@@ -5,6 +5,8 @@ const filesize = require('filesize')
 const pathname = require('path')
 const fs = require("fs")
 
+const allowed_workflow_conclusions = ["failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"];
+
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
@@ -12,6 +14,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
+        const workflow_conclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
@@ -19,8 +22,12 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        if ([runID, branch, pr, commit].filter(elem => elem).length > 1) {
+        if ([runID, branch, pr, commit, workflow_conclusion].filter(elem => elem).length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, and `commit` together")
+        }
+
+        if(workflow_conclusion && !allowed_workflow_conclusions.includes(workflow_conclusion)) {
+            throw new Error(`Unknown workflow conclusion '${workflow_conclusion}'`)
         }
 
         console.log("==> Repo:", owner + "/" + repo)
@@ -57,7 +64,7 @@ async function main() {
                         // No PR or commit was specified just return the first one.
                         // The results appear to be sorted from API, so the most recent is first.
                         // Just check if workflow run completed.
-                        return r.status == "completed"
+                        return r.status == "completed" && (!workflow_conclusion || r.conclusion == workflow_conclusion)
                     }
                 })
 

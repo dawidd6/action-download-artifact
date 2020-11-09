@@ -12,6 +12,9 @@ inputs:
   workflow:
     description: Workflow name
     required: true
+  workflow_conclusion:
+    description: Wanted conclusion to search for in recent runs
+    required: false
   repo:
     description: Repository name with owner (like actions/checkout)
     required: false
