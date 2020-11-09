@@ -84,4 +84,4 @@ jobs:
           path: artifact
           workflow_conclusion: success
       - name: Test
-        run: cat artifact/sha | grep 378a91650c8f053aefe22c192a49f7ae56101f1c
+        run: cat artifact/sha
