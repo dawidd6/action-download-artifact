@@ -70,3 +70,18 @@ jobs:
         run: |
           cat artifact1/sha1 | grep $GITHUB_SHA
           cat artifact2/sha2 | grep $GITHUB_SHA
+  download-conclusion:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          workflow_conclusion: success
+      - name: Test
+        run: cat artifact/sha | grep 378a91650c8f053aefe22c192a49f7ae56101f1c
