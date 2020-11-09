@@ -23,7 +23,7 @@ async function main() {
         const client = github.getOctokit(token)
 
         if ([runID, branch, pr, commit, workflow_conclusion].filter(elem => elem).length > 1) {
-            throw new Error("don't specify `run_id`, `branch`, `pr`, and `commit` together")
+            throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` and `workflow_conclusion` together")
         }
 
         if(workflow_conclusion && !allowed_workflow_conclusions.includes(workflow_conclusion)) {
@@ -59,12 +59,13 @@ async function main() {
                 const run = runs.data.find(r => {
                     if (commit) {
                         return r.head_sha == commit
-                    }
-                    else {
-                        // No PR or commit was specified just return the first one.
+                    } else if(workflow_conclusion) {
+                        return r.conclusion == workflow_conclusion
+                    } else {
+                        // No PR, commit or conclusion was specified; just return the first one.
                         // The results appear to be sorted from API, so the most recent is first.
                         // Just check if workflow run completed.
-                        return r.status == "completed" && (!workflow_conclusion || r.conclusion == workflow_conclusion)
+                        return r.status == "completed"
                     }
                 })
 
