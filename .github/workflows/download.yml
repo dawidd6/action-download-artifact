@@ -84,4 +84,4 @@ jobs:
           path: artifact
           workflow_conclusion: success
       - name: Test
-        run: cat artifact/sha
+        run: cat artifact/sha | grep $GITHUB_SHA
