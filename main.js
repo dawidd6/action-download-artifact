@@ -27,8 +27,12 @@ async function extractWithFilter(adm, filter, dir) {
     
     const globber = await glob.create(filter.map(s => `${tmpdir}${s}`).join("\n"))
     for await (const file of globber.globGenerator()){
-        filepath = file.slice(tmpdir.length)
+        // Only copy files that we know are matched
+        if (fs.lstatSync(file).isDirectory()) {
+            return;
+        }
 
+        const filepath = file.slice(tmpdir.length)
         const destination = pathname.join(dir, filepath)
         console.log(`  creating: ${destination}`)
 
