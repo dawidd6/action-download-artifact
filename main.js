@@ -22,11 +22,24 @@ function extractAll(adm, dir) {
 }
 
 async function extractWithFilter(adm, filter, dir) {
-    tmpdir = pathname.join(os.tmpdir(), "artifact")
+    const tmpdir = pathname.join(os.tmpdir(), "artifact")
     adm.extractAllTo(tmpdir, true)
+
+    filter = filter.map(f => {
+        // If this pattern is an absolute path pattern
+        if (f[0] == "/" || (f[0] == "!" && f[1] == "/")) {
+            return f
+        }
+
+        if (f[0] == "!") {
+            return `!${tmpdir}/${f.slice(1)}`
+        }
+
+        return `${tmpdir}${f}`
+    }).join("\n")
     
-    const globber = await glob.create(filter.map(s => `${tmpdir}${s}`).join("\n"))
-    for await (const file of globber.globGenerator()){
+    const globber = await glob.create(filter)
+    for await (const file of globber.globGenerator()) {
         // Only copy files that we know are matched
         if (fs.lstatSync(file).isDirectory()) {
             return;
@@ -50,11 +63,11 @@ async function main() {
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         const workflow_conclusion = core.getInput("workflow_conclusion")
-        let filter = core.getInput("filter", { required: false })
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
         let runID = core.getInput("run_id")
+        let filter = core.getInput("filter")
 
         const client = github.getOctokit(token)
 

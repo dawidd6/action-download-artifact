@@ -102,9 +102,9 @@ jobs:
             !**/*.txt
       - name: Test
         run: |
+          [ -f artifact3/sha.txt ] && echo "artifact3/sha.txt should not exist" && exit 1
           cat artifact1/sha1 | grep $GITHUB_SHA
           cat artifact2/sha2 | grep $GITHUB_SHA
-          [ -f artifact3/sha.txt ] && echo "artifact3/sha.txt should not exist" && exit 1
   download-conclusion:
     runs-on: ubuntu-latest
     needs: wait
