@@ -27,7 +27,7 @@ async function extractWithFilter(adm, filter, dir) {
     
     const globber = await glob.create(filter.map(s => `${tmpdir}${s}`).join("\n"))
     for await (const file of globber.globGenerator()){
-        filepath = file.slice(tmpdir, length)
+        filepath = file.slice(tmpdir.length)
 
         const destination = pathname.join(dir, filepath)
         console.log(`  creating: ${destination}`)
@@ -44,9 +44,9 @@ async function main() {
         const workflow = core.getInput("workflow", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
-        const filter = core.getInput("filter", { required: true })
         const name = core.getInput("name")
         const workflow_conclusion = core.getInput("workflow_conclusion")
+        let filter = core.getInput("filter", { required: false })
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
