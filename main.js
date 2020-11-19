@@ -1,11 +1,42 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
+const glob = require('@actions/glob')
 const AdmZip = require('adm-zip')
 const filesize = require('filesize')
 const pathname = require('path')
-const fs = require("fs")
+const fs = require('fs')
+const os = require('os')
+const rimraf = require('rimraf')
 
 const allowed_workflow_conclusions = ["failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"];
+
+function extractAll(adm, dir) {
+    adm.getEntries().forEach((entry) => {
+        const action = entry.isDirectory ? "creating" : "inflating"
+        const filepath = pathname.join(dir, entry.entryName)
+
+        console.log(`  ${action}: ${filepath}`)
+    })
+
+    adm.extractAllTo(dir, true)
+}
+
+async function extractWithFilter(adm, filter, dir) {
+    tmpdir = pathname.join(os.tmpdir(), "artifact")
+    adm.extractAllTo(tmpdir, true)
+    
+    const globber = await glob.create(filter.map(s => `${tmpdir}${s}`).join("\n"))
+    for await (const file of globber.globGenerator()){
+        filepath = file.slice(tmpdir, length)
+
+        const destination = pathname.join(dir, filepath)
+        console.log(`  creating: ${destination}`)
+
+        fs.copyFileSync(file, destination)
+    }
+
+    rimraf.sync(tmpdir)
+}
 
 async function main() {
     try {
@@ -13,6 +44,7 @@ async function main() {
         const workflow = core.getInput("workflow", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
+        const filter = core.getInput("filter", { required: true })
         const name = core.getInput("name")
         const workflow_conclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
@@ -28,6 +60,14 @@ async function main() {
 
         if(workflow_conclusion && !allowed_workflow_conclusions.includes(workflow_conclusion)) {
             throw new Error(`Unknown workflow conclusion '${workflow_conclusion}'`)
+        }
+
+        // If a filter is provided, treat it as a line-delimeted array
+        if (filter) {
+            filter = filter
+                .split("\n")
+                .map(s => s.trim())
+                .filter(x => x !== "");
         }
 
         console.log("==> Repo:", owner + "/" + repo)
@@ -116,14 +156,11 @@ async function main() {
 
             const adm = new AdmZip(Buffer.from(zip.data))
 
-            adm.getEntries().forEach((entry) => {
-                const action = entry.isDirectory ? "creating" : "inflating"
-                const filepath = pathname.join(dir, entry.entryName)
-
-                console.log(`  ${action}: ${filepath}`)
-            })
-
-            adm.extractAllTo(dir, true)
+            if (filter) {
+                await extractWithFilter(adm, filter, dir)
+            } else {
+                extractAll(adm, dir)
+            }
         }
     } catch (error) {
         core.setFailed(error.message)

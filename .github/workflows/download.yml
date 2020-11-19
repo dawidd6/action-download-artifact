@@ -70,6 +70,41 @@ jobs:
         run: |
           cat artifact1/sha1 | grep $GITHUB_SHA
           cat artifact2/sha2 | grep $GITHUB_SHA
+  download-inclusion-filter:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          filter: |
+            **/*.txt
+      - name: Test
+        run: |
+          cat artifact1/sha1 | grep $GITHUB_SHA
+          cat artifact2/sha2 | grep $GITHUB_SHA
+          cat artifact3/sha.txt | grep $GITHUB_SHA
+  download-exclusion-filter:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          filter: |
+            *
+            !*.txt
+      - name: Test
+        run: |
+          cat artifact1/sha1 | grep $GITHUB_SHA
+          cat artifact2/sha2 | grep $GITHUB_SHA
+          cat artifact3/sha.txt | grep $GITHUB_SHA
   download-conclusion:
     runs-on: ubuntu-latest
     needs: wait
