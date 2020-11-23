@@ -64,7 +64,7 @@ async function main() {
                 repo: repo,
                 id: workflow,
                 branch: branch,
-                status: status,
+                status: workflow_conclusion,
             }
             for await (const runs of client.paginate.iterator(endpoint, params)) {
                 const run = runs.data.find(r => {
