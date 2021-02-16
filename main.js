@@ -55,6 +55,7 @@ async function main() {
     }
 
     console.log("==> Repo:", owner + "/" + repo);
+    console.log("==> Updated");
 
     if (pr) {
       console.log("==> PR:", pr);
