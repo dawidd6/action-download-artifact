@@ -31,6 +31,9 @@ inputs:
   run_id:
     description: Workflow run id
     required: false
+  run_number:
+    description: Workflow run number
+    required: false
   name:
     description: Artifact name (download all artifacts in not specified)
     required: false
