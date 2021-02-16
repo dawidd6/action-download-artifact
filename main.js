@@ -55,7 +55,6 @@ async function main() {
     }
 
     console.log("==> Repo:", owner + "/" + repo);
-    console.log("==> Updated");
 
     if (pr) {
       console.log("==> PR:", pr);
@@ -91,20 +90,12 @@ async function main() {
             return r.head_sha == commit;
           }
           if (runNumber) {
-            console.log(
-              `RunNumber set ${runNumber} - checking against ${r.run_number}`
-            );
-            if (r.run_number == runNumber) {
-              console.log(`Found correct run with runNumber: ${runNumber}`);
-              return true;
-            }
-            return false;
+            return r.run_number == runNumber;
           }
           return true;
         });
 
         if (run) {
-          console.log(`Run is set`, run);
           runID = run.id;
           break;
         }
