@@ -90,14 +90,21 @@ async function main() {
           if (commit) {
             return r.head_sha == commit;
           }
-          console.log(r);
           if (runNumber) {
-            return r.run_number === runNumber;
+            console.log(
+              `RunNumber set ${runNumber} - checking against ${r.run_number}`
+            );
+            if (r.run_number == runNumber) {
+              console.log(`Found correct run with runNumber: ${runNumber}`);
+              return true;
+            }
+            return false;
           }
           return true;
         });
 
         if (run) {
+          console.log(`Run is set`, run);
           runID = run.id;
           break;
         }
