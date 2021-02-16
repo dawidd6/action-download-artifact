@@ -70,6 +70,9 @@ async function main() {
     if (commit) {
       console.log("==> Commit:", commit);
     }
+    if (runNumber) {
+      console.log("==> RunNumber:", runNumber);
+    }
 
     if (!runID) {
       const endpoint =
@@ -86,6 +89,7 @@ async function main() {
           if (commit) {
             return r.head_sha == commit;
           }
+          console.log(r);
           if (runNumber) {
             return r.run_number === runNumber;
           }
