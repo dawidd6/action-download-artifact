@@ -86,8 +86,8 @@ async function main() {
           if (commit) {
             return r.head_sha == commit;
           }
-          if (run_number) {
-            return r.run_number === run_number;
+          if (runNumber) {
+            return r.run_number === runNumber;
           }
           return true;
         });
