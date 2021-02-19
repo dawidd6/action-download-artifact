@@ -1,6 +1,6 @@
 # Download workflow artifact GitHub Action
 
-An action that downloads and extracts uploaded artifact associated with given workflow and commit.
+An action that downloads and extracts uploaded artifact associated with given workflow and commit or other criteria.
 
 Let's suppose you have a workflow with a job in it that at the end uploads an artifact using `actions/upload-artifact` action and you want to download this artifact in another workflow that is run after the first one. Official `actions/download-artifact` does not allow this. That's why I decided to create this action. By knowing only the workflow name and commit SHA, you can download the previously uploaded artifact from different workflow associated with that commit and use it.
 
