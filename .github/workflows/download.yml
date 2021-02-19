@@ -42,6 +42,22 @@ jobs:
           branch: master
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
+  download-pr:
+    runs-on: ubuntu-latest
+    needs: wait
+    if: github.ref != 'refs/heads/master'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          pr: ${{github.event.pull_request.number}}
+      - name: Test
+        run: cat artifact/sha | grep $GITHUB_SHA
   download-run_id:
     runs-on: ubuntu-latest
     needs: wait
