@@ -58,7 +58,7 @@ async function main() {
         }
 
         if (!runID) {
-            const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status"
+            const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status&branch=:branch"
             const params = {
                 owner: owner,
                 repo: repo,
