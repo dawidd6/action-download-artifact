@@ -1,32 +1,19 @@
-const core = require("@actions/core")
-const github = require("@actions/github")
-const AdmZip = require("adm-zip")
-const filesize = require("filesize")
-const pathname = require("path")
-const fs = require("fs")
+const core = require('@actions/core')
+const github = require('@actions/github')
+const AdmZip = require('adm-zip')
+const filesize = require('filesize')
+const pathname = require('path')
+const fs = require('fs')
 
 // https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
 // allows for both status or conclusion to be used as status filter
-const allowed_workflow_conclusions = [
-    "failure",
-    "success",
-    "neutral",
-    "cancelled",
-    "skipped",
-    "timed_out",
-    "action_required",
-    "queued",
-    "in_progress",
-    "completed",
-]
+const allowed_workflow_conclusions = ["failure","success", "neutral", "cancelled", "skipped", "timed_out", "action_required", "queued", "in_progress", "completed"]
 
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
-        const [owner, repo] = core
-            .getInput("repo", { required: true })
-            .split("/")
+        const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         let workflow_conclusion = core.getInput("workflow_conclusion")
@@ -38,16 +25,12 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        if ([runID, branch, pr, commit].filter((elem) => elem).length > 1) {
-            throw new Error(
-                "don't specify `run_id`, `branch`, `pr`, `commit` together"
-            )
+        if ([runID, branch, pr, commit, run_number].filter((elem) => elem).length > 1) {
+            throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
         if ([runID, workflow_conclusion].filter((elem) => elem).length > 1) {
-            throw new Error(
-                "don't specify `run_id`, `workflow_conclusion` together"
-            )
+            throw new Error("don't specify `run_id`, `workflow_conclusion` together")
         }
 
         if (!workflow_conclusion) {
@@ -55,9 +38,7 @@ async function main() {
         }
 
         if (!allowed_workflow_conclusions.includes(workflow_conclusion)) {
-            throw new Error(
-                `Unknown workflow conclusion '${workflow_conclusion}'`
-            )
+            throw new Error(`Unknown workflow conclusion '${workflow_conclusion}'`)
         }
 
         console.log("==> Repo:", owner + "/" + repo)
@@ -90,10 +71,7 @@ async function main() {
                 branch: branch,
                 status: workflow_conclusion,
             }
-            for await (const runs of client.paginate.iterator(
-                endpoint,
-                params
-            )) {
+            for await (const runs of client.paginate.iterator(endpoint,params)) {
                 const run = runs.data.find((r) => {
                     if (commit) {
                         return r.head_sha == commit

@@ -8,7 +8,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 > If `commit` or `pr` or `branch` or `run_id` or `workflow_conclusion` is not specified then the artifact from the most recent completed workflow run will be downloaded.
 
-**Do not specify `pr`, `commit`, `branch`, `run_id` together or `workflow_conclusion` and `run_id` together. Pick just one of each or none.**
+**Do not specify `pr`, `commit`, `branch`, `run_id`, `run_number` together or `workflow_conclusion` and `run_id` together. Pick just one of each or none.**
 
 ```yaml
 - name: Download artifact
@@ -42,4 +42,6 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
+    # Optional, run number from the workflow
+    run_number: 34
 ```
