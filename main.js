@@ -25,7 +25,7 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        if ([runID, branch, pr, commit, run_number].filter(elem => elem).length > 1) {
+        if ([runID, branch, pr, commit, runNumber].filter(elem => elem).length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
