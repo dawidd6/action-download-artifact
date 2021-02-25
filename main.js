@@ -7,7 +7,7 @@ const fs = require('fs')
 
 // https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
 // allows for both status or conclusion to be used as status filter
-const allowed_workflow_conclusions = ["failure","success", "neutral", "cancelled", "skipped", "timed_out", "action_required", "queued", "in_progress", "completed"]
+const allowed_workflow_conclusions = ["failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required", "queued", "in_progress", "completed"]
 
 async function main() {
     try {
@@ -25,7 +25,7 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        if ([runID, branch, pr, commit, run_number].filter((elem) => elem).length > 1) {
+        if ([runID, branch, pr, commit, run_number].filter(elem => elem).length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
@@ -37,7 +37,7 @@ async function main() {
             workflow_conclusion = "completed"
         }
 
-        if (!allowed_workflow_conclusions.includes(workflow_conclusion)) {
+        if(!allowed_workflow_conclusions.includes(workflow_conclusion)) {
             throw new Error(`Unknown workflow conclusion '${workflow_conclusion}'`)
         }
 
@@ -62,8 +62,7 @@ async function main() {
         }
 
         if (!runID) {
-            const endpoint =
-                "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status"
+            const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status"
             const params = {
                 owner: owner,
                 repo: repo,
@@ -72,7 +71,7 @@ async function main() {
                 status: workflow_conclusion,
             }
             for await (const runs of client.paginate.iterator(endpoint,params)) {
-                const run = runs.data.find((r) => {
+                const run = runs.data.find(r => {
                     if (commit) {
                         return r.head_sha == commit
                     }
@@ -106,7 +105,8 @@ async function main() {
             artifacts = artifacts.data.artifacts
         }
 
-        if (artifacts.length == 0) throw new Error("no artifacts found")
+        if (artifacts.length == 0) 
+          throw new Error("no artifacts found")
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
