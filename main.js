@@ -24,8 +24,15 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        if ([runID, branch, pr, commit].filter(elem => elem).length > 1) {
+        const client = github.getOctokit(token)
+
+        let sourceSelection = [runID, branch, pr, commit].filter(elem => elem);
+        if (sourceSelection.length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
+        }
+
+        if (sourceSelection.length <= 0) {
+            throw new Error("one of the following must be specified: `run_id`, `branch`, `pr`, `commit`")
         }
 
         if ([runID, workflow_conclusion].filter(elem => elem).length > 1) {
