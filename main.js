@@ -27,10 +27,6 @@ async function main() {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
-        if (sourceSelection.length <= 0) {
-            throw new Error("one of the following must be specified: `run_id`, `branch`, `pr`, `commit`")
-        }
-
         if ([runID, workflow_conclusion].filter(elem => elem).length > 1) {
             throw new Error("don't specify `run_id`, `workflow_conclusion` together")
         }
@@ -84,6 +80,10 @@ async function main() {
                     break
                 }
             }
+        }
+
+        if (sourceSelection.length <= 0 && !runID) {
+            throw new Error("one of the following must be specified: `run_id`, `branch`, `pr`, `commit`")
         }
 
         console.log("==> RunID:", runID)
