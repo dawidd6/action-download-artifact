@@ -22,10 +22,6 @@ async function main() {
         let branch = core.getInput("branch")
         let runID = core.getInput("run_id")
 
-        const client = github.getOctokit(token)
-
-        const client = github.getOctokit(token)
-
         let sourceSelection = [runID, branch, pr, commit].filter(elem => elem);
         if (sourceSelection.length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
@@ -46,6 +42,8 @@ async function main() {
         if(!allowed_workflow_conclusions.includes(workflow_conclusion)) {
             throw new Error(`Unknown workflow conclusion '${workflow_conclusion}'`)
         }
+
+        const client = github.getOctokit(token)
 
         console.log("==> Repo:", owner + "/" + repo)
 
