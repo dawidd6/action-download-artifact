@@ -57,12 +57,17 @@ async function main() {
         if (commit) {
             console.log("==> Commit:", commit)
         }
+
         if (runNumber) {
             console.log("==> RunNumber:", runNumber)
         }
 
-        if (!runID) {
+        if (branch) {
             branch = branch.replace(/^refs\/heads\//, "")
+            console.log("==> Branch:", branch)
+        }
+
+        if (!runID) {
             const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status&branch=:branch"
             const params = {
                 owner: owner,
