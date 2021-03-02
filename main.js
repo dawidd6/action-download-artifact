@@ -3,11 +3,11 @@ const github = require('@actions/github')
 const AdmZip = require('adm-zip')
 const filesize = require('filesize')
 const pathname = require('path')
-const fs = require("fs")
+const fs = require('fs')
 
 // https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
 // allows for both status or conclusion to be used as status filter
-const allowed_workflow_conclusions = ["failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required", "queued", "in_progress", "completed"];
+const allowed_workflow_conclusions = ["failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required", "queued", "in_progress", "completed"]
 
 async function main() {
     try {
@@ -21,14 +21,15 @@ async function main() {
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
         let runID = core.getInput("run_id")
+        let runNumber = core.getInput("run_number")
 
         const client = github.getOctokit(token)
 
-        if ([runID, branch, pr, commit].filter(elem => elem).length > 1) {
+        if ([runID, branch, pr, commit, runNumber].filter(elem => elem).length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
-        if ([runID, workflow_conclusion].filter(elem => elem).length > 1) {
+        if ([runID, workflow_conclusion].filter((elem) => elem).length > 1) {
             throw new Error("don't specify `run_id`, `workflow_conclusion` together")
         }
 
@@ -56,6 +57,9 @@ async function main() {
         if (commit) {
             console.log("==> Commit:", commit)
         }
+        if (runNumber) {
+            console.log("==> RunNumber:", runNumber)
+        }
 
         if (!runID) {
             const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status&branch=:branch"
@@ -66,10 +70,13 @@ async function main() {
                 branch: branch,
                 status: workflow_conclusion,
             }
-            for await (const runs of client.paginate.iterator(endpoint, params)) {
+            for await (const runs of client.paginate.iterator(endpoint,params)) {
                 const run = runs.data.find(r => {
                     if (commit) {
                         return r.head_sha == commit
+                    }
+                    if (runNumber) {
+                        return r.run_number == runNumber
                     }
                     return true
                 })
@@ -98,8 +105,8 @@ async function main() {
             artifacts = artifacts.data.artifacts
         }
 
-        if (artifacts.length == 0)
-            throw new Error("no artifacts found")
+        if (artifacts.length == 0) 
+          throw new Error("no artifacts found")
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
