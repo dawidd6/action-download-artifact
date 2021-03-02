@@ -62,6 +62,7 @@ async function main() {
         }
 
         if (!runID) {
+            branch = branch.replace(/^refs\/heads\//, "")
             const endpoint = "GET /repos/:owner/:repo/actions/workflows/:id/runs?status=:status&branch=:branch"
             const params = {
                 owner: owner,
