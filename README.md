@@ -33,6 +33,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     branch: master
     # Optional, will use specified workflow run
     run_id: 1122334455
+    # Optional, run number from the workflow
+    run_number: 34
     # Optional, uploaded artifact name,
     # will download all artifacts if not specified
     # and extract them in respective subdirectories
@@ -42,6 +44,4 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
-    # Optional, run number from the workflow
-    run_number: 34
 ```
