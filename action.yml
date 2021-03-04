@@ -23,7 +23,7 @@ inputs:
     description: Pull request number
     required: false
   commit:
-    description: Commit SHA1
+    description: Commit hash
     required: false
   branch:
     description: Branch name
