@@ -29,7 +29,11 @@ async function main() {
             throw new Error("don't specify `run_id`, `workflow_conclusion` together")
         }
 
+        console.log("==> Workflow:", workflow)
+
         console.log("==> Repo:", owner + "/" + repo)
+
+        console.log("==> Conclusion:", workflowConclusion)
 
         if (pr) {
             console.log("==> PR:", pr)
@@ -46,13 +50,13 @@ async function main() {
             console.log("==> Commit:", commit)
         }
 
-        if (runNumber) {
-            console.log("==> RunNumber:", runNumber)
-        }
-
         if (branch) {
             branch = branch.replace(/^refs\/heads\//, "")
             console.log("==> Branch:", branch)
+        }
+
+        if (runNumber) {
+            console.log("==> RunNumber:", runNumber)
         }
 
         if (!runID) {
