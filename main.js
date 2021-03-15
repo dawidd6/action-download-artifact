@@ -25,10 +25,6 @@ async function main() {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
-        if ([runID, workflowConclusion].filter((elem) => elem).length > 1) {
-            throw new Error("don't specify `run_id`, `workflow_conclusion` together")
-        }
-
         console.log("==> Workflow:", workflow)
 
         console.log("==> Repo:", owner + "/" + repo)
@@ -103,8 +99,8 @@ async function main() {
             artifacts = artifacts.data.artifacts
         }
 
-        if (artifacts.length == 0) 
-          throw new Error("no artifacts found")
+        if (artifacts.length == 0)
+            throw new Error("no artifacts found")
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
