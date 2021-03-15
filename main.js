@@ -21,32 +21,12 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        // Allows for both status or conclusion to be used as status filter
-        const allowedWorkflowConclusions = [
-            // statuses
-            "failure",
-            "success",
-            "neutral",
-            "cancelled",
-            "skipped",
-            "timed_out",
-            "action_required",
-            // conslusions
-            "queued",
-            "in_progress",
-            "completed"
-        ]
-
         if ([runID, branch, pr, commit].filter(elem => elem).length > 1) {
             throw new Error("don't specify `run_id`, `branch`, `pr`, `commit` together")
         }
 
         if ([runID, workflowConclusion].filter((elem) => elem).length > 1) {
             throw new Error("don't specify `run_id`, `workflow_conclusion` together")
-        }
-
-        if(!allowedWorkflowConclusions.includes(workflowConclusion)) {
-            throw new Error(`unknown workflow conclusion '${workflowConclusion}'`)
         }
 
         console.log("==> Repo:", owner + "/" + repo)
