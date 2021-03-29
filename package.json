@@ -6,7 +6,7 @@
     "@actions/github": "^4.0.0",
     "adm-zip": "^0.5.4",
     "filesize": "^6.1.0",
-    "retry": "^0.12.0"
+    "p-retry": "^4.4.0"
   },
   "devDependencies": {
     "jest": "^26.6.3",

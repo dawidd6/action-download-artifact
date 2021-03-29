@@ -4,7 +4,7 @@ const AdmZip = require('adm-zip')
 const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
-const retry = require('retry');
+const pRetry = require('p-retry');
 
 
 async function listArtifacts(client, owner, repo, runID, name) {
@@ -23,19 +23,14 @@ async function listArtifacts(client, owner, repo, runID, name) {
         artifacts = artifacts.data.artifacts
     }
 
+    if (artifacts.length == 0) {
+        console.log("No artifacts found yet.");
+        return Promise.reject("No artifacts found.");
+    }
+
     return artifacts;
 }
 
-async function retryListArtifacts(client, owner, repo, runID) {
-
-    // TODO: create backoff here using condition artifacts.length == 0
-    // Use npm module https://npmjs.com/package/backoff
-    let artifacts = await  listArtifacts(owner, repo, runID);
-
-    if (artifacts.length == 0)
-        throw new Error("no artifacts found")
-
-}
 
 async function index() {
     try {
@@ -116,13 +111,10 @@ async function index() {
 
         console.log("==> RunID:", runID)
 
-        let artifacts = await listArtifacts(client, owner, repo, runID, name)
-
-        // TODO: create backoff here using condition artifacts.length == 0
-        // Use npm module https://npmjs.com/package/backoff
-
-        if (artifacts.length == 0)
-            throw new Error("no artifacts found")
+        let artifacts = await pRetry(
+        () => listArtifacts(client, owner, repo, runID, name),
+        {retries: 5}
+        );
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
