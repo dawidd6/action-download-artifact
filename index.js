@@ -37,7 +37,7 @@ async function retryListArtifacts(client, owner, repo, runID) {
 
 }
 
-async function main() {
+async function index() {
     try {
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
@@ -162,4 +162,4 @@ async function main() {
 exports.listArtifacts = listArtifacts;
 exports.retryListArtifacts = retryListArtifacts;
 
-main()
+index()
