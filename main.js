@@ -4,6 +4,7 @@ const AdmZip = require('adm-zip')
 const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
+const listArtifacts = require('./listArtifacts')
 
 async function main() {
     try {
@@ -84,20 +85,10 @@ async function main() {
 
         console.log("==> RunID:", runID)
 
-        let artifacts = await client.actions.listWorkflowRunArtifacts({
-            owner: owner,
-            repo: repo,
-            run_id: runID,
-        })
+        let artifacts = await listArtifacts.listArtifacts(client, owner, repo, runID)
 
-        // One artifact or all if `name` input is not specified.
-        if (name) {
-            artifacts = artifacts.data.artifacts.filter((artifact) => {
-                return artifact.name == name
-            })
-        } else {
-            artifacts = artifacts.data.artifacts
-        }
+        // TODO: create backoff here using condition artifacts.length == 0
+        // Use npm module https://npmjs.com/package/backoff
 
         if (artifacts.length == 0)
             throw new Error("no artifacts found")
