@@ -7,7 +7,7 @@ const fs = require('fs')
 const retry = require('retry');
 
 
-async function listArtifacts(client, owner, repo, runID) {
+async function listArtifacts(client, owner, repo, runID, name) {
     let artifacts = await client.actions.listWorkflowRunArtifacts({
         owner: owner,
         repo: repo,
