@@ -153,6 +153,6 @@ async function index() {
 
 
 exports.listArtifacts = listArtifacts;
-exports.retryListArtifacts = retryListArtifacts;
+
 
 index()
