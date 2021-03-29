@@ -116,7 +116,7 @@ async function index() {
 
         console.log("==> RunID:", runID)
 
-        let artifacts = await listArtifacts(client, owner, repo, runID)
+        let artifacts = await listArtifacts(client, owner, repo, runID, name)
 
         // TODO: create backoff here using condition artifacts.length == 0
         // Use npm module https://npmjs.com/package/backoff
