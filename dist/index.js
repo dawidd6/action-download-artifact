@@ -11,10 +11,11 @@ const AdmZip = __nccwpck_require__(3301)
 const filesize = __nccwpck_require__(5577)
 const pathname = __nccwpck_require__(5622)
 const fs = __nccwpck_require__(5747)
-const retry = __nccwpck_require__(5664);
+const pRetry = __nccwpck_require__(9683);
 
 
-async function listArtifacts(client, owner, repo, runID) {
+
+async function listArtifacts(client, owner, repo, runID, name) {
     let artifacts = await client.actions.listWorkflowRunArtifacts({
         owner: owner,
         repo: repo,
@@ -30,19 +31,14 @@ async function listArtifacts(client, owner, repo, runID) {
         artifacts = artifacts.data.artifacts
     }
 
+    if (artifacts.length == 0) {
+        console.log("No artifacts found yet.");
+        return Promise.reject("No artifacts found.");
+    }
+
     return artifacts;
 }
 
-async function retryListArtifacts(client, owner, repo, runID) {
-
-    // TODO: create backoff here using condition artifacts.length == 0
-    // Use npm module https://npmjs.com/package/backoff
-    let artifacts = await  listArtifacts(owner, repo, runID);
-
-    if (artifacts.length == 0)
-        throw new Error("no artifacts found")
-
-}
 
 async function index() {
     try {
@@ -123,13 +119,10 @@ async function index() {
 
         console.log("==> RunID:", runID)
 
-        let artifacts = await listArtifacts(client, owner, repo, runID)
-
-        // TODO: create backoff here using condition artifacts.length == 0
-        // Use npm module https://npmjs.com/package/backoff
-
-        if (artifacts.length == 0)
-            throw new Error("no artifacts found")
+        let artifacts = await pRetry(
+        () => listArtifacts(client, owner, repo, runID, name),
+        {retries: 5}
+        );
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
@@ -8480,6 +8473,98 @@ function onceStrict (fn) {
   f.called = false
   return f
 }
+
+
+/***/ }),
+
+/***/ 9683:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const retry = __nccwpck_require__(5664);
+
+const networkErrorMsgs = [
+	'Failed to fetch', // Chrome
+	'NetworkError when attempting to fetch resource', // Firefox
+	'The Internet connection appears to be offline' // Safari
+];
+
+class AbortError extends Error {
+	constructor(message) {
+		super();
+
+		if (message instanceof Error) {
+			this.originalError = message;
+			({message} = message);
+		} else {
+			this.originalError = new Error(message);
+			this.originalError.stack = this.stack;
+		}
+
+		this.name = 'AbortError';
+		this.message = message;
+	}
+}
+
+const decorateErrorWithCounts = (error, attemptNumber, options) => {
+	// Minus 1 from attemptNumber because the first attempt does not count as a retry
+	const retriesLeft = options.retries - (attemptNumber - 1);
+
+	error.attemptNumber = attemptNumber;
+	error.retriesLeft = retriesLeft;
+	return error;
+};
+
+const isNetworkError = errorMessage => networkErrorMsgs.includes(errorMessage);
+
+const pRetry = (input, options) => new Promise((resolve, reject) => {
+	options = {
+		onFailedAttempt: () => {},
+		retries: 10,
+		...options
+	};
+
+	const operation = retry.operation(options);
+
+	operation.attempt(async attemptNumber => {
+		try {
+			resolve(await input(attemptNumber));
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				reject(new TypeError(`Non-error was thrown: "${error}". You should only throw errors.`));
+				return;
+			}
+
+			if (error instanceof AbortError) {
+				operation.stop();
+				reject(error.originalError);
+			} else if (error instanceof TypeError && !isNetworkError(error.message)) {
+				operation.stop();
+				reject(error);
+			} else {
+				decorateErrorWithCounts(error, attemptNumber, options);
+
+				try {
+					await options.onFailedAttempt(error);
+				} catch (error) {
+					reject(error);
+					return;
+				}
+
+				if (!operation.retry(error)) {
+					reject(operation.mainError());
+				}
+			}
+		}
+	});
+});
+
+module.exports = pRetry;
+// TODO: remove this in the next major version
+module.exports.default = pRetry;
+
+module.exports.AbortError = AbortError;
 
 
 /***/ }),
