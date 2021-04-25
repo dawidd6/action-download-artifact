@@ -32,6 +32,9 @@ inputs:
   branch:
     description: Branch name
     required: false
+  event:
+    description: Event type
+    required: false
   run_id:
     description: Workflow run id
     required: false

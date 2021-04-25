@@ -31,6 +31,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     commit: ${{github.event.pull_request.head.sha}}
     # Optional, will use the branch
     branch: master
+    # Optional, defaults to all types
+    event: push
     # Optional, will use specified workflow run
     run_id: 1122334455
     # Optional, run number from the workflow
