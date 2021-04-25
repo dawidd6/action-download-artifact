@@ -60,7 +60,7 @@ async function main() {
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
                 repo: repo,
-                id: workflow,
+                workflow_id: workflow,
                 branch: branch,
                 event: event,
                 status: workflowConclusion,
