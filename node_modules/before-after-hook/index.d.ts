@@ -2,9 +2,15 @@ type HookMethod<Options, Result> = (
   options: Options
 ) => Result | Promise<Result>
 
-type BeforeHook<Options> = (options: Options) => void
-type ErrorHook<Options, Error> = (error: Error, options: Options) => void
-type AfterHook<Options, Result> = (result: Result, options: Options) => void
+type BeforeHook<Options> = (options: Options) => void | Promise<void>
+type ErrorHook<Options, Error> = (
+  error: Error,
+  options: Options
+) => void | Promise<void>
+type AfterHook<Options, Result> = (
+  result: Result,
+  options: Options
+) => void | Promise<void>
 type WrapHook<Options, Result> = (
   hookMethod: HookMethod<Options, Result>,
   options: Options
