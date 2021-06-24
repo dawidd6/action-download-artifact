@@ -14,7 +14,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 - name: Download artifact
   uses: dawidd6/action-download-artifact@v2
   with:
-    # Optional, GitHub token, a personal access token with public_repo scope
+    # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
     github_token: ${{secrets.GITHUB_TOKEN}}, required if artifact is from a different repo
     # Required, workflow file name or ID
     workflow: workflow_name.yml
@@ -42,7 +42,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # and extract them in respective subdirectories
     # https://github.com/actions/download-artifact#download-all-artifacts
     name: artifact_name
-    # Optional, directory where to extract artifact. Defaults to the artifact name (see name arg)
+    # Optional, directory where to extract artifact. Defaults to the artifact name (see `name` input)
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
