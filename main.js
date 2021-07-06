@@ -73,7 +73,9 @@ async function main() {
                     if (runNumber) {
                         return r.run_number == runNumber
                     }
-                    return true
+                    if (r.artifacts_url) {
+                        return true
+                    }
                 })
 
                 if (run) {
