@@ -14,11 +14,7 @@ jobs:
         run: |
           mkdir artifact
           echo $GITHUB_SHA > artifact/sha
-      - name: Upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact
-          path: artifact
+
   upload-multiple:
     runs-on: ubuntu-latest
     steps:
@@ -27,13 +23,3 @@ jobs:
           mkdir artifact1 artifact2
           echo $GITHUB_SHA > artifact1/sha1
           echo $GITHUB_SHA > artifact2/sha2
-      - name: Upload first
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact1
-          path: artifact1
-      - name: Upload second
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact2
-          path: artifact2
