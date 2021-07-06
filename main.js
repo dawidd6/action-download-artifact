@@ -73,7 +73,12 @@ async function main() {
                     if (runNumber) {
                         return r.run_number == runNumber
                     }
-                    if (r.artifacts.length > 0) {
+                    let artifacts = client.actions.listWorkflowRunArtifacts({
+                        owner: owner,
+                        repo: repo,
+                        run_id: r.run_number,
+                    })
+                    if (artifacts.length > 0) {
                         return true
                     }
                 })
