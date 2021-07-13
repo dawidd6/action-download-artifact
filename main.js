@@ -89,7 +89,7 @@ async function main() {
             owner: owner,
             repo: repo,
             run_id: runID,
-        });
+        })
 
         // One artifact or all if `name` input is not specified.
         if (name) {
