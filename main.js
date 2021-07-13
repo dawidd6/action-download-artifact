@@ -85,19 +85,17 @@ async function main() {
 
         console.log("==> RunID:", runID)
 
-        let artifacts = await client.actions.listWorkflowRunArtifacts({
+        let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
             owner: owner,
             repo: repo,
             run_id: runID,
-        })
+        });
 
         // One artifact or all if `name` input is not specified.
         if (name) {
-            artifacts = artifacts.data.artifacts.filter((artifact) => {
+            artifacts = artifacts.filter((artifact) => {
                 return artifact.name == name
             })
-        } else {
-            artifacts = artifacts.data.artifacts
         }
 
         if (artifacts.length == 0)
