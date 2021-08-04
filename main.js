@@ -83,7 +83,11 @@ async function main() {
             }
         }
 
-        console.log("==> RunID:", runID)
+        if (runID) {
+            console.log("==> RunID:", runID)
+        } else {
+            throw new Error("no matching workflow run found")
+        }
 
         let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
             owner: owner,
