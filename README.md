@@ -21,7 +21,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     workflow: workflow_name.yml
     # Optional, the status or conclusion of a completed workflow to search for
     # Can be one of a workflow conclusion:
-    #.  "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
+    #   "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
     # Or a workflow status:
     #   "completed", "in_progress", "queued"
     workflow_conclusion: success
