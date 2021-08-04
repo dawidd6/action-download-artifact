@@ -5,6 +5,7 @@ const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
 
+
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
