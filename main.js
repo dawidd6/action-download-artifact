@@ -12,7 +12,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
-        let workflowConclusion = core.getInput("workflow_conclusion")
+        let workflowConclusion = core.getInput("workflow_conclusion").split(",").map(o => o.trim())
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
@@ -63,7 +63,6 @@ async function main() {
                 workflow_id: workflow,
                 branch: branch,
                 event: event,
-                status: workflowConclusion,
             }
             )) {
                 const run = runs.data.find(r => {
@@ -72,6 +71,9 @@ async function main() {
                     }
                     if (runNumber) {
                         return r.run_number == runNumber
+                    }
+                    if (workflowConclusion.length > 0) {
+                        return workflowConclusion.includes(r.status) || workflowConclusion.includes(r.conclusion)
                     }
                     return true
                 })
