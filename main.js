@@ -12,8 +12,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
-        let workflowConclusion = core.getInput("workflow_conclusion").split(",").map(o => o.trim())
-        if (workflowConclusion.length == 0) workflowConclusion = ["completed","success"]
+        let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
@@ -66,21 +65,20 @@ async function main() {
                 event: event,
             }
             )) {
-                const run = runs.data.find(r => {
-                    if (commit) {
-                        return r.head_sha == commit
+                for (const run of runs.data) {
+                    if (commit && run.head_sha != commit) {
+                        continue
                     }
-                    if (runNumber) {
-                        return r.run_number == runNumber
+                    if (runNumber && run.run_number != runNumber) {
+                        continue
                     }
-                    if (workflowConclusion.length > 0) {
-                        return workflowConclusion.includes(r.status) || workflowConclusion.includes(r.conclusion)
+                    if (workflowConclusion && (workflowConclusion != run.conclusion || workflowConclusion != run.status)) {
+                        continue
                     }
-                    return true
-                })
-
-                if (run) {
                     runID = run.id
+                    break
+                }
+                if (runID) {
                     break
                 }
             }
