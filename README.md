@@ -20,11 +20,10 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Required, workflow file name or ID
     workflow: workflow_name.yml
     # Optional, the status or conclusion of a completed workflow to search for
-    # Can be one of a workflow conclusion::
-    # "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
+    # Can be one of a workflow conclusion:
+    #.  "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
     # Or a workflow status:
-    # "completed", "in_progress", "queued"
-    # Default: "completed,success"
+    #   "completed", "in_progress", "queued"
     workflow_conclusion: success
     # Optional, will get head commit SHA
     pr: ${{github.event.pull_request.number}}
