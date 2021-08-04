@@ -13,6 +13,7 @@ async function main() {
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         let workflowConclusion = core.getInput("workflow_conclusion").split(",").map(o => o.trim())
+        if (workflowConclusion.length == 0) workflowConclusion = ["completed","success"]
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
