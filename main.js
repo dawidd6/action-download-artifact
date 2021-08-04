@@ -63,21 +63,22 @@ async function main() {
                 workflow_id: workflow,
                 branch: branch,
                 event: event,
-                status: workflowConclusion,
             }
             )) {
-                const run = runs.data.find(r => {
-                    if (commit) {
-                        return r.head_sha == commit
+                for (const run of runs.data) {
+                    if (commit && run.head_sha != commit) {
+                        continue
                     }
-                    if (runNumber) {
-                        return r.run_number == runNumber
+                    if (runNumber && run.run_number != runNumber) {
+                        continue
                     }
-                    return true
-                })
-
-                if (run) {
+                    if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
+                        continue
+                    }
                     runID = run.id
+                    break
+                }
+                if (runID) {
                     break
                 }
             }
