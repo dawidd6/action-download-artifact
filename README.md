@@ -15,15 +15,15 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
   uses: dawidd6/action-download-artifact@v2
   with:
     # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
-    github_token: ${{secrets.GITHUB_TOKEN}}, required if artifact is from a different repo
+    # Required, if artifact is from a different repo
+    github_token: ${{secrets.GITHUB_TOKEN}}
     # Required, workflow file name or ID
     workflow: workflow_name.yml
     # Optional, the status or conclusion of a completed workflow to search for
-    # Can be one of a workflow conclusion::
-    # "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
+    # Can be one of a workflow conclusion:
+    #   "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
     # Or a workflow status:
-    # "completed", "in_progress", "queued"
-    # Default: "completed,success"
+    #   "completed", "in_progress", "queued"
     workflow_conclusion: success
     # Optional, will get head commit SHA
     pr: ${{github.event.pull_request.number}}

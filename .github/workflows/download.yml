@@ -84,6 +84,6 @@ jobs:
           workflow: upload.yml
           name: artifact
           path: artifact
-          workflow_conclusion: success
+          workflow_conclusion: ''
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA

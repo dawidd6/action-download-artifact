@@ -14,11 +14,11 @@ inputs:
     required: true
   workflow_conclusion:
     description: |
-      Wanted status or conclusion or both to search for in recent runs
+      Wanted status or conclusion to search for in recent runs
 
       https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
     required: false
-    default: completed,success
+    default: success
   repo:
     description: Repository name with owner (like actions/checkout)
     required: false
