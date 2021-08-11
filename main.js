@@ -80,7 +80,7 @@ async function main() {
                         let artifacts = await client.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
-                            run_id: r.id,
+                            run_id: run.id,
                         })
                         if (artifacts.data.artifacts.length == 0) {
                             continue
