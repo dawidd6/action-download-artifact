@@ -46,4 +46,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
+    # Optional, check the workflow run whether it has an artifact
+    # then will get the last available artifact from previous workflow
+    # default false, just try to download from the last one
+    check_artifacts:  false
 ```

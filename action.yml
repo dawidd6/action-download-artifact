@@ -48,6 +48,9 @@ inputs:
     description: Where to unpack the artifact
     required: false
     default: "./"
+  check_artifacts:
+    description: Check workflow run whether it has an artifact
+    required: false
 runs:
   using: node12
   main: main.js

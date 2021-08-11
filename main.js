@@ -5,13 +5,6 @@ const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
 
-async function findAsync(arr, asyncCallback) {
-    const promises = arr.map(asyncCallback);
-    const results = await Promise.all(promises);
-    const index = results.findIndex(result => result);
-    return arr[index];
-}
-
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
@@ -26,6 +19,7 @@ async function main() {
         let event = core.getInput("event")
         let runID = core.getInput("run_id")
         let runNumber = core.getInput("run_number")
+        let checkArtifacts = core.getInput("check_artifacts")
 
         const client = github.getOctokit(token)
 
@@ -81,6 +75,16 @@ async function main() {
                     }
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
+                    }
+                    if (checkArtifacts) {
+                        let artifacts = await client.actions.listWorkflowRunArtifacts({
+                            owner: owner,
+                            repo: repo,
+                            run_id: r.id,
+                        })
+                        if (artifacts.data.artifacts.length == 0) {
+                            continue
+                        }
                     }
                     runID = run.id
                     break
