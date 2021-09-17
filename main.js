@@ -31,13 +31,6 @@ async function main() {
 
         if (pr) {
             console.log("==> PR:", pr)
-
-            const pull = await client.pulls.get({
-                owner: owner,
-                repo: repo,
-                pull_number: pr,
-            })
-            commit = pull.data.head.sha
         }
 
         if (commit) {
@@ -68,6 +61,9 @@ async function main() {
             )) {
                 for (const run of runs.data) {
                     if (commit && run.head_sha != commit) {
+                        continue
+                    }
+                    if (pr && !run.pull_requests.some(x => x.number == pr)) {
                         continue
                     }
                     if (runNumber && run.run_number != runNumber) {
