@@ -25,7 +25,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Or a workflow status:
     #   "completed", "in_progress", "queued"
     workflow_conclusion: success
-    # Optional, will get head commit SHA
+    # Optional, will get search runs for matching pull_request.*.number
     pr: ${{github.event.pull_request.number}}
     # Optional, no need to specify if PR is
     commit: ${{github.event.pull_request.head.sha}}
