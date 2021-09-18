@@ -16,6 +16,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
   with:
     # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
     # Required, if artifact is from a different repo
+    # For private repos, you need a Personal Access Token with `repo` scope.
+    # Use different name from `GITHUB_TOKEN`, i.e `${{secrets.GH_TOKEN}}`.
     github_token: ${{secrets.GITHUB_TOKEN}}
     # Required, workflow file name or ID
     workflow: workflow_name.yml
