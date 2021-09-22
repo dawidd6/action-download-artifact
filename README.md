@@ -38,9 +38,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     run_id: 1122334455
     # Optional, run number from the workflow
     run_number: 34
-    # Optional, uploaded artifact name,
-    # will download all artifacts if not specified
-    # and extract them in respective subdirectories
+    # Optional, uploaded artifact name or comma seperated list of artifact names
+    # If not specified, will download all artifacts and extract them in respective subdirectories
     # https://github.com/actions/download-artifact#download-all-artifacts
     name: artifact_name
     # Optional, directory where to extract artifact. Defaults to the artifact name (see `name` input)

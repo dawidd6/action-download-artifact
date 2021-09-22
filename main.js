@@ -109,8 +109,9 @@ async function main() {
 
         // One artifact or all if `name` input is not specified.
         if (name) {
+            const names = name.split(",").map(name => name.trim())
             artifacts = artifacts.filter((artifact) => {
-                return artifact.name == name
+                return names.includes(artifact.name)
             })
         }
 
