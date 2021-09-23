@@ -112,14 +112,9 @@ async function main() {
             const matchesWithRegex = (stringToTest, regexRule) => {
                 const escapeSpecialChars = (string) => string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
                 const builtRegexRule = "^" + regexRule.split("*").map(escapeSpecialChars).join(".*") + "$"
-                const match = new RegExp(builtRegexRule).test(stringToTest)
-
-                console.log(`[DEBUG] name: ${regexRule}, artifact: ${stringToTest}, regexRule: ${builtRegexRule}, match: ${match}`)
-                return match
+                return new RegExp(builtRegexRule).test(stringToTest)
             }
             const names = name.split(",").map(name => name.trim())
-            console.log(`[DEBUG] names: ${JSON.stringify(names, null, 4)}`)
-            console.log(`[DEBUG] artifacts: ${JSON.stringify(artifacts.map(artifact => artifact.name), null, 4)}`)
 
             artifacts = artifacts.filter(artifact => {
                 return names.map(name => matchesWithRegex(artifact.name, name)).reduce((prevValue, currValue) => prevValue || currValue)
