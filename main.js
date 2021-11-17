@@ -78,12 +78,12 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts) {
-                        let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
+                        let artifacts = await client.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
                             run_id: run.id,
                         })
-                        if (artifacts.length == 0) {
+                        if (artifacts.data.artifacts.length == 0) {
                             continue
                         }
                     }
