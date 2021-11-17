@@ -23,10 +23,10 @@ async function main() {
 
         const client = github.getOctokit(token)
 
+        console.log("==> Build name:", name)
+        console.log("==> Local path:", path)
         console.log("==> Workflow:", workflow)
-
         console.log("==> Repo:", owner + "/" + repo)
-
         console.log("==> Conclusion:", workflowConclusion)
 
         if (pr) {
@@ -95,6 +95,7 @@ async function main() {
                     }
                     runID = run.id
                     console.log("==> Found run:", runID)
+                    console.log("==> Run date:", run.created_at)
                     console.log("==> Run date:", run.created_at)
                     break
                 }
