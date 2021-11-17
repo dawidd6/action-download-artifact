@@ -82,12 +82,20 @@ async function main() {
                             repo: repo,
                             run_id: run.id,
                         })
+                        if (name) {
+                            // skip this run if the artifact we are looking for doesn't exist in this run.
+                            artifacts = artifacts.filter((artifact) => {
+                                return artifact.name == name
+                            })
+                        }
                         if (artifacts.data.artifacts.length == 0) {
                             continue
                         }
                     }
                     runID = run.id
-                    break
+                    console.log("==> Found run:", runID)
+                    console.log("==> Date:", run.created_at)
+                    // break
                 }
                 if (runID) {
                     break
