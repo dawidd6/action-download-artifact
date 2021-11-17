@@ -88,7 +88,7 @@ async function main() {
                                 return artifact.name == name
                             })
                         }
-                        if (artifacts.data.artifacts.length == 0) {
+                        if (artifacts.length == 0) {
                             continue
                         }
                     }
