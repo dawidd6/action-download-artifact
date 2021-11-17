@@ -58,6 +58,7 @@ async function main() {
         }
 
         if (!runID) {
+            // note the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
                 repo: repo,
@@ -94,8 +95,8 @@ async function main() {
                     }
                     runID = run.id
                     console.log("==> Found run:", runID)
-                    console.log("==> Date:", run.created_at)
-                    // break
+                    console.log("==> Run date:", run.created_at)
+                    break
                 }
                 if (runID) {
                     break
@@ -103,9 +104,7 @@ async function main() {
             }
         }
 
-        if (runID) {
-            console.log("==> RunID:", runID)
-        } else {
+        if (!runID) {
             throw new Error("no matching workflow run found")
         }
 
