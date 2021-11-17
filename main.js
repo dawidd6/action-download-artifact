@@ -83,19 +83,12 @@ async function main() {
                             repo: repo,
                             run_id: run.id,
                         })
-                        if (name) {
-                            // skip this run if the artifact we are looking for doesn't exist in this run.
-                            artifacts = artifacts.filter((artifact) => {
-                                return artifact.name == name
-                            })
-                        }
                         if (artifacts.length == 0) {
                             continue
                         }
                     }
                     runID = run.id
                     console.log("==> Found run:", runID)
-                    console.log("==> Run date:", run.created_at)
                     console.log("==> Run date:", run.created_at)
                     break
                 }
@@ -106,7 +99,7 @@ async function main() {
         }
 
         if (!runID) {
-            throw new Error("no matching workflow run found")
+            throw new Error("no workflow found with any artifacts?")
         }
 
         let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
@@ -117,13 +110,23 @@ async function main() {
 
         // One artifact or all if `name` input is not specified.
         if (name) {
-            artifacts = artifacts.filter((artifact) => {
+            filtered = artifacts.filter((artifact) => {
                 return artifact.name == name
             })
+            if (filtered.length == 0){
+                console.log(`==> Artifact ${name} not found in run ${run.id}`)
+                console.log("==> We found the following artifacts instead:")
+                for (const artifact of artifacts) {
+                    console.log(`====> Artifact: '${artifact.name}'`);
+                }
+                throw new Error(`no artifacts named ${name} found`)
+            }
+            artifacts = filtered;
         }
 
-        if (artifacts.length == 0)
+        if (artifacts.length == 0) {
             throw new Error("no artifacts found")
+        }
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
