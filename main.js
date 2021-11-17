@@ -114,7 +114,7 @@ async function main() {
                 return artifact.name == name
             })
             if (filtered.length == 0){
-                console.log(`==> Artifact ${name} not found in run ${run.id}`)
+                console.log(`==> Artifact ${name} not found in run ${runID}`)
                 console.log("==> We found the following artifacts instead:")
                 for (const artifact of artifacts) {
                     console.log(`====> Artifact: '${artifact.name}'`);
