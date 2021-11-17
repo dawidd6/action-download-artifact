@@ -1,4 +1,4 @@
-name: Download workflow artifact
+name: Chris's version download workflow artifact
 description: Chris's version of Download and extract an artifact associated with given workflow and commit
 author: lovettchris
 branding:
