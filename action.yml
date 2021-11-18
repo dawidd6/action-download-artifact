@@ -1,6 +1,6 @@
-name: Chris's version download workflow artifact
-description: Chris's version of Download and extract an artifact associated with given workflow and commit
-author: lovettchris
+name: Download workflow artifact
+description: Download and extract an artifact associated with given workflow and commit
+author: dawidd6
 branding:
   icon: download
   color: blue
