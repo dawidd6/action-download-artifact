@@ -96,8 +96,11 @@ async function main() {
                                     runID = run.id
                                 }
                             }
+                            continue
                         }
                     }
+                    runID = run.id
+                    break
                 }
                 if (runID) {
                     break
