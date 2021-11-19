@@ -51,6 +51,9 @@ inputs:
   check_artifacts:
     description: Check workflow run whether it has an artifact
     required: false
+  search:
+    description: Search workflow for a specified name
+    required: false
 runs:
   using: node12
   main: main.js

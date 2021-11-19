@@ -12,6 +12,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
+        const search = core.getInput("search")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -76,7 +77,7 @@ async function main() {
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
                     }
-                    if (checkArtifacts) {
+                    if (checkArtifacts || search) {
                         let artifacts = await client.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
@@ -85,9 +86,14 @@ async function main() {
                         if (artifacts.data.artifacts.length == 0) {
                             continue
                         }
+                        if (search) {
+                            for(const art of artifacts.data.artifacts) {
+                                if (art.name == name) {
+                                    runID = run.id
+                                }
+                            }
+                        }
                     }
-                    runID = run.id
-                    break
                 }
                 if (runID) {
                     break
