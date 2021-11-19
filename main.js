@@ -88,7 +88,7 @@ async function main() {
                         }
                         if (search) {
                             for(const art of artifacts.data.artifacts) {
-                                if (art.name == name) {
+                                if (art.name == search) {
                                     runID = run.id
                                 }
                             }
