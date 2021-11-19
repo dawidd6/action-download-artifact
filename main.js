@@ -57,6 +57,10 @@ async function main() {
         if (runNumber) {
             console.log("==> RunNumber:", runNumber)
         }
+        
+        if (search) {
+            console.log("==> Search:", search)
+        }
 
         if (!runID) {
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
