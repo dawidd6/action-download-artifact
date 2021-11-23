@@ -20,7 +20,7 @@ async function main() {
         let runID = core.getInput("run_id")
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getInput("check_artifacts")
-        let search = core.getInput("search")
+        let searchArtifacts = core.getInput("search_artifacts")
 
         const client = github.getOctokit(token)
 
@@ -62,10 +62,6 @@ async function main() {
             console.log("==> Name:", name)
         }
 
-        if (search) {
-            console.log("==> Search:", search)
-        }
-
         if (!runID) {
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
@@ -85,7 +81,7 @@ async function main() {
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
                     }
-                    if (checkArtifacts || search) {
+                    if (checkArtifacts || searchArtifacts) {
                         let artifacts = await client.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
@@ -94,7 +90,7 @@ async function main() {
                         if (artifacts.data.artifacts.length == 0) {
                             continue
                         }
-                        if (search) {
+                        if (searchArtifacts) {
                             for(const art of artifacts.data.artifacts) {
                                 if (art.name == name) {
                                     runID = run.id
