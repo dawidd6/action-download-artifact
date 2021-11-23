@@ -51,6 +51,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # then will get the last available artifact from previous workflow
     # default false, just try to download from the last one
     check_artifacts:  false
-    # Optional, search for the last workflow whose stored search_artifact_name artifact
-    search: search_artifact_name
+    # Optional, search for the last workflow whose stored artifact_name specified in `name` input
+    # default false
+    search: false
 ```

@@ -12,7 +12,6 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
-        const search = core.getInput("search")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -21,6 +20,7 @@ async function main() {
         let runID = core.getInput("run_id")
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getInput("check_artifacts")
+        let search = core.getInput("search")
 
         const client = github.getOctokit(token)
 
@@ -57,7 +57,11 @@ async function main() {
         if (runNumber) {
             console.log("==> RunNumber:", runNumber)
         }
-        
+
+        if (name) {
+            console.log("==> Name:", name)
+        }
+
         if (search) {
             console.log("==> Search:", search)
         }
@@ -92,7 +96,7 @@ async function main() {
                         }
                         if (search) {
                             for(const art of artifacts.data.artifacts) {
-                                if (art.name == search) {
+                                if (art.name == name) {
                                     runID = run.id
                                 }
                             }
