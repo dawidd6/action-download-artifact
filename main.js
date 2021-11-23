@@ -58,10 +58,6 @@ async function main() {
             console.log("==> RunNumber:", runNumber)
         }
 
-        if (name) {
-            console.log("==> Name:", name)
-        }
-
         if (!runID) {
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
@@ -91,12 +87,12 @@ async function main() {
                             continue
                         }
                         if (searchArtifacts) {
-                            for(const art of artifacts.data.artifacts) {
-                                if (art.name == name) {
-                                    runID = run.id
-                                }
+                            const artifact = artifacts.data.artifacts.find((artifact) => {
+                                return artifact.name == name
+                            })
+                            if (!artifact) {
+                                continue
                             }
-                            continue
                         }
                     }
                     runID = run.id
