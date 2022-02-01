@@ -134,6 +134,7 @@ jobs:
       - name: Download
         uses: ./
         id: download-latest
+        continue-on-error: true
         with:
           testing: no_artifacts_found
           workflow: upload.yml
@@ -162,6 +163,7 @@ jobs:
         if: always() && steps.download-latest.outcome != 'failure'
         run: |
           echo "Post download step. Runs if there is NOT an error"
+          exit 1;
 
       - name: Test (should not run)
         run: cat artifact/sha | grep $GITHUB_SHA
