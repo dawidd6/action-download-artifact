@@ -102,8 +102,7 @@ jobs:
           testing: api_rate_limit_exceeded
           workflow: upload.yml
           name: artifact
-          path: artifact
-      
+          path: artifact    
       - name: post-download-step-if-failed (should run)
         if: always() && steps.download-latest.outcome == 'failure'
         env:
@@ -119,7 +118,6 @@ jobs:
         if: always() && contains(steps.download-latest.outputs.error_message, 'API rate limit exceeded for installation ID')
         run: |
           echo "The failure was specifically due to exeeding API rate limits"
-          exit 0;
       - name: post-download-step-if-not-failed (should not run)
         if: always() && steps.download-latest.outcome != 'failure'
         run: |
@@ -140,7 +138,6 @@ jobs:
           workflow: upload.yml
           name: artifact
           path: artifact
-      
       - name: post-download-step-if-failed (should run)
         if: always() && steps.download-latest.outcome == 'failure'
         env:
@@ -148,17 +145,14 @@ jobs:
         run: |
           echo "Post download step. Runs if there is an error"
           echo "Message = " $FAILURE_MESSAGE
-
       - name: step-for no artifacts found error (should run)
         if: always() && contains(steps.download-latest.outputs.error_message, 'no artifacts found')
         run: |
           echo "The failure was specifically due to not finding artifacts"
-
       - name: step-for API rate limit exceeded for installation ID error (should NOT run)
         if: always() && contains(steps.download-latest.outputs.error_message, 'API rate limit exceeded for installation ID')
         run: |
           echo "The failure was specifically due to exeeding API rate limits"
-
       - name: post-download-step-if-not-failed (should not run)
         if: always() && steps.download-latest.outcome != 'failure'
         run: |
