@@ -54,6 +54,11 @@ inputs:
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
+output:
+  state: 
+    description: 'Set to "failed" if the action fails to download an artifact.'
+  message:
+    description: 'The error message, if an error occurs'
 runs:
   using: node12
   main: main.js

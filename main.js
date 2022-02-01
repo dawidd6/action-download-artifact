@@ -78,7 +78,7 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        for(var i = 0; i < 1000; i++) {
+                        for(var i = 0; i < 10; i++) {
                             let artifacts = await client.actions.listWorkflowRunArtifacts({
                                 owner: owner,
                                 repo: repo,
@@ -158,6 +158,9 @@ async function main() {
             adm.extractAllTo(dir, true)
         }
     } catch (error) {
+        console.error("Error message: " + error.message)
+        core.setOutput("state", "failed")
+        core.setOutput("message", error.message)
         core.setFailed(error.message)
     }
 }
