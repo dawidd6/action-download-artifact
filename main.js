@@ -78,18 +78,8 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        const _client = core.getInput("testing") === true 
-                        ? 
-                        { actions: 
-                            { 
-                                listWorkflowRunArtifacts: () => { 
-                                    throw new Error('API rate limit exceeded for installation ID xyz')
-                                }
-                            } 
-                        } : client
-
                         //for(var i = 0; i < 10; i++) {
-                            let artifacts = await _client.actions.listWorkflowRunArtifacts({
+                            let artifacts = await client.actions.listWorkflowRunArtifacts({
                                 owner: owner,
                                 repo: repo,
                                 run_id: run.id,
@@ -122,7 +112,20 @@ async function main() {
             throw new Error("no matching workflow run found")
         }
 
-        let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
+        const _client = core.getInput("testing") === true 
+            ? 
+            { 
+                paginate: () => {
+                    throw new Error('API rate limit exceeded for installation ID xyz')
+                },
+                actions: 
+                { 
+                    listWorkflowRunArtifacts: () => { 
+                        throw new Error('API rate limit exceeded for installation ID xyz')
+                    }
+                } 
+            } : client
+        let artifacts = await _client.paginate(_client.actions.listWorkflowRunArtifacts, {
             owner: owner,
             repo: repo,
             run_id: runID,
