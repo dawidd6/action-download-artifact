@@ -7,6 +7,9 @@ const fs = require('fs')
 
 async function main() {
     try {
+        if(core.getInput("testing") === true)
+            throw new Error('API rate limit exceeded for installation ID xyz')
+        
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
@@ -112,20 +115,7 @@ async function main() {
             throw new Error("no matching workflow run found")
         }
 
-        const _client = core.getInput("testing") === true 
-            ? 
-            { 
-                paginate: () => {
-                    throw new Error('API rate limit exceeded for installation ID xyz')
-                },
-                actions: 
-                { 
-                    listWorkflowRunArtifacts: () => { 
-                        throw new Error('API rate limit exceeded for installation ID xyz')
-                    }
-                } 
-            } : client
-        let artifacts = await _client.paginate(_client.actions.listWorkflowRunArtifacts, {
+        let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
             owner: owner,
             repo: repo,
             run_id: runID,
