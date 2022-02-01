@@ -97,6 +97,7 @@ jobs:
       - name: Download
         uses: ./
         id: download-latest
+        continue-on-error: true
         with:
           testing: api_rate_limit_exceeded
           workflow: upload.yml
