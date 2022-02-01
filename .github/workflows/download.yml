@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wait
-        run: sleep 20
+        run: sleep 60
   download-latest:
     runs-on: ubuntu-latest
     needs: wait
