@@ -78,8 +78,18 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        for(var i = 0; i < 10; i++) {
-                            let artifacts = await client.actions.listWorkflowRunArtifacts({
+                        const _client = core.getInput("testing") === true 
+                        ? 
+                        { actions: 
+                            { 
+                                listWorkflowRunArtifacts: () => { 
+                                    throw new Error('API rate limit exceeded for installation ID xyz')
+                                }
+                            } 
+                        } : client
+
+                        //for(var i = 0; i < 10; i++) {
+                            let artifacts = await _client.actions.listWorkflowRunArtifacts({
                                 owner: owner,
                                 repo: repo,
                                 run_id: run.id,
@@ -95,7 +105,7 @@ async function main() {
                                     continue
                                 }
                             }
-                        }
+                        //}
                     }
                     runID = run.id
                     break

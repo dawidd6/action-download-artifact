@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wait
-        run: sleep 60
+        run: sleep 20
   download-latest:
     runs-on: ubuntu-latest
     needs: wait
@@ -22,6 +22,7 @@ jobs:
         uses: ./
         id: download-latest
         with:
+          testing: true
           workflow: upload.yml
           name: artifact
           path: artifact
