@@ -54,6 +54,9 @@ inputs:
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
+  testing:
+    description: Throws an error for testing purposes
+    required: false
 output:
   state: 
     description: 'Set to "failed" if the action fails to download an artifact.'
