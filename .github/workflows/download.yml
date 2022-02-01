@@ -22,34 +22,11 @@ jobs:
         uses: ./
         id: download-latest
         with:
-          testing: true
           workflow: upload.yml
           name: artifact
           path: artifact
-          search_artifacts: true
-      
-      - name: post-download-step-if-failed
-        if: always() && steps.download-latest.outputs.state == 'failed'
-        env:
-          FAILURE_MESSAGE: ${{ steps.download-latest.outputs.message }}
-        run: |
-          echo "Post download step. Runs if there is an error"
-          echo "Message = " $FAILURE_MESSAGE
-
-      - name: step-for API rate limit exceeded for installation ID error
-        if: always() && contains(steps.download-latest.outputs.message, 'API rate limit exceeded for installation ID')
-        run: |
-          echo "The failure was specifically due to exeeding API rate limits"
-
-
-      - name: post-download-step-if-not-failed
-        if: always() && steps.download-latest.outputs.state != 'failed'
-        run: |
-          echo "Post download step. Runs if there is NOT an error"
-
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
-    
   download-branch:
     runs-on: ubuntu-latest
     needs: wait
@@ -110,4 +87,85 @@ jobs:
           path: artifact
           workflow_conclusion: ''
       - name: Test
+        run: cat artifact/sha | grep $GITHUB_SHA
+  download-attempt-api-error:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        id: download-latest
+        with:
+          testing: api_rate_limit_exceeded
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+      
+      - name: post-download-step-if-failed (should run)
+        if: always() && steps.download-latest.outcome == 'failure'
+        env:
+          FAILURE_MESSAGE: ${{ steps.download-latest.outputs.error_message }}
+        run: |
+          echo "Post download step. Runs if there is an error"
+          echo "Message = " $FAILURE_MESSAGE
+
+      - name: step-for API rate limit exceeded for installation ID error (should NOT run)
+        if: always() && contains(steps.download-latest.outputs.error_message, 'no artifacts found')
+        run: |
+          echo "The failure was specifically due to not finding artifacts"
+
+      - name: step-for API rate limit exceeded for installation ID error (should run)
+        if: always() && contains(steps.download-latest.outputs.error_message, 'API rate limit exceeded for installation ID')
+        run: |
+          echo "The failure was specifically due to exeeding API rate limits"
+
+
+      - name: post-download-step-if-not-failed (should not run)
+        if: always() && steps.download-latest.outcome != 'failure'
+        run: |
+          echo "Post download step. Runs if there is NOT an error"
+
+      - name: Test (should not run)
+        run: cat artifact/sha | grep $GITHUB_SHA
+  download-attempt-no-artifacts-found:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        id: download-latest
+        with:
+          testing: no_artifacts_found
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+      
+      - name: post-download-step-if-failed (should run)
+        if: always() && steps.download-latest.outcome == 'failure'
+        env:
+          FAILURE_MESSAGE: ${{ steps.download-latest.outputs.error_message }}
+        run: |
+          echo "Post download step. Runs if there is an error"
+          echo "Message = " $FAILURE_MESSAGE
+
+      - name: step-for API rate limit exceeded for installation ID error (should run)
+        if: always() && contains(steps.download-latest.outputs.error_message, 'no artifacts found')
+        run: |
+          echo "The failure was specifically due to not finding artifacts"
+
+      - name: step-for API rate limit exceeded for installation ID error (should NOT run)
+        if: always() && contains(steps.download-latest.outputs.error_message, 'API rate limit exceeded for installation ID')
+        run: |
+          echo "The failure was specifically due to exeeding API rate limits"
+
+      - name: post-download-step-if-not-failed (should not run)
+        if: always() && steps.download-latest.outcome != 'failure'
+        run: |
+          echo "Post download step. Runs if there is NOT an error"
+
+      - name: Test (should not run)
         run: cat artifact/sha | grep $GITHUB_SHA
