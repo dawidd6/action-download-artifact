@@ -125,9 +125,6 @@ jobs:
         run: |
           echo "Post download step. Runs if there is NOT an error"
           exit 1;
-
-      - name: Test (should not run)
-        run: cat artifact/sha | grep $GITHUB_SHA
   download-attempt-no-artifacts-found:
     runs-on: ubuntu-latest
     needs: wait
