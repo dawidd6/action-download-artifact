@@ -55,3 +55,4 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # default false
     search_artifacts: false
 ```
+
