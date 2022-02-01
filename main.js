@@ -83,24 +83,22 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        //for(var i = 0; i < 10; i++) {
-                            let artifacts = await client.actions.listWorkflowRunArtifacts({
-                                owner: owner,
-                                repo: repo,
-                                run_id: run.id,
+                        let artifacts = await client.actions.listWorkflowRunArtifacts({
+                            owner: owner,
+                            repo: repo,
+                            run_id: run.id,
+                        })
+                        if (artifacts.data.artifacts.length == 0) {
+                            continue
+                        }
+                        if (searchArtifacts) {
+                            const artifact = artifacts.data.artifacts.find((artifact) => {
+                                return artifact.name == name
                             })
-                            if (artifacts.data.artifacts.length == 0) {
+                            if (!artifact) {
                                 continue
                             }
-                            if (searchArtifacts) {
-                                const artifact = artifacts.data.artifacts.find((artifact) => {
-                                    return artifact.name == name
-                                })
-                                if (!artifact) {
-                                    continue
-                                }
-                            }
-                        //}
+                        }
                     }
                     runID = run.id
                     break
