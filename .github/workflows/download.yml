@@ -28,7 +28,7 @@ jobs:
           search_artifacts: true
       
       - name: post-download-step-if-failed
-        if: ${{ steps.download-latest.outputs.state == 'failed' }}
+        if: always() && steps.download-latest.outputs.state == 'failed'
         env:
           FAILURE_MESSAGE: ${{ steps.download-latest.outputs.message }}
         run: |
@@ -36,13 +36,13 @@ jobs:
           echo "Message = " $FAILURE_MESSAGE
 
       - name: step-for API rate limit exceeded for installation ID error
-        if: contains(steps.download-latest.outputs.message, 'API rate limit exceeded for installation ID')
+        if: always() && contains(steps.download-latest.outputs.message, 'API rate limit exceeded for installation ID')
         run: |
           echo "The failure was specifically due to exeeding API rate limits"
 
 
       - name: post-download-step-if-not-failed
-        if: ${{ steps.download-latest.outputs.state != 'failed' }}
+        if: always() && steps.download-latest.outputs.state != 'failed'
         run: |
           echo "Post download step. Runs if there is NOT an error"
 
