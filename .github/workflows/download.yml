@@ -110,22 +110,20 @@ jobs:
         run: |
           echo "Post download step. Runs if there is an error"
           echo "Message = " $FAILURE_MESSAGE
-
-      - name: step-for API rate limit exceeded for installation ID error (should NOT run)
+      - name: step-for no artifacts found error (should NOT run)
         if: always() && contains(steps.download-latest.outputs.error_message, 'no artifacts found')
         run: |
           echo "The failure was specifically due to not finding artifacts"
-
       - name: step-for API rate limit exceeded for installation ID error (should run)
         if: always() && contains(steps.download-latest.outputs.error_message, 'API rate limit exceeded for installation ID')
         run: |
           echo "The failure was specifically due to exeeding API rate limits"
-
-
+          exit 0;
       - name: post-download-step-if-not-failed (should not run)
         if: always() && steps.download-latest.outcome != 'failure'
         run: |
           echo "Post download step. Runs if there is NOT an error"
+          exit 1;
 
       - name: Test (should not run)
         run: cat artifact/sha | grep $GITHUB_SHA
@@ -152,7 +150,7 @@ jobs:
           echo "Post download step. Runs if there is an error"
           echo "Message = " $FAILURE_MESSAGE
 
-      - name: step-for API rate limit exceeded for installation ID error (should run)
+      - name: step-for no artifacts found error (should run)
         if: always() && contains(steps.download-latest.outputs.error_message, 'no artifacts found')
         run: |
           echo "The failure was specifically due to not finding artifacts"
