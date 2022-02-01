@@ -7,7 +7,7 @@ const fs = require('fs')
 
 async function main() {
     try {
-        if(core.getInput("testing") === true)
+        if(core.getInput("testing") === "true")
             throw new Error('API rate limit exceeded for installation ID xyz')
         
         const token = core.getInput("github_token", { required: true })
