@@ -57,9 +57,9 @@ inputs:
   testing:
     description: Throws an api_rate_limit_exceeded or no_artifacts_found error for testing purposes
     required: false
-output:
+outputs:
   error_message:
-    description: 'The error message, if an error occurs'
+    description: The error message, if an error occurs
 runs:
   using: node12
   main: main.js
