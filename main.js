@@ -7,11 +7,6 @@ const fs = require('fs')
 
 async function main() {
     try {
-        if(core.getInput("testing") === "api_rate_limit_exceeded")
-            throw new Error('API rate limit exceeded for installation ID xyz')
-        else if(core.getInput("testing") === "no_artifacts_found")
-            throw new Error('no artifacts found')
-        
         const token = core.getInput("github_token", { required: true })
         const workflow = core.getInput("workflow", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
