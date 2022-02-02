@@ -54,9 +54,6 @@ inputs:
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
-  testing:
-    description: Throws an api_rate_limit_exceeded or no_artifacts_found error for testing purposes
-    required: false
 outputs:
   error_message:
     description: The error message, if an error occurs
