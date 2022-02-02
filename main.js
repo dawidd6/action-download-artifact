@@ -156,6 +156,7 @@ async function main() {
             adm.extractAllTo(dir, true)
         }
     } catch (error) {
+        core.setOutput("error_message", error.message)
         core.setFailed(error.message)
     }
 }

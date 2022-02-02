@@ -54,6 +54,9 @@ inputs:
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
+outputs:
+  error_message:
+    description: The error message, if an error occurs
 runs:
   using: node12
   main: main.js
