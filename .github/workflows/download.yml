@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Wait
         run: sleep 60
-  download-latest:
+  download-default:
     runs-on: ubuntu-latest
     needs: wait
     steps:
