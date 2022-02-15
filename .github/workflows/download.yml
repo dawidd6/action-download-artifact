@@ -23,6 +23,19 @@ jobs:
         with:
           workflow: upload.yml
           name: artifact
+      - name: Test default behavior
+        run: cat artifact/sha | grep $GITHUB_SHA
+  download-latest:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
           path: artifact
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
