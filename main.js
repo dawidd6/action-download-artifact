@@ -147,8 +147,6 @@ async function main() {
                 dir = path
             } 
 
-            console.log(dir)
-
             fs.mkdirSync(dir, { recursive: true })
 
             const adm = new AdmZip(Buffer.from(zip.data))
