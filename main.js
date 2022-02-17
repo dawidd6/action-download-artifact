@@ -140,7 +140,7 @@ async function main() {
                 archive_format: "zip",
             })
 
-            const dir = name
+            let dir = name
             if (path !== './' && name) {
                 dir = pathname.join(path, name)
             } else if (!name) {
