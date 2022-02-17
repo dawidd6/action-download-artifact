@@ -141,11 +141,11 @@ async function main() {
             })
 
             let dir = name
-            if (path !== './' && name) {
-                dir = pathname.join(path, name)
-            } else if (!name) {
+            if (!name) {
                 dir = pathname.join(path, artifact.name)
-            }
+            } else if (path !== './') {
+                dir = path
+            } 
 
             console.log(dir)
 
