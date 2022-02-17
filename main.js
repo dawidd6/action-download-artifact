@@ -141,6 +141,7 @@ async function main() {
             })
 
             const dir = name ? pathname.join(path, name) : pathname.join(path, artifact.name)
+            console.log(dir)
 
             fs.mkdirSync(dir, { recursive: true })
 
