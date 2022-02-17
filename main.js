@@ -144,8 +144,10 @@ async function main() {
             if (path !== './' && name) {
                 dir = pathname.join(path, name)
             } else if (!name) {
-                pathname.join(path, artifact.name)
+                dir = pathname.join(path, artifact.name)
             }
+
+            console.log(dir)
 
             fs.mkdirSync(dir, { recursive: true })
 
