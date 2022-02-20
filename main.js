@@ -142,7 +142,7 @@ async function main() {
 
             let dir = name
             if (!name) {
-                dir = pathname.join(path, artifact.name)
+                dir = pathname.join(path, 'artifacts', artifact.name)
             } else if (path !== './') {
                 dir = path
             } 
