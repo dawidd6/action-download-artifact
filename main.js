@@ -140,13 +140,7 @@ async function main() {
                 archive_format: "zip",
             })
 
-            let dir = name
-            if (!name) {
-                const artifacts_folder = path === './' ? 'artifacts' : ''
-                dir = pathname.join(path, artifacts_folder, artifact.name)
-            } else if (path !== './') {
-                dir = path
-            } 
+            const dir = name ? path : pathname.join(path, artifact.name)
 
             fs.mkdirSync(dir, { recursive: true })
 
