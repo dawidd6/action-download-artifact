@@ -47,7 +47,7 @@ inputs:
   path:
     description: Where to unpack the artifact
     required: false
-    default: "./artifacts"
+    default: "./"
   check_artifacts:
     description: Check workflow run whether it has an artifact
     required: false

@@ -43,7 +43,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # and extract them in respective subdirectories
     # https://github.com/actions/download-artifact#download-all-artifacts
     name: artifact_name
-    # Optional, directory where to extract artifact. Defaults to the './artifacts'
+    # Optional, directory where to extract artifact. Defaults to the artifact name (see `name` input)
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
