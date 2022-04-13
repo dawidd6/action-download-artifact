@@ -68,15 +68,19 @@ async function main() {
             )) {
                 for (const run of runs.data) {
                     if (commit && run.head_sha != commit) {
+                        console.log("   Skipping RunID-1: ", run.id, " SHA: ", run.head_sha)
                         continue
                     }
                     if (runNumber && run.run_number != runNumber) {
+                        console.log("   Skipping RunID-2: ", run.id, " SHA: ", run.head_sha)
                         continue
                     }
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
+                        console.log("   Skipping RunID-3: ", run.id, " SHA: ", run.head_sha)
                         continue
                     }
                     if (run.head_branch != branch) {
+                        console.log("   Skipping RunID-4: ", run.id, " SHA: ", run.head_sha)
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
