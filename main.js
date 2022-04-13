@@ -64,8 +64,6 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 workflow_id: workflow,
-                ...(branch ? { branch } : {}),
-                ...(event ? { event } : {}),
             }
             )) {
                 for (const run of runs.data) {
@@ -76,6 +74,9 @@ async function main() {
                         continue
                     }
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
+                        continue
+                    }
+                    if (run.head_branch != branch) {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
