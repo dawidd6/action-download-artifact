@@ -39,7 +39,7 @@ async function main() {
                 pull_number: pr,
             })
             commit = pull.data.head.sha
-            branch = pull.data.head.ref
+            //branch = pull.data.head.ref
         }
 
         if (commit) {
