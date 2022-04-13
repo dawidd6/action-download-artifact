@@ -39,7 +39,7 @@ async function main() {
                 pull_number: pr,
             })
             commit = pull.data.head.sha
-            branch = pull.data.head.ref
+            //branch = pull.data.head.ref
         }
 
         if (commit) {
@@ -64,8 +64,8 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 workflow_id: workflow,
-                branch: branch,
-                event: event,
+                ...(branch ? { branch } : {}),
+                ...(event ? { event } : {}),
             }
             )) {
                 for (const run of runs.data) {
