@@ -75,19 +75,19 @@ async function main() {
                     }
                     checkedRuns++;
                     if (commit && run.head_sha != commit) {
-                        console.log("   Skipping RunID-1: ", run.id, " SHA: ", run.head_sha)
+                        console.log("      Skipping RunID:", run.id, "SHA:", run.head_sha, "because commit does not match")
                         continue
                     }
                     if (runNumber && run.run_number != runNumber) {
-                        console.log("   Skipping RunID-2: ", run.id, " SHA: ", run.head_sha)
+                        console.log("      Skipping RunID:", run.id, "SHA:", run.head_sha, "because run number does not match")
                         continue
                     }
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
-                        console.log("   Skipping RunID-3: ", run.id, " SHA: ", run.head_sha)
+                        console.log("      Skipping RunID:", run.id, "SHA:", run.head_sha, "because conclusion does not match")
                         continue
                     }
                     if (branch && run.head_branch != branch) {
-                        console.log("   Skipping RunID-4: ", run.id, " SHA: ", run.head_sha)
+                        console.log("      Skipping RunID:", run.id, "SHA:", run.head_sha, "because branch does not match")
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
