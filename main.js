@@ -86,7 +86,7 @@ async function main() {
                         console.log("   Skipping RunID-3: ", run.id, " SHA: ", run.head_sha)
                         continue
                     }
-                    if (run.head_branch != branch) {
+                    if (branch && run.head_branch != branch) {
                         console.log("   Skipping RunID-4: ", run.id, " SHA: ", run.head_sha)
                         continue
                     }
