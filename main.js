@@ -64,6 +64,7 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 workflow_id: workflow,
+                per_page: 100,
             }
             )) {
                 for (const run of runs.data) {
