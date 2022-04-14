@@ -59,6 +59,8 @@ async function main() {
             console.log("==> RunNumber:", runNumber)
         }
 
+        let checkedRuns = 0;
+        const maxRunsToCheck = 1000;
         if (!runID) {
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
@@ -68,6 +70,10 @@ async function main() {
             }
             )) {
                 for (const run of runs.data) {
+                    if (checkedRuns > maxRunsToCheck) {
+                        throw new Error("no matching workflow run found, checked maximum number of allowed runs. If you are sure that a matching workflow run should have been found, perhaps the limit in repo liquibase/action-download-artifact needs to be increased.")
+                    }
+                    checkedRuns++;
                     if (commit && run.head_sha != commit) {
                         console.log("   Skipping RunID-1: ", run.id, " SHA: ", run.head_sha)
                         continue
