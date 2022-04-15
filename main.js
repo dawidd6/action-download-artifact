@@ -12,7 +12,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
-        const shouldUnpack = core.getBooleanInput("unpack")
+        const skipUnpack = core.getInput("skip_unpack")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -142,7 +142,7 @@ async function main() {
                 archive_format: "zip",
             })
 
-            if (!shouldUnpack) continue
+            if (skipUnpack) continue
 
             const dir = name ? path : pathname.join(path, artifact.name)
 
