@@ -54,6 +54,10 @@ inputs:
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
+  unpack:
+    description: Choose to unpack the downloaded artifact or not
+    required: false
+    default: true
 outputs:
   error_message:
     description: The error message, if an error occurs
