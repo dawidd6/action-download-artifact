@@ -118,10 +118,11 @@ jobs:
         with:
           workflow: upload.yml
           skip_unpack: true
-      - name: Unzip Artifact
-        run: |
-          tar -xf artifact.zip
-          cat sha
+      - name: Save zip Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: saved_artifact1
+          path: artifact1.zip
       - name: Test
         run: |
           ls -al
