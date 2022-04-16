@@ -143,7 +143,7 @@ async function main() {
             })
 
             if (skipUnpack) {
-                fs.writeFileSync(`${artifact.name}.zip`, Buffer.from(zip.data))
+                fs.writeFileSync(`${artifact.name}.zip`, Buffer.from(zip.data), 'binary')
                 continue
             }
 
