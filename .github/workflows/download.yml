@@ -103,9 +103,9 @@ jobs:
           skip_unpack: true
       - name: Test
         run: |
-          if [[ `ls *.zip` != "artifact.zip" ]]; then
-            exit 1
-          fi
+          test -f artifact.zip
+          ! test -d artifact
+          unzip -l artifact.zip
   download-multiple-skip-unpack:
     runs-on: ubuntu-latest
     needs: wait
