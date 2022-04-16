@@ -70,6 +70,7 @@ jobs:
           workflow: upload.yml
       - name: Test
         run: |
+          cat artifact/sha | grep $GITHUB_SHA
           cat artifact1/sha1 | grep $GITHUB_SHA
           cat artifact2/sha2 | grep $GITHUB_SHA
   download-conclusion:
@@ -99,26 +100,9 @@ jobs:
           workflow: upload.yml
           name: artifact
           path: artifact
-          workflow_conclusion: ''
           skip_unpack: true
       - name: Test
         run: |
           test -f artifact.zip
           ! test -d artifact
           unzip -l artifact.zip
-  download-multiple-skip-unpack:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          skip_unpack: true
-      - name: Test
-        run: |
-          if [[ `echo $(ls *.zip)` != "artifact.zip artifact1.zip artifact2.zip" ]]; then
-            exit 1
-          fi
