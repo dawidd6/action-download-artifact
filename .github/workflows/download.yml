@@ -119,7 +119,7 @@ jobs:
           workflow: upload.yml
           skip_unpack: true
       - name: Unzip Artifact
-        runs: |
+        run: |
           tar -xf artifact.zip
           cat sha
       - name: Test
