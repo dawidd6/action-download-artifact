@@ -121,6 +121,6 @@ jobs:
       - name: Test
         run: |
           ls -al
-          if [[ `ls *.zip` != "artifact.zip artifact1.zip artifact2.zip" ]]; then
+          if [[ `echo $(ls *.zip)` != "artifact.zip artifact1.zip artifact2.zip" ]]; then
             exit 1
           fi
