@@ -54,6 +54,9 @@ inputs:
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
+  skip_unpack:
+    description: Choose to skip unpacking the downloaded artifact(s)
+    required: false
 outputs:
   error_message:
     description: The error message, if an error occurs

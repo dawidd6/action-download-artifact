@@ -12,6 +12,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
+        const skipUnpack = core.getInput("skip_unpack")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -140,6 +141,11 @@ async function main() {
                 artifact_id: artifact.id,
                 archive_format: "zip",
             })
+
+            if (skipUnpack) {
+                fs.writeFileSync(`${artifact.name}.zip`, Buffer.from(zip.data), 'binary')
+                continue
+            }
 
             const dir = name ? path : pathname.join(path, artifact.name)
 

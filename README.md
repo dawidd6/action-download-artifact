@@ -54,4 +54,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, search for the last workflow run whose stored an artifact named as in `name` input
     # default false
     search_artifacts: false
+    # Optional, choose to skip unpacking the downloaded artifact(s)
+    # default false
+    skip_unpack: false
 ```
