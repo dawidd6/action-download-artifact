@@ -121,7 +121,7 @@ jobs:
       - name: Unzip Artifact
         run: |
           tar -xvzf artifact.zip
-          cat sha
+          ls -al
       - name: Test
         run: |
           ls -al
