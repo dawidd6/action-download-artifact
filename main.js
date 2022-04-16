@@ -142,7 +142,10 @@ async function main() {
                 archive_format: "zip",
             })
 
-            if (skipUnpack) continue
+            if (skipUnpack) {
+                fs.writeFileSync(`${artifact.name}.zip`, zip.data)
+                continue
+            }
 
             const dir = name ? path : pathname.join(path, artifact.name)
 
