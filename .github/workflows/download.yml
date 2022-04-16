@@ -103,6 +103,7 @@ jobs:
           skip_unpack: true
       - name: Test
         run: |
+          ls
           if [[ `ls` != "artifact.zip" ]]; then
             exit 1
           fi
@@ -119,6 +120,7 @@ jobs:
           skip_unpack: true
       - name: Test
         run: |
+          ls
           if [[ `ls` != "artifact.zip artifact1.zip artifact2.zip" ]]; then
             exit 1
           fi
