@@ -121,6 +121,7 @@ jobs:
       - name: Unzip Artifact
         run: |
           tar -xvzf artifact.zip
+          sleep 10
           ls -al
       - name: Test
         run: |
