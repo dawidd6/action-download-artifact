@@ -132,6 +132,16 @@ async function main() {
                 return
             }else{
                 core.setOutput("dry_run", true)
+                console.log("==> Artifacts Found")
+                for (const artifact of artifacts){
+                    const size = filesize(artifact.size_in_bytes, { base: 10 })
+                    console.log(
+                        `\t==> Artifact:`,
+                        `\n\t==> ID: ${artifact.id}`,
+                        `\n\t==> Name: ${artifact.name}`,
+                        `\n\t==> Size: ${size}`
+                    )
+                }
                 return
             }
         }
