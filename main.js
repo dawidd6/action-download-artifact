@@ -22,6 +22,7 @@ async function main() {
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getInput("check_artifacts")
         let searchArtifacts = core.getInput("search_artifacts")
+        let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
 
@@ -49,8 +50,8 @@ async function main() {
 
         if (branch) {
             branch = branch.replace(/^refs\/heads\//, "")
-            console.log("==> Branch:", branch)
-        }
+                console.log("==> Branch:", branch)
+            }
 
         if (event) {
             console.log("==> Event:", event)
@@ -123,6 +124,16 @@ async function main() {
             artifacts = artifacts.filter((artifact) => {
                 return artifact.name == name
             })
+        }
+
+        if (dryRun) {
+            if (artifacts.length == 0){
+                core.setOutput("dry_run", false)
+                return
+            }else{
+                core.setOutput("dry_run", true)
+                return
+            }
         }
 
         if (artifacts.length == 0)
