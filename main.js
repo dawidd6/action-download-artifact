@@ -26,11 +26,11 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        console.log("==> Name:", name)
-        console.log("==> Path:", path)
-        console.log("==> Workflow:", workflow)
-        console.log("==> Repo:", owner + "/" + repo)
-        console.log("==> Conclusion:", workflowConclusion)
+        console.log("==> Artifact name:", name)
+        console.log("==> Local path:", path)
+        console.log("==> Workflow name:", workflow)
+        console.log("==> Repository:", owner + "/" + repo)
+        console.log("==> Workflow conclusion:", workflowConclusion)
 
         if (pr) {
             console.log("==> PR:", pr)
@@ -125,12 +125,11 @@ async function main() {
                 return artifact.name == name
             })
             if (filtered.length == 0) {
-                console.log(`==> Artifact "${name}" not found in run with ID:`, runID)
+                console.log("==> (not found) Artifact:", name)
                 console.log("==> Found the following artifacts instead:")
                 for (const artifact of artifacts) {
-                    console.log(`\t==> Artifact: "${artifact.name}"`)
+                    console.log("\t==> (found) Artifact:", artifact.name)
                 }
-                throw new Error(`no artifacts named "${name}" found`)
             }
             artifacts = filtered
         }
