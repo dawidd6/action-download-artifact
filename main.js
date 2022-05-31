@@ -37,20 +37,12 @@ async function main() {
                 "commit": commit,
                 "branch": branch,
                 "run_id": runID
-            },
-            {
-                "workflow_conclusion": workflowConclusion,
-                "run_id": runID
             }
         ]
         uniqueInputSets.forEach((inputSet) => {
-            const occurrences = Object.values(inputSet).reduce((occurrences, val) => {
-                if (val !== '') {
-                    occurrences++
-                }
-                return occurrences
-            },0)
-            if(occurrences > 1) {
+            const inputs = Object.values(inputSet)
+            const providedInputs = inputs.filter(input => input !== '')
+            if (providedInputs.length > 1) {
                 throw new Error(`The following inputs cannot be used together: ${Object.keys(inputSet).join(", ")}`)
             }
         })
