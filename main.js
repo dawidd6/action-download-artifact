@@ -135,7 +135,6 @@ async function main() {
             artifacts = filtered
         }
 
-
         if (dryRun) {
             if (artifacts.length == 0) {
                 core.setOutput("dry_run", false)
@@ -156,7 +155,7 @@ async function main() {
             }
         }
 
-        if (artifacts.length == 0)
+        if (artifacts.length == 0) {
             throw new Error("no artifacts found")
         }
 
