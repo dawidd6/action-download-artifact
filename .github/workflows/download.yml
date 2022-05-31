@@ -17,7 +17,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download
         uses: ./
         with:
@@ -32,7 +32,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download
         uses: ./
         with:
@@ -48,7 +48,7 @@ jobs:
     if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download
         uses: ./
         with:
@@ -63,13 +63,14 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download
         uses: ./
         with:
           workflow: upload.yml
       - name: Test
         run: |
+          cat artifact/sha | grep $GITHUB_SHA
           cat artifact1/sha1 | grep $GITHUB_SHA
           cat artifact2/sha2 | grep $GITHUB_SHA
   download-conclusion:
@@ -77,7 +78,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download
         uses: ./
         with:
@@ -87,3 +88,54 @@ jobs:
           workflow_conclusion: ''
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
+  download-skip-unpack:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          skip_unpack: true
+      - name: Test
+        run: |
+          test -f artifact.zip
+          ! test -d artifact
+          unzip -l artifact.zip
+  download-dry-run-exists:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        id: download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          dry_run: true
+      - name: Test
+        run: test ${{ steps.download.outputs.dry_run }} == true
+  download-dry-run-not-exists:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        id: download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: not-artifact
+          path: artifact
+          dry_run: true
+      - name: Test
+        run: test ${{ steps.download.outputs.dry_run }} == false
+

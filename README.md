@@ -43,7 +43,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # and extract them in respective subdirectories
     # https://github.com/actions/download-artifact#download-all-artifacts
     name: artifact_name
-    # Optional, directory where to extract artifact. Defaults to the artifact name (see `name` input)
+    # Optional, directory where to extract artifact(s), defaults to current directory
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{github.repository}}
@@ -51,4 +51,10 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # then will get the last available artifact from previous workflow
     # default false, just try to download from the last one
     check_artifacts:  false
+    # Optional, search for the last workflow run whose stored an artifact named as in `name` input
+    # default false
+    search_artifacts: false
+    # Optional, choose to skip unpacking the downloaded artifact(s)
+    # default false
+    skip_unpack: false
 ```

@@ -42,7 +42,7 @@ inputs:
     description: Workflow run number
     required: false
   name:
-    description: Artifact name (download all artifacts in not specified)
+    description: Artifact name (download all artifacts if not specified)
     required: false
   path:
     description: Where to unpack the artifact
@@ -51,6 +51,20 @@ inputs:
   check_artifacts:
     description: Check workflow run whether it has an artifact
     required: false
+  search_artifacts:
+    description: Search workflow runs for artifact with specified name
+    required: false
+  skip_unpack:
+    description: Choose to skip unpacking the downloaded artifact(s)
+    required: false
+  dry_run:
+    description: Check the existence of artifact(s) without downloading.
+    required: false
+outputs:
+  error_message:
+    description: The error message, if an error occurs
+  dry_run:
+    description: Boolean output which is true if the dry run was successful and false otherwise.
 runs:
-  using: node12
+  using: node16
   main: main.js

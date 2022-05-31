@@ -12,6 +12,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
+        const skipUnpack = core.getInput("skip_unpack")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -20,6 +21,8 @@ async function main() {
         let runID = core.getInput("run_id")
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getInput("check_artifacts")
+        let searchArtifacts = core.getInput("search_artifacts")
+        let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
 
@@ -31,13 +34,13 @@ async function main() {
 
         if (pr) {
             console.log("==> PR:", pr)
-
             const pull = await client.pulls.get({
                 owner: owner,
                 repo: repo,
                 pull_number: pr,
             })
             commit = pull.data.head.sha
+            //branch = pull.data.head.ref
         }
 
         if (commit) {
@@ -63,8 +66,8 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 workflow_id: workflow,
-                branch: branch,
-                event: event,
+                ...(branch ? { branch } : {}),
+                ...(event ? { event } : {}),
             }
             )) {
                 for (const run of runs.data) {
@@ -77,7 +80,7 @@ async function main() {
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
                     }
-                    if (checkArtifacts) {
+                    if (checkArtifacts || searchArtifacts) {
                         let artifacts = await client.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
@@ -85,6 +88,14 @@ async function main() {
                         })
                         if (artifacts.data.artifacts.length == 0) {
                             continue
+                        }
+                        if (searchArtifacts) {
+                            const artifact = artifacts.data.artifacts.find((artifact) => {
+                                return artifact.name == name
+                            })
+                            if (!artifact) {
+                                continue
+                            }
                         }
                     }
                     runID = run.id
@@ -124,7 +135,28 @@ async function main() {
             artifacts = filtered
         }
 
-        if (artifacts.length == 0) {
+
+        if (dryRun) {
+            if (artifacts.length == 0) {
+                core.setOutput("dry_run", false)
+                return
+            } else {
+                core.setOutput("dry_run", true)
+                console.log("==> Artifacts Found")
+                for (const artifact of artifacts){
+                    const size = filesize(artifact.size_in_bytes, { base: 10 })
+                    console.log(
+                        `\t==> Artifact:`,
+                        `\n\t==> ID: ${artifact.id}`,
+                        `\n\t==> Name: ${artifact.name}`,
+                        `\n\t==> Size: ${size}`
+                    )
+                }
+                return
+            }
+        }
+
+        if (artifacts.length == 0)
             throw new Error("no artifacts found")
         }
 
@@ -142,6 +174,11 @@ async function main() {
                 archive_format: "zip",
             })
 
+            if (skipUnpack) {
+                fs.writeFileSync(`${artifact.name}.zip`, Buffer.from(zip.data), 'binary')
+                continue
+            }
+
             const dir = name ? path : pathname.join(path, artifact.name)
 
             fs.mkdirSync(dir, { recursive: true })
@@ -158,8 +195,10 @@ async function main() {
             adm.extractAllTo(dir, true)
         }
     } catch (error) {
+        core.setOutput("error_message", error.message)
         core.setFailed(error.message)
     }
 }
 
 main()
+
