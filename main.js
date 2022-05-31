@@ -27,14 +27,11 @@ async function main() {
         const client = github.getOctokit(token)
 
         console.log("==> Workflow:", workflow)
-
         console.log("==> Repo:", owner + "/" + repo)
-
         console.log("==> Conclusion:", workflowConclusion)
 
         if (pr) {
             console.log("==> PR:", pr)
-
             const pull = await client.pulls.get({
                 owner: owner,
                 repo: repo,
@@ -50,8 +47,8 @@ async function main() {
 
         if (branch) {
             branch = branch.replace(/^refs\/heads\//, "")
-                console.log("==> Branch:", branch)
-            }
+            console.log("==> Branch:", branch)
+        }
 
         if (event) {
             console.log("==> Event:", event)
@@ -127,10 +124,10 @@ async function main() {
         }
 
         if (dryRun) {
-            if (artifacts.length == 0){
+            if (artifacts.length == 0) {
                 core.setOutput("dry_run", false)
                 return
-            }else{
+            } else {
                 core.setOutput("dry_run", true)
                 console.log("==> Artifacts Found")
                 for (const artifact of artifacts){
