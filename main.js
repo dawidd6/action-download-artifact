@@ -46,8 +46,9 @@ async function main() {
         uniqueInputSets.forEach((inputSet) => {
             const occurrences = Object.values(inputSet).reduce((occurrences, val) => {
                 if (val !== '') {
-                    return occurrences++
+                    occurrences++
                 }
+                return occurrences
             },0)
             if(occurrences > 1) {
                 throw new Error(`The following inputs cannot be used together: ${Object.keys(inputSet).join(", ")}`)
