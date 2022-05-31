@@ -128,7 +128,7 @@ async function main() {
                 console.log(`==> Artifact "${name}" not found in run with ID:`, runID)
                 console.log("==> Found the following artifacts instead:")
                 for (const artifact of artifacts) {
-                    console.log(`\t===> Artifact: "${artifact.name}"`)
+                    console.log(`\t==> Artifact: "${artifact.name}"`)
                 }
                 throw new Error(`no artifacts named "${name}" found`)
             }
