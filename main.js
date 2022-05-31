@@ -26,9 +26,11 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        console.log("==> Workflow:", workflow)
-        console.log("==> Repo:", owner + "/" + repo)
-        console.log("==> Conclusion:", workflowConclusion)
+        console.log("==> Artifact name:", name)
+        console.log("==> Local path:", path)
+        console.log("==> Workflow name:", workflow)
+        console.log("==> Repository:", owner + "/" + repo)
+        console.log("==> Workflow conclusion:", workflowConclusion)
 
         if (pr) {
             console.log("==> PR:", pr)
@@ -59,6 +61,7 @@ async function main() {
         }
 
         if (!runID) {
+            // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
                 repo: repo,
@@ -96,6 +99,8 @@ async function main() {
                         }
                     }
                     runID = run.id
+                    console.log("==> (found) Run ID:", runID)
+                    console.log("==> (found) Run date:", run.created_at)
                     break
                 }
                 if (runID) {
@@ -104,10 +109,8 @@ async function main() {
             }
         }
 
-        if (runID) {
-            console.log("==> RunID:", runID)
-        } else {
-            throw new Error("no matching workflow run found")
+        if (!runID) {
+            throw new Error("no matching workflow run found with any artifacts?")
         }
 
         let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
@@ -118,9 +121,17 @@ async function main() {
 
         // One artifact or all if `name` input is not specified.
         if (name) {
-            artifacts = artifacts.filter((artifact) => {
+            filtered = artifacts.filter((artifact) => {
                 return artifact.name == name
             })
+            if (filtered.length == 0) {
+                console.log("==> (not found) Artifact:", name)
+                console.log("==> Found the following artifacts instead:")
+                for (const artifact of artifacts) {
+                    console.log("\t==> (found) Artifact:", artifact.name)
+                }
+            }
+            artifacts = filtered
         }
 
         if (dryRun) {
@@ -143,8 +154,9 @@ async function main() {
             }
         }
 
-        if (artifacts.length == 0)
+        if (artifacts.length == 0) {
             throw new Error("no artifacts found")
+        }
 
         for (const artifact of artifacts) {
             console.log("==> Artifact:", artifact.id)
