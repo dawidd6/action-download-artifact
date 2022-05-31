@@ -57,9 +57,14 @@ inputs:
   skip_unpack:
     description: Choose to skip unpacking the downloaded artifact(s)
     required: false
+  dry_run:
+    description: Check the existence of artifact(s) without downloading.
+    required: false
 outputs:
   error_message:
     description: The error message, if an error occurs
+  dry_run:
+    description: Boolean output which is true if the dry run was successful and false otherwise.
 runs:
   using: node16
   main: main.js

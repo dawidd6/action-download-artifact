@@ -22,18 +22,16 @@ async function main() {
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getInput("check_artifacts")
         let searchArtifacts = core.getInput("search_artifacts")
+        let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
 
         console.log("==> Workflow:", workflow)
-
         console.log("==> Repo:", owner + "/" + repo)
-
         console.log("==> Conclusion:", workflowConclusion)
 
         if (pr) {
             console.log("==> PR:", pr)
-
             const pull = await client.pulls.get({
                 owner: owner,
                 repo: repo,
@@ -123,6 +121,26 @@ async function main() {
             artifacts = artifacts.filter((artifact) => {
                 return artifact.name == name
             })
+        }
+
+        if (dryRun) {
+            if (artifacts.length == 0) {
+                core.setOutput("dry_run", false)
+                return
+            } else {
+                core.setOutput("dry_run", true)
+                console.log("==> Artifacts Found")
+                for (const artifact of artifacts){
+                    const size = filesize(artifact.size_in_bytes, { base: 10 })
+                    console.log(
+                        `\t==> Artifact:`,
+                        `\n\t==> ID: ${artifact.id}`,
+                        `\n\t==> Name: ${artifact.name}`,
+                        `\n\t==> Size: ${size}`
+                    )
+                }
+                return
+            }
         }
 
         if (artifacts.length == 0)

@@ -106,3 +106,36 @@ jobs:
           test -f artifact.zip
           ! test -d artifact
           unzip -l artifact.zip
+  download-dry-run-exists:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        id: download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          dry_run: true
+      - name: Test
+        run: test ${{ steps.download.outputs.dry_run }} == true
+  download-dry-run-not-exists:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        id: download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: not-artifact
+          path: artifact
+          dry_run: true
+      - name: Test
+        run: test ${{ steps.download.outputs.dry_run }} == false
+
