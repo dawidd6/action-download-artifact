@@ -23,8 +23,8 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        console.log("==> Build name:", name)
-        console.log("==> Local path:", path)
+        console.log("==> Name:", name)
+        console.log("==> Path:", path)
         console.log("==> Workflow:", workflow)
         console.log("==> Repo:", owner + "/" + repo)
         console.log("==> Conclusion:", workflowConclusion)
@@ -58,7 +58,7 @@ async function main() {
         }
 
         if (!runID) {
-            // note the runs are returned in most recent first order.
+            // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
                 repo: repo,
@@ -88,8 +88,8 @@ async function main() {
                         }
                     }
                     runID = run.id
-                    console.log("==> Found run:", runID)
-                    console.log("==> Run date:", run.created_at)
+                    console.log("==> (found) Run ID:", runID)
+                    console.log("==> (found) Run date:", run.created_at)
                     break
                 }
                 if (runID) {
@@ -113,15 +113,15 @@ async function main() {
             filtered = artifacts.filter((artifact) => {
                 return artifact.name == name
             })
-            if (filtered.length == 0){
-                console.log(`==> Artifact ${name} not found in run ${runID}`)
-                console.log("==> We found the following artifacts instead:")
+            if (filtered.length == 0) {
+                console.log(`==> Artifact "${name}" not found in run with ID:`, runID)
+                console.log("==> Found the following artifacts instead:")
                 for (const artifact of artifacts) {
-                    console.log(`====> Artifact: '${artifact.name}'`);
+                    console.log(`\t===> Artifact: "${artifact.name}"`)
                 }
-                throw new Error(`no artifacts named ${name} found`)
+                throw new Error(`no artifacts named "${name}" found`)
             }
-            artifacts = filtered;
+            artifacts = filtered
         }
 
         if (artifacts.length == 0) {
