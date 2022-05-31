@@ -110,7 +110,7 @@ async function main() {
         }
 
         if (!runID) {
-            throw new Error("no workflow found with any artifacts?")
+            throw new Error("no matching workflow run found with any artifacts?")
         }
 
         let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
