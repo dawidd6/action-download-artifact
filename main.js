@@ -26,14 +26,14 @@ async function main() {
 
         const client = github.getOctokit(token)
 
-        console.log("==> Artifact name:", name)
-        console.log("==> Local path:", path)
-        console.log("==> Workflow name:", workflow)
-        console.log("==> Repository:", owner + "/" + repo)
-        console.log("==> Workflow conclusion:", workflowConclusion)
+        core.info(`==> Artifact name: ${name}`)
+        core.info(`==> Local path: ${path}`)
+        core.info(`==> Workflow name: ${workflow}`)
+        core.info(`==> Repository: ${owner}/${repo}`)
+        core.info(`==> Workflow conclusion: ${workflowConclusion}`)
 
         if (pr) {
-            console.log("==> PR:", pr)
+            core.info(`==> PR: ${pr}`)
             const pull = await client.pulls.get({
                 owner: owner,
                 repo: repo,
@@ -44,20 +44,20 @@ async function main() {
         }
 
         if (commit) {
-            console.log("==> Commit:", commit)
+            core.info(`==> Commit: ${commit}`)
         }
 
         if (branch) {
             branch = branch.replace(/^refs\/heads\//, "")
-            console.log("==> Branch:", branch)
+            core.info(`==> Branch: ${branch}`)
         }
 
         if (event) {
-            console.log("==> Event:", event)
+            core.info(`==> Event: ${event}`)
         }
 
         if (runNumber) {
-            console.log("==> RunNumber:", runNumber)
+            core.info(`==> RunNumber: ${runNumber}`)
         }
 
         if (!runID) {
@@ -99,8 +99,8 @@ async function main() {
                         }
                     }
                     runID = run.id
-                    console.log("==> (found) Run ID:", runID)
-                    console.log("==> (found) Run date:", run.created_at)
+                    core.info(`==> (found) Run ID: ${runID}`)
+                    core.info(`==> (found) Run date: ${run.created_at}`)
                     break
                 }
                 if (runID) {
@@ -125,10 +125,10 @@ async function main() {
                 return artifact.name == name
             })
             if (filtered.length == 0) {
-                console.log("==> (not found) Artifact:", name)
-                console.log("==> Found the following artifacts instead:")
+                core.info(`==> (not found) Artifact: ${name}`)
+                core.info('==> Found the following artifacts instead:')
                 for (const artifact of artifacts) {
-                    console.log("\t==> (found) Artifact:", artifact.name)
+                    core.info(`\t==> (found) Artifact: ${artifact.name}`)
                 }
             }
             artifacts = filtered
@@ -140,15 +140,13 @@ async function main() {
                 return
             } else {
                 core.setOutput("dry_run", true)
-                console.log("==> Artifacts Found")
+                core.info('==> (found) Artifacts')
                 for (const artifact of artifacts){
                     const size = filesize(artifact.size_in_bytes, { base: 10 })
-                    console.log(
-                        `\t==> Artifact:`,
-                        `\n\t==> ID: ${artifact.id}`,
-                        `\n\t==> Name: ${artifact.name}`,
-                        `\n\t==> Size: ${size}`
-                    )
+                    core.info(`\t==> Artifact:`)
+                    core.info(`\t==> ID: ${artifact.id}`)
+                    core.info(`\t==> Name: ${artifact.name}`)
+                    core.info(`\t==> Size: ${size}`)
                 }
                 return
             }
@@ -159,11 +157,11 @@ async function main() {
         }
 
         for (const artifact of artifacts) {
-            console.log("==> Artifact:", artifact.id)
+            core.info(`==> Artifact: ${artifact.id}`)
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
 
-            console.log(`==> Downloading: ${artifact.name}.zip (${size})`)
+            core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
             const zip = await client.actions.downloadArtifact({
                 owner: owner,
@@ -183,14 +181,16 @@ async function main() {
 
             const adm = new AdmZip(Buffer.from(zip.data))
 
+            core.startGroup(`==> Extracting: ${artifact.name}.zip`)
             adm.getEntries().forEach((entry) => {
                 const action = entry.isDirectory ? "creating" : "inflating"
                 const filepath = pathname.join(dir, entry.entryName)
 
-                console.log(`  ${action}: ${filepath}`)
+                core.info(`  ${action}: ${filepath}`)
             })
 
             adm.extractAllTo(dir, true)
+            core.endGroup()
         }
     } catch (error) {
         core.setOutput("error_message", error.message)
@@ -199,4 +199,3 @@ async function main() {
 }
 
 main()
-
