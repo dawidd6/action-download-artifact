@@ -140,13 +140,13 @@ async function main() {
                 return
             } else {
                 core.setOutput("dry_run", true)
-                core.info('==> Artifacts Foundi')
+                core.info('==> (found) Artifacts')
                 for (const artifact of artifacts){
                     const size = filesize(artifact.size_in_bytes, { base: 10 })
                     core.info(`\t==> Artifact:`)
-                    core.info(`\n\t==> ID: ${artifact.id}`)
-                    core.info(`\n\t==> Name: ${artifact.name}`)
-                    core.info(`\n\t==> Size: ${size}`)
+                    core.info(`\t==> ID: ${artifact.id}`)
+                    core.info(`\t==> Name: ${artifact.name}`)
+                    core.info(`\t==> Size: ${size}`)
                 }
                 return
             }
