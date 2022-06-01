@@ -5,6 +5,10 @@ const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
 
+function inform(key, val) {
+    core.info(`==> ${key}: ${val}`)
+}
+
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
@@ -57,7 +61,7 @@ async function main() {
         }
 
         if (runNumber) {
-            core.info(`==> RunNumber: ${runNumber}`)
+            core.info(`==> Run number: ${runNumber}`)
         }
 
         if (!runID) {
