@@ -36,6 +36,22 @@ async function main() {
         core.info(`==> Repository: ${owner}/${repo}`)
         core.info(`==> Workflow conclusion: ${workflowConclusion}`)
 
+        const uniqueInputSets = [
+            {
+                "pr": pr,
+                "commit": commit,
+                "branch": branch,
+                "run_id": runID
+            }
+        ]
+        uniqueInputSets.forEach((inputSet) => {
+            const inputs = Object.values(inputSet)
+            const providedInputs = inputs.filter(input => input !== '')
+            if (providedInputs.length > 1) {
+                throw new Error(`The following inputs cannot be used together: ${Object.keys(inputSet).join(", ")}`)
+            }
+        })
+
         if (pr) {
             core.info(`==> PR: ${pr}`)
             const pull = await client.pulls.get({
