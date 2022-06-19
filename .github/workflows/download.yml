@@ -103,9 +103,11 @@ jobs:
           skip_unpack: true
       - name: Test
         run: |
-          test -f artifact.zip
-          ! test -d artifact
-          unzip -l artifact.zip
+          test -d artifact
+          test -f artifact/artifact.zip
+          ! test -d artifact/artifact
+          ! test -f artifact.zip
+          unzip -l artifact/artifact.zip
   download-dry-run-exists:
     runs-on: ubuntu-latest
     needs: wait

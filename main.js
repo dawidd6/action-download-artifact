@@ -191,7 +191,8 @@ async function main() {
             })
 
             if (skipUnpack) {
-                fs.writeFileSync(`${artifact.name}.zip`, Buffer.from(zip.data), 'binary')
+                fs.mkdirSync(path, { recursive: true })
+                fs.writeFileSync(`${pathname.join(path, artifact.name)}.zip`, Buffer.from(zip.data), 'binary')
                 continue
             }
 
