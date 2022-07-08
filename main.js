@@ -54,7 +54,7 @@ async function main() {
 
         if (pr) {
             core.info(`==> PR: ${pr}`)
-            const pull = await client.pulls.get({
+            const pull = await client.rest.pulls.get({
                 owner: owner,
                 repo: repo,
                 pull_number: pr,
@@ -82,7 +82,7 @@ async function main() {
 
         if (!runID) {
             // Note that the runs are returned in most recent first order.
-            for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
+            for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
                 owner: owner,
                 repo: repo,
                 workflow_id: workflow,
@@ -101,7 +101,7 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        let artifacts = await client.actions.listWorkflowRunArtifacts({
+                        let artifacts = await client.rest.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
                             run_id: run.id,
@@ -133,7 +133,7 @@ async function main() {
             throw new Error("no matching workflow run found with any artifacts?")
         }
 
-        let artifacts = await client.paginate(client.actions.listWorkflowRunArtifacts, {
+        let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
             owner: owner,
             repo: repo,
             run_id: runID,
@@ -183,7 +183,7 @@ async function main() {
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
-            const zip = await client.actions.downloadArtifact({
+            const zip = await client.rest.actions.downloadArtifact({
                 owner: owner,
                 repo: repo,
                 artifact_id: artifact.id,
