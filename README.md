@@ -18,7 +18,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Required, if artifact is from a different repo
     # Required, if repo is private a Personal Access Token with `repo` scope is needed
     github_token: ${{secrets.GITHUB_TOKEN}}
-    # Required, workflow file name or ID
+    # Optional, workflow file name or ID
+    # If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
     workflow: workflow_name.yml
     # Optional, the status or conclusion of a completed workflow to search for
     # Can be one of a workflow conclusion:

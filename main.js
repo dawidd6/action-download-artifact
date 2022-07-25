@@ -12,11 +12,11 @@ function inform(key, val) {
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
-        const workflow = core.getInput("workflow", { required: true })
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         const skipUnpack = core.getInput("skip_unpack")
+        let workflow = core.getInput("workflow")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -30,10 +30,20 @@ async function main() {
 
         const client = github.getOctokit(token)
 
+        core.info(`==> Repository: ${owner}/${repo}`)
         core.info(`==> Artifact name: ${name}`)
         core.info(`==> Local path: ${path}`)
+
+        if (!workflow) {
+            const run = await client.rest.actions.getWorkflowRun({
+                owner: owner,
+                repo: repo,
+                run_id: runID || github.context.runId,
+            });
+            workflow = run.data.workflow_id
+        }
+
         core.info(`==> Workflow name: ${workflow}`)
-        core.info(`==> Repository: ${owner}/${repo}`)
         core.info(`==> Workflow conclusion: ${workflowConclusion}`)
 
         const uniqueInputSets = [

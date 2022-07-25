@@ -10,8 +10,11 @@ inputs:
     required: false
     default: ${{github.token}}
   workflow:
-    description: Workflow name
-    required: true
+    description: |
+      Workflow name.
+
+      If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
+    required: false
   workflow_conclusion:
     description: |
       Wanted status or conclusion to search for in recent runs
