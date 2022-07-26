@@ -62,7 +62,7 @@ The methods are executed in the following order
 1. `beforeHook`
 2. `fetchFromDatabase`
 3. `afterHook`
-4. `getData`
+4. `handleData`
 
 `beforeHook` can mutate `options` before it’s passed to `fetchFromDatabase`.
 
@@ -70,10 +70,10 @@ If an error is thrown in `beforeHook` or `fetchFromDatabase` then `errorHook` is
 called next.
 
 If `afterHook` throws an error then `handleGetError` is called instead
-of `getData`.
+of `handleData`.
 
 If `errorHook` throws an error then `handleGetError` is called next, otherwise
-`afterHook` and `getData`.
+`afterHook` and `handleData`.
 
 You can also use `hook.wrap` to achieve the same thing as shown above (collection example):
 
