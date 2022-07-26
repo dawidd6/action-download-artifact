@@ -1,12 +1,11 @@
-exports.require = function() {
-  var fs = require("fs");
-  if (process && process.versions && process.versions['electron']) {
-	  try {
-	    originalFs = require("original-fs");
-	    if (Object.keys(originalFs).length > 0) {
-	      fs = originalFs;
-      }
-	  } catch (e) {}
-  }
-  return fs
+exports.require = function () {
+    if (typeof process === "object" && process.versions && process.versions["electron"]) {
+        try {
+            const originalFs = require("original-fs");
+            if (Object.keys(originalFs).length > 0) {
+                return originalFs;
+            }
+        } catch (e) {}
+    }
+    return require("fs");
 };

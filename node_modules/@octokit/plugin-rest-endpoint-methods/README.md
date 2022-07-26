@@ -59,8 +59,10 @@ Example
 ```ts
 import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 
-type UpdateLabelParameters = RestEndpointMethodTypes["issues"]["updateLabel"]["parameters"];
-type UpdateLabelResponse = RestEndpointMethodTypes["issues"]["updateLabel"]["response"];
+type UpdateLabelParameters =
+  RestEndpointMethodTypes["issues"]["updateLabel"]["parameters"];
+type UpdateLabelResponse =
+  RestEndpointMethodTypes["issues"]["updateLabel"]["response"];
 ```
 
 In order to get types beyond parameters and responses, check out [`@octokit/openapi-types`](https://github.com/octokit/openapi-types.ts/#readme), which is a direct transpliation from GitHub's official OpenAPI specification.
