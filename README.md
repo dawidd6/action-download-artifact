@@ -26,7 +26,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     #   "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
     # Or a workflow status:
     #   "completed", "in_progress", "queued"
-    # Use the emtpy string ("") to ignore status or conclusion in the search
+    # Use the empty string ("") to ignore status or conclusion in the search
     workflow_conclusion: success
     # Optional, will get head commit SHA
     pr: ${{github.event.pull_request.number}}
