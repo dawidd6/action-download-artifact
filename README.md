@@ -59,4 +59,9 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, choose to skip unpacking the downloaded artifact(s)
     # default false
     skip_unpack: false
+    # Optional, choose how to exit the action if no artifact is found
+    # can be one of:
+    #  "fail", "warn", "ignore"
+    # default ignore
+    if_no_files_found: false
 ```
