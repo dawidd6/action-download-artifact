@@ -63,6 +63,10 @@ inputs:
   dry_run:
     description: Check the existence of artifact(s) without downloading.
     required: false
+  if_no_files_found: false
+    required: false
+    description: choose how to exit the action if no artifact is found
+    default: "ignore"
 outputs:
   error_message:
     description: The error message, if an error occurs
