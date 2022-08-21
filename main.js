@@ -16,7 +16,7 @@ async function main() {
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         const skipUnpack = core.getInput("skip_unpack")
-        const ifNoFilesFound = core.getInput("if_no_files_found")
+        const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         let workflow = core.getInput("workflow")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
