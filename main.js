@@ -40,7 +40,7 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 run_id: runID || github.context.runId,
-            });
+            })
             workflow = run.data.workflow_id
         }
 
@@ -142,7 +142,7 @@ async function main() {
 
         if (!runID) {
             setExitMessage("no matching workflow run found with any artifacts?")
-            return;
+            return
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
@@ -186,7 +186,7 @@ async function main() {
 
         if (artifacts.length == 0) {
             setExitMessage("no artifacts found")
-            return;
+            return
         }
 
         for (const artifact of artifacts) {
