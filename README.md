@@ -12,6 +12,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 ```yaml
 - name: Download artifact
+  id: download-artifact
   uses: dawidd6/action-download-artifact@v2
   with:
     # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
@@ -65,3 +66,15 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # default ignore
     if_no_artifact_found: false
 ```
+
+## Output
+
+The `found_artifact` step output contains a boolean value indicating whether an artifact was found.
+```yaml
+steps:
+  - id: download-artifact
+    uses: dawidd6/action-download-artifact@v2
+
+  - name: 'use artifact'
+    if: steps.download-artifact.found_artifact
+    run: echo "Found artifact"

@@ -141,7 +141,7 @@ async function main() {
         }
 
         if (!runID) {
-            setExitMessage("no matching workflow run found with any artifacts?")
+            setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
             return
         }
 
@@ -169,9 +169,11 @@ async function main() {
         if (dryRun) {
             if (artifacts.length == 0) {
                 core.setOutput("dry_run", false)
+                core.setOutput("found_artifact", false)
                 return
             } else {
                 core.setOutput("dry_run", true)
+                core.setOutput("found_artifact", true)
                 core.info('==> (found) Artifacts')
                 for (const artifact of artifacts) {
                     const size = filesize(artifact.size_in_bytes, { base: 10 })
@@ -185,11 +187,13 @@ async function main() {
         }
 
         if (artifacts.length == 0) {
-            setExitMessage("no artifacts found")
+            setExitMessage(ifNoArtifactFound, "no artifacts found")
             return
         }
 
+        core.setOutput("found_artifact", true)
         for (const artifact of artifacts) {
+
             core.info(`==> Artifact: ${artifact.id}`)
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
@@ -227,12 +231,14 @@ async function main() {
             core.endGroup()
         }
     } catch (error) {
+        core.setOutput("found_artifact", false)
         core.setOutput("error_message", error.message)
         core.setFailed(error.message)
     }
 
-    function setExitMessage(message) {
-        switch (ifNoFilesFound) {
+    function setExitMessage(ifNoArtifactFound, message) {
+        core.setOutput("found_artifact", false)
+        switch (ifNoArtifactFound) {
             case "fail":
                 core.setFailed(message)
                 break
