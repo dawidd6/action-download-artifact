@@ -68,6 +68,8 @@ outputs:
     description: The error message, if an error occurs
   dry_run:
     description: Boolean output which is true if the dry run was successful and false otherwise.
+  artifacts:
+    description: Description of the downloaded artifacts.
 runs:
   using: node16
   main: main.js

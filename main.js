@@ -164,6 +164,8 @@ async function main() {
             artifacts = filtered
         }
 
+        core.setOutput("artifacts", artifacts)
+
         if (dryRun) {
             if (artifacts.length == 0) {
                 core.setOutput("dry_run", false)
