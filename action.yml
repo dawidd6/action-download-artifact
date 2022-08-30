@@ -78,6 +78,8 @@ outputs:
     description: Boolean output which is true if the dry run was successful and false otherwise
   found_artifact:
     description: Boolean output which is true if the artifact was found and false otherwise
+  artifacts:
+    description: JSON array with details about found artifacts
 runs:
   using: node16
   main: main.js
