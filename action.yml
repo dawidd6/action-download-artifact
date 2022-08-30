@@ -1,5 +1,5 @@
 name: Download workflow artifact
-description: Download and extract an artifact associated with given workflow and commit
+description: Download and extract an artifact associated with given workflow and commit or other criteria
 author: dawidd6
 branding:
   icon: download
@@ -8,7 +8,7 @@ inputs:
   github_token:
     description: GitHub token
     required: false
-    default: ${{github.token}}
+    default: ${{ github.token }}
   workflow:
     description: |
       Workflow name.
@@ -25,7 +25,7 @@ inputs:
   repo:
     description: Repository name with owner (like actions/checkout)
     required: false
-    default: ${{github.repository}}
+    default: ${{ github.repository }}
   pr:
     description: Pull request number
     required: false
@@ -61,19 +61,23 @@ inputs:
     description: Choose to skip unpacking the downloaded artifact(s)
     required: false
   dry_run:
-    description: Check the existence of artifact(s) without downloading.
+    description: Check the existence of artifact(s) without downloading
     required: false
   if_no_artifact_found:
     required: false
-    description: choose how to exit the action if no artifact is found
-    default: "fail"
+    description: |
+      Choose how to exit the action if no artifact is found
+      
+      fail, warn or ignore
+    default: fail
 outputs:
   error_message:
     description: The error message, if an error occurs
+  # TODO: dry_run should be merged with found_artifact output
   dry_run:
-    description: Boolean output which is true if the dry run was successful and false otherwise.
+    description: Boolean output which is true if the dry run was successful and false otherwise
   found_artifact:
-    description: Boolean output which is true if the artifact was found and false otherwise.
+    description: Boolean output which is true if the artifact was found and false otherwise
 runs:
   using: node16
   main: main.js
