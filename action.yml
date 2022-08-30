@@ -66,7 +66,7 @@ inputs:
   if_no_artifact_found:
     required: false
     description: choose how to exit the action if no artifact is found
-    default: "ignore"
+    default: "fail"
 outputs:
   error_message:
     description: The error message, if an error occurs

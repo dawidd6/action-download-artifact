@@ -64,7 +64,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # can be one of:
     #  "fail", "warn", "ignore"
     # default ignore
-    if_no_artifact_found: false
+    if_no_artifact_found: fail
 ```
 
 ## Output
