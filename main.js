@@ -5,10 +5,6 @@ const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
 
-function inform(key, val) {
-    core.info(`==> ${key}: ${val}`)
-}
-
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
@@ -141,8 +137,7 @@ async function main() {
         }
 
         if (!runID) {
-            setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
-            return
+            return setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
@@ -187,13 +182,12 @@ async function main() {
         }
 
         if (artifacts.length == 0) {
-            setExitMessage(ifNoArtifactFound, "no artifacts found")
-            return
+            return setExitMessage(ifNoArtifactFound, "no artifacts found")
         }
 
         core.setOutput("found_artifact", true)
+        
         for (const artifact of artifacts) {
-
             core.info(`==> Artifact: ${artifact.id}`)
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
@@ -238,6 +232,7 @@ async function main() {
 
     function setExitMessage(ifNoArtifactFound, message) {
         core.setOutput("found_artifact", false)
+        
         switch (ifNoArtifactFound) {
             case "fail":
                 core.setFailed(message)
