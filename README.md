@@ -2,7 +2,7 @@
 
 An action that downloads and extracts uploaded artifacts associated with a given workflow and commit or other criteria.
 
-Let's suppose you have a workflow with a job in it that at the end uploads an artifact using `actions/upload-artifact` action and you want to download this artifact in another workflow that is run after the first one. Official `actions/download-artifact` does not allow this. That's why I decided to create this action. By knowing only the workflow name and commit SHA, you can download the previously uploaded artifact from different workflow associated with that commit and use it.
+Let's suppose you have a workflow with a job in it that at the end uploads an artifact using `actions/upload-artifact` action and you want to download this artifact in another workflow that is run after the first one. Official `actions/download-artifact` does not allow this. That's why I decided to create this action. By knowing only the workflow name and commit SHA or other details, you can download the previously uploaded artifact from different workflow associated with that commit or other criteria and use it.
 
 ## Usage
 
@@ -49,7 +49,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, a directory where to extract artifact(s), defaults to the current directory
     path: extract_here
     # Optional, defaults to current repo
-    repo: ${{github.repository}}
+    repo: ${{ github.repository }}
     # Optional, check the workflow run to whether it has an artifact
     # then will get the last available artifact from the previous workflow
     # default false, just try to download from the last one
@@ -63,18 +63,6 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, choose how to exit the action if no artifact is found
     # can be one of:
     #  "fail", "warn", "ignore"
-    # default ignore
+    # default fail
     if_no_artifact_found: fail
 ```
-
-## Output
-
-The `found_artifact` step output contains a boolean value indicating whether an artifact was found.
-```yaml
-steps:
-  - id: download-artifact
-    uses: dawidd6/action-download-artifact@v2
-
-  - name: 'use artifact'
-    if: steps.download-artifact.found_artifact
-    run: echo "Found artifact"
