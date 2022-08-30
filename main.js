@@ -16,6 +16,7 @@ async function main() {
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         const skipUnpack = core.getInput("skip_unpack")
+        const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         let workflow = core.getInput("workflow")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
@@ -39,7 +40,7 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 run_id: runID || github.context.runId,
-            });
+            })
             workflow = run.data.workflow_id
         }
 
@@ -140,7 +141,8 @@ async function main() {
         }
 
         if (!runID) {
-            throw new Error("no matching workflow run found with any artifacts?")
+            setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
+            return
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
@@ -167,11 +169,13 @@ async function main() {
         if (dryRun) {
             if (artifacts.length == 0) {
                 core.setOutput("dry_run", false)
+                core.setOutput("found_artifact", false)
                 return
             } else {
                 core.setOutput("dry_run", true)
+                core.setOutput("found_artifact", true)
                 core.info('==> (found) Artifacts')
-                for (const artifact of artifacts){
+                for (const artifact of artifacts) {
                     const size = filesize(artifact.size_in_bytes, { base: 10 })
                     core.info(`\t==> Artifact:`)
                     core.info(`\t==> ID: ${artifact.id}`)
@@ -183,10 +187,13 @@ async function main() {
         }
 
         if (artifacts.length == 0) {
-            throw new Error("no artifacts found")
+            setExitMessage(ifNoArtifactFound, "no artifacts found")
+            return
         }
 
+        core.setOutput("found_artifact", true)
         for (const artifact of artifacts) {
+
             core.info(`==> Artifact: ${artifact.id}`)
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
@@ -224,8 +231,25 @@ async function main() {
             core.endGroup()
         }
     } catch (error) {
+        core.setOutput("found_artifact", false)
         core.setOutput("error_message", error.message)
         core.setFailed(error.message)
+    }
+
+    function setExitMessage(ifNoArtifactFound, message) {
+        core.setOutput("found_artifact", false)
+        switch (ifNoArtifactFound) {
+            case "fail":
+                core.setFailed(message)
+                break
+            case "warn":
+                core.warning(message)
+                break
+            case "ignore":
+            default:
+                core.info(message)
+                break
+        }
     }
 }
 

@@ -63,11 +63,17 @@ inputs:
   dry_run:
     description: Check the existence of artifact(s) without downloading.
     required: false
+  if_no_artifact_found:
+    required: false
+    description: choose how to exit the action if no artifact is found
+    default: "fail"
 outputs:
   error_message:
     description: The error message, if an error occurs
   dry_run:
     description: Boolean output which is true if the dry run was successful and false otherwise.
+  found_artifact:
+    description: Boolean output which is true if the artifact was found and false otherwise.
 runs:
   using: node16
   main: main.js
