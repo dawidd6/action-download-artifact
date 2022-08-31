@@ -33,7 +33,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     pr: ${{github.event.pull_request.number}}
     # Optional, no need to specify if PR is
     commit: ${{github.event.pull_request.head.sha}}
-    # Optional, will use the branch
+    # Optional, will use the specified branch. Defaults to all branches
     branch: master
     # Optional, defaults to all types
     event: push
