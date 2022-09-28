@@ -26,7 +26,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Can be one of a workflow conclusion:
     #   "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"
     # Or a workflow status:
-    #   "completed", "in_progress", "queued"
+    #   "completed", "in_progress"
     # Use the empty string ("") to ignore status or conclusion in the search
     workflow_conclusion: success
     # Optional, will get head commit SHA
@@ -50,10 +50,10 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     path: extract_here
     # Optional, defaults to current repo
     repo: ${{ github.repository }}
-    # Optional, check the workflow run to whether it has an artifact
-    # then will get the last available artifact from the previous workflow
+    # Optional, check the workflow run whether it has an artifact and download it
+    # otherwise get the last available artifact from the previous workflow
     # default false, just try to download from the last one
-    check_artifacts:  false
+    check_artifacts: false
     # Optional, search for the last workflow run whose stored an artifact named as in `name` input
     # default false
     search_artifacts: false

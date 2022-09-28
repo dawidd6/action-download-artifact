@@ -1,9 +1,27 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
+const artifact = require('@actions/artifact')
 const AdmZip = require('adm-zip')
 const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
+
+async function downloadAction(name, path) {
+    const artifactClient = artifact.create()
+    core.info(`Starting download for ${name} from this run to ${path}`)
+    const downloadOptions = {
+        createArtifactFolder: false
+    }
+    const downloadResponse = await artifactClient.downloadArtifact(
+        name,
+        path,
+        downloadOptions
+    )
+    core.info(
+        `Artifact ${downloadResponse.artifactName} was downloaded to ${downloadResponse.downloadPath}`
+    )
+    core.setOutput("found_artifact", true)
+}
 
 async function main() {
     try {
@@ -87,6 +105,16 @@ async function main() {
             core.info(`==> Run number: ${runNumber}`)
         }
 
+
+        if (checkArtifacts) {
+            try {
+                await downloadAction(name, path)
+                return
+            } catch (error) {
+                core.info(`downloadAction error: ${error.message}`)
+            }
+        }
+
         if (!runID) {
             // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
@@ -137,7 +165,17 @@ async function main() {
         }
 
         if (!runID) {
-            return setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
+            if (workflowConclusion && (workflowConclusion != 'in_progress')) {
+                return setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
+            }
+
+            try {
+                await downoadAction(name, path)
+                return
+            } catch (error) {
+                core.info(`fallbackToDownoadAction error: ${error.message}`)
+            }
+            return setExitMessage(ifNoArtifactFound, "no matching artifact in this workflow?")
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
