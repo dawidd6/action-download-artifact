@@ -106,15 +106,6 @@ async function main() {
         }
 
 
-        if (checkArtifacts) {
-            try {
-                await downloadAction(name, path)
-                return
-            } catch (error) {
-                core.info(`downloadAction error: ${error.message}`)
-            }
-        }
-
         if (!runID) {
             // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
@@ -170,7 +161,7 @@ async function main() {
             }
 
             try {
-                await downoadAction(name, path)
+                await downloadAction(name, path)
                 return
             } catch (error) {
                 core.info(`fallbackToDownoadAction error: ${error.message}`)

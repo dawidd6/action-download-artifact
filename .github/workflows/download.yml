@@ -13,6 +13,8 @@ jobs:
       - name: Wait
         run: sleep 60
   in-progress:
+    runs-on: ubuntu-latest
+    steps:
       - name: Dump
         run: |
           mkdir artifact
@@ -152,22 +154,7 @@ jobs:
         run: test ${{ steps.download.outputs.dry_run }} == false
   download-in-progress:
     runs-on: ubuntu-latest
-    needs: in-progress
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          check_artifacts: true
-      - name: Test
-        run: cat artifact/sha | grep temp
-  download-check-artifact:
-    runs-on: ubuntu-latest
-    needs: in-progress
+    needs: [wait, in-progress]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -179,5 +166,20 @@ jobs:
           path: artifact
           workflow_conclusion: in_progress
       - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
+        run: grep temp artifact/sha
+  download-empty-conclusion:
+    runs-on: ubuntu-latest
+    needs: [wait, in-progress]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          workflow_conclusion:
+      - name: Test
+        run: grep $GITHUB_SHA artifact/sha
 
