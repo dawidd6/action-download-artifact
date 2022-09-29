@@ -5,6 +5,6 @@
     "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.1",
     "adm-zip": "^0.5.9",
-    "filesize": "^9.0.11"
+    "filesize": "^10.0.2"
   }
 }
