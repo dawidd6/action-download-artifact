@@ -8,7 +8,6 @@ const fs = require('fs')
 
 async function downloadAction(name, path) {
     const artifactClient = artifact.create()
-    core.info(`Starting download for ${name} from this run to ${path}`)
     const downloadOptions = {
         createArtifactFolder: false
     }
@@ -16,9 +15,6 @@ async function downloadAction(name, path) {
         name,
         path,
         downloadOptions
-    )
-    core.info(
-        `Artifact ${downloadResponse.artifactName} was downloaded to ${downloadResponse.downloadPath}`
     )
     core.setOutput("found_artifact", true)
 }
@@ -105,7 +101,6 @@ async function main() {
             core.info(`==> Run number: ${runNumber}`)
         }
 
-
         if (!runID) {
             // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
@@ -161,12 +156,10 @@ async function main() {
             }
 
             try {
-                await downloadAction(name, path)
-                return
+                return await downloadAction(name, path)
             } catch (error) {
-                core.info(`fallbackToDownoadAction error: ${error.message}`)
+                return setExitMessage(ifNoArtifactFound, "no matching artifact in this workflow?")
             }
-            return setExitMessage(ifNoArtifactFound, "no matching artifact in this workflow?")
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
