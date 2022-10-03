@@ -106,7 +106,7 @@ const issues = await octokit.paginate(
     per_page: 100,
   },
   (response, done) => {
-    if (response.data.find((issues) => issue.title.includes("something"))) {
+    if (response.data.find((issue) => issue.title.includes("something"))) {
       done();
     }
     return response.data;

@@ -65,7 +65,7 @@ type UpdateLabelResponse =
   RestEndpointMethodTypes["issues"]["updateLabel"]["response"];
 ```
 
-In order to get types beyond parameters and responses, check out [`@octokit/openapi-types`](https://github.com/octokit/openapi-types.ts/#readme), which is a direct transpliation from GitHub's official OpenAPI specification.
+In order to get types beyond parameters and responses, check out [`@octokit/openapi-types`](https://github.com/octokit/openapi-types.ts/#readme), which is a direct transpilation from GitHub's official OpenAPI specification.
 
 ## Contributing
 
