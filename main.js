@@ -1,23 +1,9 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
-const artifact = require('@actions/artifact')
 const AdmZip = require('adm-zip')
 const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
-
-async function downloadAction(name, path) {
-    const artifactClient = artifact.create()
-    const downloadOptions = {
-        createArtifactFolder: false
-    }
-    const downloadResponse = await artifactClient.downloadArtifact(
-        name,
-        path,
-        downloadOptions
-    )
-    core.setOutput("found_artifact", true)
-}
 
 async function main() {
     try {
@@ -151,15 +137,7 @@ async function main() {
         }
 
         if (!runID) {
-            if (workflowConclusion && (workflowConclusion != 'in_progress')) {
-                return setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
-            }
-
-            try {
-                return await downloadAction(name, path)
-            } catch (error) {
-                return setExitMessage(ifNoArtifactFound, "no matching artifact in this workflow?")
-            }
+            return setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
