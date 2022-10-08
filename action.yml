@@ -54,12 +54,15 @@ inputs:
   check_artifacts:
     description: Check workflow run whether it has an artifact
     required: false
+    default: false
   search_artifacts:
     description: Search workflow runs for artifact with specified name
     required: false
+    default: false
   skip_unpack:
     description: Choose to skip unpacking the downloaded artifact(s)
     required: false
+    default: false
   dry_run:
     description: Check the existence of artifact(s) without downloading
     required: false
