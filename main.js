@@ -142,6 +142,7 @@ async function main() {
                     runID = run.id
                     core.info(`==> (found) Run ID: ${runID}`)
                     core.info(`==> (found) Run date: ${run.created_at}`)
+                    core.setOutput("head_sha", run.head_sha)
                     break
                 }
                 if (runID) {
