@@ -83,6 +83,8 @@ outputs:
     description: Boolean output which is true if the artifact was found and false otherwise
   artifacts:
     description: JSON array with details about found artifacts
+  head_sha:
+    description: The commit SHA1 of the downloaded artifact
 runs:
   using: node16
   main: main.js
