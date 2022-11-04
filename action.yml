@@ -84,7 +84,7 @@ outputs:
   artifacts:
     description: JSON array with details about found artifacts
   head_sha:
-    description: The commit SHA1 of the downloaded artifact
+    description: The commit SHA1 of the downloaded artifacts
 runs:
   using: node16
   main: main.js
