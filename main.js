@@ -218,7 +218,7 @@ async function main() {
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
-            let zip;
+            let zip
             try {
                 zip = await client.rest.actions.downloadArtifact({
                     owner: owner,
