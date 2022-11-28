@@ -24,9 +24,41 @@ jobs:
     steps:
       - name: Dump
         run: |
-          mkdir artifact1 artifact2
+          mkdir artifact1 artifact2 artifact3 artifact4 artifact5 artifact6 artifact7 artifact8 artifact9 artifact10 
+          artifact11 artifact12 artifact13 artifact14 artifact15 artifact16 artifact17 artifact18 artifact19 artifact20
+          artifact21 artifact22 artifact23 artifact24 artifact25 artifact26 artifact27 artifact28 artifact29 artifact30
+          artifact31
           echo $GITHUB_SHA > artifact1/sha1
           echo $GITHUB_SHA > artifact2/sha2
+          echo $GITHUB_SHA > artifact3/sha3
+          echo $GITHUB_SHA > artifact4/sha4
+          echo $GITHUB_SHA > artifact5/sha5
+          echo $GITHUB_SHA > artifact6/sha6
+          echo $GITHUB_SHA > artifact7/sha7
+          echo $GITHUB_SHA > artifact8/sha8
+          echo $GITHUB_SHA > artifact9/sha9
+          echo $GITHUB_SHA > artifact10/sha10
+          echo $GITHUB_SHA > artifact11/sha11
+          echo $GITHUB_SHA > artifact12/sha12
+          echo $GITHUB_SHA > artifact13/sha13
+          echo $GITHUB_SHA > artifact14/sha14
+          echo $GITHUB_SHA > artifact15/sha15
+          echo $GITHUB_SHA > artifact16/sha16
+          echo $GITHUB_SHA > artifact17/sha17
+          echo $GITHUB_SHA > artifact18/sha18
+          echo $GITHUB_SHA > artifact19/sha19
+          echo $GITHUB_SHA > artifact20/sha20
+          echo $GITHUB_SHA > artifact21/sha21
+          echo $GITHUB_SHA > artifact22/sha22
+          echo $GITHUB_SHA > artifact23/sha23
+          echo $GITHUB_SHA > artifact24/sha24
+          echo $GITHUB_SHA > artifact25/sha25
+          echo $GITHUB_SHA > artifact26/sha26
+          echo $GITHUB_SHA > artifact27/sha27
+          echo $GITHUB_SHA > artifact28/sha28
+          echo $GITHUB_SHA > artifact29/sha29
+          echo $GITHUB_SHA > artifact30/sha30
+          echo $GITHUB_SHA > artifact31/sha31
       - name: Upload first
         uses: actions/upload-artifact@v3
         with:
@@ -37,3 +69,148 @@ jobs:
         with:
           name: artifact2
           path: artifact2
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact3
+          path: artifact3
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact4
+          path: artifact4
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact5
+          path: artifact5
+      - name: Upload first
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact6
+          path: artifact6
+      - name: Upload second
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact7
+          path: artifact7
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact8
+          path: artifact8
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact9
+          path: artifact9
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact10
+          path: artifact10
+      - name: Upload first
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact11
+          path: artifact11
+      - name: Upload second
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact12
+          path: artifact12
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact13
+          path: artifact13
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact14
+          path: artifact14
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact15
+          path: artifact15
+      - name: Upload first
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact16
+          path: artifact16
+      - name: Upload second
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact17
+          path: artifact17
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact18
+          path: artifact18
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact19
+          path: artifact19
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact20
+          path: artifact20
+      - name: Upload first
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact21
+          path: artifact21
+      - name: Upload second
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact22
+          path: artifact22
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact23
+          path: artifact23
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact24
+          path: artifact24
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact25
+          path: artifact25
+      - name: Upload first
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact26
+          path: artifact26
+      - name: Upload second
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact27
+          path: artifact27
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact28
+          path: artifact28
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact29
+          path: artifact29
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact30
+          path: artifact30
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact31
+          path: artifact31
