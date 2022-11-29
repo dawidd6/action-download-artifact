@@ -50,7 +50,6 @@ async function main() {
                 owner: owner,
                 repo: repo,
                 run_id: runID || github.context.runId,
-                per_page: 30,
             })
             workflow = run.data.workflow_id
         }
