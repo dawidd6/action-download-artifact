@@ -24,10 +24,11 @@ jobs:
     steps:
       - name: Dump
         run: |
-          mkdir artifact1 artifact2 artifact3 artifact4 artifact5 artifact6 artifact7 artifact8 artifact9 artifact10 
+          mkdir artifact artifact1 artifact2 artifact3 artifact4 artifact5 artifact6 artifact7 artifact8 artifact9 artifact10 
           artifact11 artifact12 artifact13 artifact14 artifact15 artifact16 artifact17 artifact18 artifact19 artifact20
           artifact21 artifact22 artifact23 artifact24 artifact25 artifact26 artifact27 artifact28 artifact29 artifact30
           artifact31
+          echo $GITHUB_SHA > artifact/sha
           echo $GITHUB_SHA > artifact1/sha1
           echo $GITHUB_SHA > artifact2/sha2
           echo $GITHUB_SHA > artifact3/sha3
@@ -59,12 +60,17 @@ jobs:
           echo $GITHUB_SHA > artifact29/sha29
           echo $GITHUB_SHA > artifact30/sha30
           echo $GITHUB_SHA > artifact31/sha31
-      - name: Upload first
+      - name: Upload art
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: artifact
+      - name: Upload art
         uses: actions/upload-artifact@v3
         with:
           name: artifact1
           path: artifact1
-      - name: Upload second
+      - name: Upload art
         uses: actions/upload-artifact@v3
         with:
           name: artifact2
