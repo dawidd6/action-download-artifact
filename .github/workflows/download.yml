@@ -83,12 +83,12 @@ jobs:
         uses: ./
         with:
           workflow: upload.yml
-          name: artifact31/sha31
+          name: artifact29/sha29
           search_artifacts: true
           workflow_conclusion: completed
       - name: Test
         run: |
-          cat artifact31/sha31 | grep $GITHUB_SHA
+          cat artifact29/sha29 | grep $GITHUB_SHA
   download-empty-conclusion:
     runs-on: ubuntu-latest
     needs: wait

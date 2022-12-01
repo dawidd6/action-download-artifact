@@ -161,7 +161,7 @@ async function main() {
                 return setExitMessage(ifNoArtifactFound, "no matching artifact in this workflow?")
             }
         }
-        //x
+
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
             owner: owner,
             repo: repo,
