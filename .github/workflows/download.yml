@@ -85,6 +85,7 @@ jobs:
           workflow: upload.yml
           name: artifact15
           search_artifacts: true
+          workflow_conclusion: completed
       - name: Test
         run: |
           cat artifact15/sha15 | grep $GITHUB_SHA
