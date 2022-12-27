@@ -60,7 +60,7 @@ async function main() {
         }
 
         let checkedRuns = 0;
-        const maxRunsToCheck = 300;
+        const maxRunsToCheck = 600;
         if (!runID) {
             for await (const runs of client.paginate.iterator(client.actions.listWorkflowRuns, {
                 owner: owner,
