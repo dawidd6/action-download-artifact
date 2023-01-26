@@ -212,9 +212,10 @@ async function main() {
 
             const sendGetRequest = async () => {
                 return new Promise(resolve => {
+                    const { hostName, pathName } = url.parse(request.url)
                     const options = {
-                        hostname: url.parse(request.url).hostname,
-                        path: url.parse(request.url).pathname,
+                        hostname
+                        path: pathname,
                         headers: {
                             ...request.headers,
                             Authorization: `token ${token}`,
