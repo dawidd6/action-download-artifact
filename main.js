@@ -129,18 +129,22 @@ async function main() {
                             run_id: run.id,
                         })
                         core.info(`==> (found) Artifacts: ${artifacts} for run ID: ${run.id}`)
-                        if (!artifacts.data.artifacts || artifacts.data.artifacts.length == 0) {
+                        core.info(`==> Test 1: ${artifacts}`)
+                        core.info(`==> Test 2: ${artifacts.length == 0}`)
+                        if (!artifacts || artifacts.length == 0) {
                             continue
                         }
+                        core.info(`==> Test 3: We found artifacts`)
                         if (searchArtifacts) {
                             core.info(`==> (found) Searching for artifacts`)
-                            const artifact = artifacts.data.artifacts.find((artifact) => {
+                            const artifact = artifacts.find((artifact) => {
                                 return artifact.name == name
                             })
                             if (!artifact) {
                                 core.info(`==> Didn't find artifact - contuing`)
                                 continue
                             }
+                            core.info(`==> Test 4: Found artifact - continuing`)
                         }
                     }
                     runID = run.id
