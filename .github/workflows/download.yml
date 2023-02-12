@@ -142,6 +142,7 @@ jobs:
         run: test ${{ steps.download.outputs.dry_run }} == false
   download-many:
     runs-on: ubuntu-latest
+    needs: wait
     strategy:
       # Use a matrix to run this job 40 times with 40 different artifacts. This catches any pagination issues (as GH's default page size is 30)
       matrix:
@@ -162,6 +163,7 @@ jobs:
         run: cat ${{ steps.setup.outputs.artifact-name }}/sha | grep $GITHUB_SHA
   download-many-check-artifacts:
     runs-on: ubuntu-latest
+    needs: wait
     strategy:
       # Use a matrix to run this job 40 times with 40 different artifacts. This catches any pagination issues (as GH's default page size is 30)
       matrix:
@@ -183,6 +185,7 @@ jobs:
         run: cat ${{ steps.setup.outputs.artifact-name }}/sha | grep $GITHUB_SHA
   download-many-search-artifacts:
     runs-on: ubuntu-latest
+    needs: wait
     strategy:
       # Use a matrix to run this job 40 times with 40 different artifacts. This catches any pagination issues (as GH's default page size is 30)
       matrix:
