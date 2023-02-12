@@ -112,7 +112,6 @@ async function main() {
             }
             )) {
                 for (const run of runs.data) {
-                    core.info(`==> (Starting loop run)`)
                     if (commit && run.head_sha != commit) {
                         continue
                     }
@@ -128,23 +127,16 @@ async function main() {
                             repo: repo,
                             run_id: run.id,
                         })
-                        core.info(`==> (found) Artifacts: ${artifacts} for run ID: ${run.id}`)
-                        core.info(`==> Test 1: ${artifacts}`)
-                        core.info(`==> Test 2: ${artifacts.length == 0}`)
                         if (!artifacts || artifacts.length == 0) {
                             continue
                         }
-                        core.info(`==> Test 3: We found artifacts`)
                         if (searchArtifacts) {
-                            core.info(`==> (found) Searching for artifacts`)
                             const artifact = artifacts.find((artifact) => {
                                 return artifact.name == name
                             })
                             if (!artifact) {
-                                core.info(`==> Didn't find artifact - contuing`)
                                 continue
                             }
-                            core.info(`==> Test 4: Found artifact - continuing`)
                         }
                     }
                     runID = run.id
