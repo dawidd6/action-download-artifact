@@ -112,6 +112,7 @@ async function main() {
             }
             )) {
                 for (const run of runs.data) {
+                    core.info(`==> (Starting loop run)`)
                     if (commit && run.head_sha != commit) {
                         continue
                     }
@@ -128,7 +129,7 @@ async function main() {
                             run_id: run.id,
                         })
                         core.info(`==> (found) Artifacts: ${artifacts} for run ID: ${run.id}`)
-                        if (!artifacts || artifacts.data.artifacts.length == 0) {
+                        if (!artifacts.data.artifacts || artifacts.data.artifacts.length == 0) {
                             continue
                         }
                         if (searchArtifacts) {
