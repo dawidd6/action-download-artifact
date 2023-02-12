@@ -133,10 +133,12 @@ async function main() {
                             continue
                         }
                         if (searchArtifacts) {
+                            core.info(`==> (found) Searching for artifacts`)
                             const artifact = artifacts.data.artifacts.find((artifact) => {
                                 return artifact.name == name
                             })
                             if (!artifact) {
+                                core.info(`==> Didn't find artifact - contuing`)
                                 continue
                             }
                         }
