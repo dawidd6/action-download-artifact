@@ -127,7 +127,8 @@ async function main() {
                             repo: repo,
                             run_id: run.id,
                         })
-                        if (artifacts.data.artifacts.length == 0) {
+                        core.info(`==> (found) Artifacts: ${artifacts} for run ID: ${run.id}`)
+                        if (!artifacts || artifacts.data.artifacts.length == 0) {
                             continue
                         }
                         if (searchArtifacts) {
