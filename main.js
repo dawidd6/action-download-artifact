@@ -122,7 +122,7 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
+                        let artifacts = await client.rest.actions.listWorkflowRunArtifacts({
                             owner: owner,
                             repo: repo,
                             run_id: run.id,
@@ -218,12 +218,21 @@ async function main() {
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
-            const zip = await client.rest.actions.downloadArtifact({
-                owner: owner,
-                repo: repo,
-                artifact_id: artifact.id,
-                archive_format: "zip",
-            })
+            let zip
+            try {
+                zip = await client.rest.actions.downloadArtifact({
+                    owner: owner,
+                    repo: repo,
+                    artifact_id: artifact.id,
+                    archive_format: "zip",
+                })
+            } catch (error) {
+                if (error.message === "Artifact has expired") {
+                    return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
+                } else {
+                    throw new Error(error.message)
+                }
+            }
 
             if (skipUnpack) {
                 fs.mkdirSync(path, { recursive: true })
