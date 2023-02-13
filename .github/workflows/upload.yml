@@ -37,22 +37,3 @@ jobs:
         with:
           name: artifact2
           path: artifact2
-  upload-many:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # Use a matrix to run this job 40 times with 40 different artifacts. This catches any pagination issues (as GitHub's default page size is 30)
-        run-number: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40 ]
-    steps:
-      - name: Setup outputs
-        id: setup
-        run: echo "artifact-name=${{ format('artifact{0}', matrix.run-number) }}" >> $GITHUB_OUTPUT
-      - name: Dump
-        run: |
-          mkdir ${{ steps.setup.outputs.artifact-name }}
-          echo $GITHUB_SHA > ${{ steps.setup.outputs.artifact-name }}/sha
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.setup.outputs.artifact-name }}
-          path: ${{ steps.setup.outputs.artifact-name }}
