@@ -122,16 +122,16 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        let artifacts = await client.rest.actions.listWorkflowRunArtifacts({
+                        let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
                             owner: owner,
                             repo: repo,
                             run_id: run.id,
                         })
-                        if (artifacts.data.artifacts.length == 0) {
+                        if (!artifacts || artifacts.length == 0) {
                             continue
                         }
                         if (searchArtifacts) {
-                            const artifact = artifacts.data.artifacts.find((artifact) => {
+                            const artifact = artifacts.find((artifact) => {
                                 return artifact.name == name
                             })
                             if (!artifact) {
