@@ -58,6 +58,21 @@ jobs:
           pr: ${{github.event.pull_request.number}}
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
+  download-commit:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          commit: ${{ github.event.workflow_run.head_sha }}
+      - name: Test
+        run: cat artifact/sha | grep $GITHUB_SHA
   download-multiple:
     runs-on: ubuntu-latest
     needs: wait
