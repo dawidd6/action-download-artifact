@@ -66,3 +66,40 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # default fail
     if_no_artifact_found: fail
 ```
+
+## Outputs
+
+The action emits the following outputs (see outputs in action.yml):
+
+```
+error_message:
+  description: The error message, if an error occurs
+dry_run:
+  description: Boolean output which is true if the dry run was successful and false otherwise
+found_artifact:
+  description: Boolean output which is true if the artifact was found and false otherwise
+artifacts:
+  description: JSON array with details about found artifacts
+```
+
+Please note that [GitHub Actions converts booleans into strings](https://docs.github.com/en/actions/learn-github-actions/expressions#functions) when you use them in expressions.
+
+Here's an example of how you can use an output for the rest of your GHA workflow:
+
+```
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact
+        with:
+          workflow: some-workflow
+          pr: 1234
+          path: some-path
+          name: some-name
+          if_no_artifact_found: warn
+      - run: echo "Found an artifact!"
+        if: ${{ steps.download-artifact.outputs.found_artifact == 'true' }}
+```
