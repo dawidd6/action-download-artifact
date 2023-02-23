@@ -101,5 +101,5 @@ jobs:
           name: some-name
           if_no_artifact_found: warn
       - run: echo "Found an artifact!"
-        if: ${{ steps.download-artifact.outputs.found_artifact == 'true' }}
+        if: ${{ steps.download-artifact.outputs.found_artifact == 'true' }} # strings must use single quotes in expressions
 ```
