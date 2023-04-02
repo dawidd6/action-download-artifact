@@ -17,7 +17,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
   with:
     # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
     # Required, if the artifact is from a different repo
-    # Required, if the repo is private a Personal Access Token with `repo` scope is needed
+    # Required, if the repo is private a Personal Access Token with `repo` scope is needed or GitHub token in a job where the permissions `action` scope set to `read`
     github_token: ${{secrets.GITHUB_TOKEN}}
     # Optional, workflow file name or ID
     # If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
