@@ -193,7 +193,7 @@ async function main() {
                 core.setOutput("found_artifact", true)
                 core.info('==> (found) Artifacts')
                 for (const artifact of artifacts) {
-                    const size = filesize.filesize(artifact.size_in_bytes, { base: 10 })
+                    const size = filesize(artifact.size_in_bytes, { base: 10 })
                     core.info(`\t==> Artifact:`)
                     core.info(`\t==> ID: ${artifact.id}`)
                     core.info(`\t==> Name: ${artifact.name}`)
@@ -263,7 +263,7 @@ async function main() {
 
     function setExitMessage(ifNoArtifactFound, message) {
         core.setOutput("found_artifact", false)
-
+        
         switch (ifNoArtifactFound) {
             case "fail":
                 core.setFailed(message)
