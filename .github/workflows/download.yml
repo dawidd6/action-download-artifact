@@ -221,7 +221,7 @@ jobs:
       - name: Test
         run: |
           find .
-          cat artifact1/sha1 | grep $GITHUB_SHA
-          cat artifact2/sha2 | grep $GITHUB_SHA
-          ! test -d artifact/artifact
-          ! test -f artifact.zip
+          cat artifact/artifact1/sha1 | grep $GITHUB_SHA
+          cat artifact/artifact2/sha2 | grep $GITHUB_SHA
+          ! test -d artifact/artifact/artifact
+          ! test -f artifact/artifact.zip
