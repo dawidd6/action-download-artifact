@@ -102,7 +102,6 @@ jobs:
           name_is_regexp: true
       - name: Test
         run: |
-          find .
           cat artifact1/sha1 | grep $GITHUB_SHA
           cat artifact2/sha2 | grep $GITHUB_SHA
           ! test -d artifact/artifact
@@ -220,7 +219,6 @@ jobs:
           search_artifacts: true
       - name: Test
         run: |
-          find .
           cat artifact/artifact1/sha1 | grep $GITHUB_SHA
           cat artifact/artifact2/sha2 | grep $GITHUB_SHA
           ! test -d artifact/artifact/artifact
