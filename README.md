@@ -38,6 +38,8 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, defaults to all types
     event: push
     # Optional, will use specified workflow run
+    # use ${{ github.event.workflow_run.id }} when your action runs in a workflow_run event
+    # and wants to download from the triggering workflow run
     run_id: 1122334455
     # Optional, run number from the workflow
     run_number: 34
