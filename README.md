@@ -50,7 +50,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # will download only those artifacts with a name that matches this regular expression
     # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
     # ignored if name is given
-    filter: /artifact_.*/
+    filter: ^artifact_.*
     # Optional, a directory where to extract artifact(s), defaults to the current directory
     path: extract_here
     # Optional, defaults to current repo
