@@ -25,6 +25,7 @@ async function main() {
         const [owner, repo] = core.getInput("repo", { required: true }).split("/")
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
+        const filter = core.getInput("filter")
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         let workflow = core.getInput("workflow")
@@ -130,7 +131,7 @@ async function main() {
                         }
                         if (searchArtifacts) {
                             const artifact = artifacts.find((artifact) => {
-                                return artifact.name == name
+                                return name && artifact.name == name || artifact.name.match(filter) !== null
                             })
                             if (!artifact) {
                                 continue
@@ -166,10 +167,10 @@ async function main() {
             run_id: runID,
         })
 
-        // One artifact or all if `name` input is not specified.
-        if (name) {
+        // One artifact if 'name' input is specified, multiple if `filter` is specified, all otherwise.
+        if (name || filter) {
             filtered = artifacts.filter((artifact) => {
-                return artifact.name == name
+                return name && artifact.name == name || artifact.name.match(filter) !== null
             })
             if (filtered.length == 0) {
                 core.info(`==> (not found) Artifact: ${name}`)
