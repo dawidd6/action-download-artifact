@@ -239,7 +239,7 @@ async function main() {
                 continue
             }
 
-            const dir = name ? path : pathname.join(path, artifact.name)
+            const dir = name && !nameIsRegExp ? path : pathname.join(path, artifact.name)
 
             fs.mkdirSync(dir, { recursive: true })
 
