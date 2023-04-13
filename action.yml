@@ -47,6 +47,10 @@ inputs:
   name:
     description: Artifact name (download all artifacts if not specified)
     required: false
+  name_is_regexp:
+    description: Treat artifact name as a regular expression and download only artifacts with matching names
+    required: false
+    default: "false"
   path:
     description: Where to unpack the artifact
     required: false
