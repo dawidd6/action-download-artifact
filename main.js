@@ -26,7 +26,6 @@ async function main() {
         const path = core.getInput("path", { required: true })
         const name = core.getInput("name")
         const nameIsRegExp = core.getBooleanInput("name_is_regexp")
-        const nameRegExp = nameIsRegExp ? new RegExp(name) : null
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         let workflow = core.getInput("workflow")
