@@ -47,7 +47,12 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # will download all artifacts if not specified
     # and extract them into respective subdirectories
     # https://github.com/actions/download-artifact#download-all-artifacts
+    # is treated as a regular expression if input name_is_regexp is true
+    # will download only those artifacts with a name that matches this regular expression
+    # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
     name: artifact_name
+    # Optional, name is treated as a regular expression if set true
+    name_is_regexp: true
     # Optional, a directory where to extract artifact(s), defaults to the current directory
     path: extract_here
     # Optional, defaults to current repo
@@ -55,7 +60,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, check the workflow run to whether it has an artifact
     # then will get the last available artifact from the previous workflow
     # default false, just try to download from the last one
-    check_artifacts:  false
+    check_artifacts: false
     # Optional, search for the last workflow run whose stored an artifact named as in `name` input
     # default false
     search_artifacts: false
