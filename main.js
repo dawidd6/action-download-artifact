@@ -131,7 +131,10 @@ async function main() {
                         }
                         if (searchArtifacts) {
                             const artifact = artifacts.find((artifact) => {
-                                return nameIsRegExp && artifact.name.match(name) !== null || artifact.name == name
+                                if (nameIsRegExp) {
+                                    return artifact.name.match(name) !== null
+                                }
+                                return artifact.name == name
                             })
                             if (!artifact) {
                                 continue
@@ -170,7 +173,10 @@ async function main() {
         // One artifact if 'name' input is specified, one or more if `name` is a regular expression, all otherwise.
         if (name) {
             filtered = artifacts.filter((artifact) => {
-                return nameIsRegExp && artifact.name.match(name) !== null || artifact.name == name
+                if (nameIsRegExp) {
+                    return artifact.name.match(name) !== null
+                }
+                return artifact.name == name
             })
             if (filtered.length == 0) {
                 core.info(`==> (not found) Artifact: ${name}`)
