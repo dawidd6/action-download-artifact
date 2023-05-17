@@ -38,6 +38,7 @@ async function main() {
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getBooleanInput("check_artifacts")
         let searchArtifacts = core.getBooleanInput("search_artifacts")
+        let ensureLatest = core.getBooleanInput("ensure_latest")
         let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
@@ -103,7 +104,8 @@ async function main() {
         }
 
         if (!runID) {
-            // Note that the runs are returned in most recent first order.
+            // Note that the runs are returned (roughly) in most recent first order. However, for repos
+            // with lots and lots of runs, this may not always be the case (hence why we need ensureLatest).
             for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRunsForRepo, {
                 owner: owner,
                 repo: repo,
@@ -113,6 +115,7 @@ async function main() {
                 ...(commit ? { head_sha: commit } : {}),
             }
             )) {
+                let runCreatedAt = null;
                 for (const run of runs.data) {
                     if (runNumber && run.run_number != runNumber) {
                         continue
@@ -141,12 +144,20 @@ async function main() {
                             }
                         }
                     }
+                    if (ensureLatest) {
+                        if (runCreatedAt === null || ((new Date(run.created_at)) > (new Date(runCreatedAt)))) {
+                            runID = run.id;
+                            runCreatedAt = run.created_at;
+                        }
+                        continue;
+                    }
                     runID = run.id
-                    core.info(`==> (found) Run ID: ${runID}`)
-                    core.info(`==> (found) Run date: ${run.created_at}`)
+                    runCreatedAt = run.created_at;
                     break
                 }
                 if (runID) {
+                    core.info(`==> (found) Run ID: ${runID}`)
+                    core.info(`==> (found) Run date: ${runCreatedAt}`)
                     break
                 }
             }
@@ -215,7 +226,7 @@ async function main() {
         }
 
         core.setOutput("found_artifact", true)
-        
+
         for (const artifact of artifacts) {
             core.info(`==> Artifact: ${artifact.id}`)
 
@@ -270,7 +281,7 @@ async function main() {
 
     function setExitMessage(ifNoArtifactFound, message) {
         core.setOutput("found_artifact", false)
-        
+
         switch (ifNoArtifactFound) {
             case "fail":
                 core.setFailed(message)

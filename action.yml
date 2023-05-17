@@ -63,6 +63,10 @@ inputs:
     description: Search workflow runs for artifact with specified name
     required: false
     default: false
+  ensure_latest:
+    description: Ensures that we are using the latest available artifact
+    required: false
+    default: false
   skip_unpack:
     description: Choose to skip unpacking the downloaded artifact(s)
     required: false
@@ -74,7 +78,7 @@ inputs:
     required: false
     description: |
       Choose how to exit the action if no artifact is found
-      
+
       fail, warn or ignore
     default: fail
 outputs:
