@@ -17,7 +17,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -32,7 +32,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -48,7 +48,7 @@ jobs:
     if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -63,7 +63,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -78,7 +78,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -93,7 +93,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -111,7 +111,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -126,7 +126,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -146,7 +146,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         id: download
         uses: ./
@@ -162,7 +162,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         id: download
         uses: ./
@@ -178,7 +178,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -193,7 +193,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
@@ -208,7 +208,7 @@ jobs:
     needs: wait
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download
         uses: ./
         with:
