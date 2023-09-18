@@ -38,6 +38,7 @@ async function main() {
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getBooleanInput("check_artifacts")
         let searchArtifacts = core.getBooleanInput("search_artifacts")
+        const allowForks = core.getBooleanInput("allow_forks")
         let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
@@ -102,6 +103,8 @@ async function main() {
             core.info(`==> Run number: ${runNumber}`)
         }
 
+        core.info(`==> Allow forks: ${allowForks}`)
+
         if (!runID) {
             // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
@@ -118,6 +121,10 @@ async function main() {
                         continue
                     }
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
+                        continue
+                    }
+                    if (!allowForks && run.head_repository.full_name !== `${owner}/${repo}`) {
+                        core.info(`==> Skipping run from fork: ${run.head_repository.full_name}`)
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {

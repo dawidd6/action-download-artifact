@@ -72,4 +72,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     #  "fail", "warn", "ignore"
     # default fail
     if_no_artifact_found: fail
+    # Optional, ignore forks when searching for artifacts
+    # default true
+    allow_forks: false
 ```
