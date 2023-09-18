@@ -38,13 +38,8 @@ async function main() {
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getBooleanInput("check_artifacts")
         let searchArtifacts = core.getBooleanInput("search_artifacts")
-        let allowForks = core.getBooleanInput("allow_forks")
+        let hasAllowForks = core.getInput("allow_forks") !== ""
         let dryRun = core.getInput("dry_run")
-
-        // Using allow_forks lets the user accept any fork, in any situation,
-        // But if it's not set, we forbid forks if the user is trying to download
-        // artifacts from a given branch.
-        const willAcceptForks = allowForks || !branch
 
         const client = github.getOctokit(token)
 
@@ -108,6 +103,16 @@ async function main() {
             core.info(`==> Run number: ${runNumber}`)
         }
 
+        // We allow forks by default, except when a branch is requested
+        let allowForks = !branch
+
+        // `allow_forks` overrides any other logic
+        if (hasAllowForks) {
+            allowForks = core.getBooleanInput("allow_forks")
+        }
+
+        core.info(`==> Allow forks: ${allowForks}`)
+
         if (!runID) {
             // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
@@ -126,7 +131,7 @@ async function main() {
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
                     }
-                    if (!willAcceptForks && run.head_repository.full_name !== `${owner}/${repo}`) {
+                    if (!allowForks && run.head_repository.full_name !== `${owner}/${repo}`) {
                         core.info(`==> Skipping run from fork: ${run.head_repository.full_name}`)
                         continue
                     }

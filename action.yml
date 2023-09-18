@@ -58,7 +58,6 @@ inputs:
   allow_forks:
     description: Allow forks
     required: false
-    default: true
   check_artifacts:
     description: Check workflow run whether it has an artifact
     required: false
