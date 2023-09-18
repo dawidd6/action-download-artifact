@@ -44,7 +44,7 @@ async function main() {
         // Using allow_forks lets the user accept any fork, in any situation,
         // But if it's not set, we forbid forks if the user is trying to download
         // artifacts from a given branch.
-        const willAcceptForks = allowForks || !branch;
+        const willAcceptForks = allowForks || !branch
 
         const client = github.getOctokit(token)
 
@@ -128,7 +128,7 @@ async function main() {
                     }
                     if (!willAcceptForks && run.head_repository.full_name !== `${owner}/${repo}`) {
                         core.info(`==> Skipping run from fork: ${run.head_repository.full_name}`)
-                        continue;
+                        continue
                     }
                     if (checkArtifacts || searchArtifacts) {
                         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
