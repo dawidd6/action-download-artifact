@@ -38,7 +38,7 @@ async function main() {
         let runNumber = core.getInput("run_number")
         let checkArtifacts = core.getBooleanInput("check_artifacts")
         let searchArtifacts = core.getBooleanInput("search_artifacts")
-        let hasAllowForks = core.getInput("allow_forks") !== ""
+        let hasAllowForksInput = core.getInput("allow_forks") !== ""
         let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
@@ -107,7 +107,7 @@ async function main() {
         let allowForks = !branch
 
         // `allow_forks` overrides any other logic
-        if (hasAllowForks) {
+        if (hasAllowForksInput) {
             allowForks = core.getBooleanInput("allow_forks")
         }
 
