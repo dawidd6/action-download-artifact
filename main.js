@@ -120,6 +120,10 @@ async function main() {
                     if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
                     }
+                    if (run.head_repository.full_name !== `${owner}/${repo}`) {
+                        core.info(`==> Skipping run from fork: ${run.head_repository.full_name}`)
+                        continue;
+                    }
                     if (checkArtifacts || searchArtifacts) {
                         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
                             owner: owner,
