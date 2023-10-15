@@ -4,9 +4,9 @@
   "dependencies": {
     "@actions/artifact": "^1.1.2",
     "@actions/core": "^1.10.1",
-    "@actions/github": "^5.0.1",
-    "filesize": "^8.0.7",
-    "follow-redirects": "^1.15.1",
+    "@actions/github": "^6.0.0",
+    "adm-zip": "^0.5.10",
+    "filesize": "^9.0.11",
     "yauzl": "^2.10.0"
   }
 }
