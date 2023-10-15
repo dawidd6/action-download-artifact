@@ -258,7 +258,7 @@ async function main() {
                 return new Promise(resolve => {
                     const { hostName, pathName } = url.parse(request.url)
                     const options = {
-                        hostname
+                        hostname: hostname,
                         path: pathname,
                         headers: {
                             ...request.headers,
