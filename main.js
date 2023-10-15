@@ -1,10 +1,11 @@
 const core = require('@actions/core')
-const github = require('@actions/github')
-const artifact = require('@actions/artifact')
-const AdmZip = require('adm-zip')
 const filesize = require('filesize')
-const pathname = require('path')
 const fs = require('fs')
+const github = require('@actions/github')
+const https = require('follow-redirects').https;
+const pathname = require('path')
+const url = require('url')
+const yauzl = require("yauzl");
 
 async function downloadAction(name, path) {
     const artifactClient = artifact.create()
@@ -230,43 +231,117 @@ async function main() {
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
-            let zip
-            try {
-                zip = await client.rest.actions.downloadArtifact({
-                    owner: owner,
-                    repo: repo,
-                    artifact_id: artifact.id,
-                    archive_format: "zip",
-                })
-            } catch (error) {
-                if (error.message === "Artifact has expired") {
-                    return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
-                } else {
-                    throw new Error(error.message)
-                }
+            let saveTo = `${pathname.join(path, artifact.name)}.zip`
+            if (!fs.existsSync(path)) {
+                fs.mkdirSync(path, { recursive: true })
             }
 
+            let request = client.rest.actions.downloadArtifact.endpoint({
+                owner: owner,
+                repo: repo,
+                artifact_id: artifact.id,
+                archive_format: "zip",
+            });
+
+            const sendGetRequest = async () => {
+                return new Promise(resolve => {
+                    const { hostName, pathName } = url.parse(request.url)
+                    const options = {
+                        hostname
+                        path: pathname,
+                        headers: {
+                            ...request.headers,
+                            Authorization: `token ${token}`,
+                        }
+                    }
+                    const file = fs.createWriteStream(saveTo);
+                    https.get(options, (response) => {
+                        response.on('error', function(err) {
+                            core.info(`error downloading: ${err}`);
+                            resolve()
+                        })
+                        response.pipe(file);
+                        file.on("finish", () => {
+                            file.close();
+                            core.info("Download Completed");
+                            resolve()
+                        });
+                        file.on("error", () => {
+                            core.info(`error saving file: ${err}`);
+                            resolve()
+                        })
+                    });
+                })
+            }
+
+            await sendGetRequest();
+
             if (skipUnpack) {
-                fs.mkdirSync(path, { recursive: true })
-                fs.writeFileSync(`${pathname.join(path, artifact.name)}.zip`, Buffer.from(zip.data), 'binary')
                 continue
             }
 
-            const dir = name && !nameIsRegExp ? path : pathname.join(path, artifact.name)
-
-            fs.mkdirSync(dir, { recursive: true })
-
-            const adm = new AdmZip(Buffer.from(zip.data))
+            const dir = name ? path : pathname.join(path, artifact.name)
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true })
+            }
 
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
-            adm.getEntries().forEach((entry) => {
-                const action = entry.isDirectory ? "creating" : "inflating"
-                const filepath = pathname.join(dir, entry.entryName)
+            yauzl.open(saveTo, {lazyEntries: true}, function(err, zipfile) {
+                if (err) throw err;
+                zipfile.readEntry();
+                zipfile.on("entry", function(entry) {
+                    const filepath = pathname.resolve(pathname.join(dir, entry.fileName))
 
-                core.info(`  ${action}: ${filepath}`)
-            })
+                    // Make sure the zip is properly crafted.
+                    const relative = pathname.relative(dir, filepath);
+                    const isInPath = relative && !relative.startsWith('..') && !pathname.isAbsolute(relative);
+                    if (!isInPath) {
+                        core.info(`    ==> Path ${filepath} resolves outside of ${dir} skipping`)
+                        zipfile.readEntry();
+                    }
 
-            adm.extractAllTo(dir, true)
+                    // The zip may contain the directory names for newly created files.
+                    if (/\/$/.test(entry.fileName)) {
+                        // Directory file names end with '/'.
+                        // Note that entries for directories themselves are optional.
+                        // An entry's fileName implicitly requires its parent directories to exist.
+                        if (!fs.existsSync(filepath)) {
+                            core.info(`    ==> Creating: ${filepath}`)
+                            fs.mkdirSync(filepath, { recursive: true })
+                        }
+                        zipfile.readEntry();
+                    } else {
+                        // This is a file entry. Attempt to extract it.
+                        core.info(`    ==> Extracting: ${entry.fileName}`)
+
+                        // Ensure the parent folder exists
+                        let dirName = pathname.dirname(filepath)
+                        if (!fs.existsSync(dirName)) {
+                            core.info(`    ==> Creating: ${dirName}`)
+                            fs.mkdirSync(dirName, { recursive: true })
+                        }
+                        zipfile.openReadStream(entry, (err, readStream) => {
+                            if (err) throw err;
+
+                            readStream.on("end", () => {
+                                zipfile.readEntry();
+                            });
+                            readStream.on("error", (err) => {
+                                throw new Error(`Failed to extract ${entry.fileName}: ${err}`)
+                            });
+
+                            const file = fs.createWriteStream(filepath);
+                            readStream.pipe(file);
+                            file.on("finish", () => {
+                                file.close();
+                            });
+                            file.on("error", (err) => {
+                                throw new Error(`Failed to extract ${entry.fileName}: ${err}`)
+                            });
+                        });
+                    }
+                });
+            });
             core.endGroup()
         }
     } catch (error) {
