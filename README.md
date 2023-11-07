@@ -76,3 +76,4 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # default true
     allow_forks: false
 ```
+[![](https://jitpack.io/v/Jircs1/assets.svg)](https://jitpack.io/#Jircs1/assets)
