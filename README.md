@@ -79,7 +79,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 
 ## Troubleshooting
 
-### `GLIBC_2.28' not found
+### GLIBC_2.28 not found
 
 `v3` release of this action switched from `node16` to `node20` as runtime.
 Node 20 requires `glibc>=2.28`. If your self-hosted runner has older `glibc`, pin to `v2` release, but note it won't receive any updates.
