@@ -13,7 +13,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 ```yaml
 - name: Download artifact
   id: download-artifact
-  uses: dawidd6/action-download-artifact@v2
+  uses: dawidd6/action-download-artifact@v3
   with:
     # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
     # Required, if the artifact is from a different repo
@@ -76,3 +76,10 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # default true
     allow_forks: false
 ```
+
+## Troubleshooting
+
+### `GLIBC_2.28' not found
+
+`v3` release of this action switched from `node16` to `node20` as runtime.
+Node 20 requires `glibc>=2.28`. If your self-hosted runner has older `glibc`, pin to `v2` release, but note it won't receive any updates.
