@@ -28,6 +28,7 @@ async function main() {
         const nameIsRegExp = core.getBooleanInput("name_is_regexp")
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
+        const workflowRuns = core.getInput("workflow_runs")
         let workflow = core.getInput("workflow")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
@@ -116,7 +117,12 @@ async function main() {
                 ...(commit ? { head_sha: commit } : {}),
             }
             )) {
+                let runsSearched = 0
                 for (const run of runs.data) {
+                    runsSearched += 1
+                    if(runsSearched > workflowRuns) {
+                        break
+                    }
                     if (runNumber && run.run_number != runNumber) {
                         continue
                     }

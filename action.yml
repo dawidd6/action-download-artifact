@@ -22,6 +22,10 @@ inputs:
       https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
     required: false
     default: success
+  workflow_runs:
+    description: Maximum number of workflow runs the action will traverse to find desired artifact.
+    required: false
+    default: 30
   repo:
     description: Repository name with owner (like actions/checkout)
     required: false
