@@ -22,6 +22,9 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, workflow file name or ID
     # If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
     workflow: workflow_name.yml
+    # If no workflow is set and workflow_search set to true, then the most recent workflow matching
+    # all other criteria will be looked up instead of using the current workflow
+    workflow_search: false
     # Optional, the status or conclusion of a completed workflow to search for
     # Can be one of a workflow conclusion:
     #   "failure", "success", "neutral", "cancelled", "skipped", "timed_out", "action_required"

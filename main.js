@@ -19,6 +19,15 @@ async function downloadAction(name, path) {
     core.setOutput("found_artifact", true)
 }
 
+async function getWorkflow(client, owner, repo, runID) {
+    const run = await client.rest.actions.getWorkflowRun({
+        owner: owner,
+        repo: repo,
+        run_id: runID || github.context.runId,
+    })
+    return run.data.workflow_id
+}
+
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
@@ -29,6 +38,7 @@ async function main() {
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         let workflow = core.getInput("workflow")
+        let workflowSearch = core.getInput("workflow_search")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
@@ -47,16 +57,13 @@ async function main() {
         core.info(`==> Artifact name: ${name}`)
         core.info(`==> Local path: ${path}`)
 
-        if (!workflow) {
-            const run = await client.rest.actions.getWorkflowRun({
-                owner: owner,
-                repo: repo,
-                run_id: runID || github.context.runId,
-            })
-            workflow = run.data.workflow_id
+        if (!workflow && !workflowSearch) {
+            workflow = await getWorkflow(client, owner, repo, runID)
         }
 
-        core.info(`==> Workflow name: ${workflow}`)
+        if (workflow) {
+            core.info(`==> Workflow name: ${workflow}`)
+        }
         core.info(`==> Workflow conclusion: ${workflowConclusion}`)
 
         const uniqueInputSets = [
@@ -106,17 +113,20 @@ async function main() {
         core.info(`==> Allow forks: ${allowForks}`)
 
         if (!runID) {
+            const runGetter = workflow ? client.rest.actions.listWorkflowRuns : client.rest.actions.listWorkflowRunsForRepo
             // Note that the runs are returned in most recent first order.
-            for await (const runs of client.paginate.iterator(client.rest.actions.listWorkflowRuns, {
+            for await (const runs of client.paginate.iterator(runGetter, {
                 owner: owner,
                 repo: repo,
-                workflow_id: workflow,
+                ...(workflow ? { workflow_id: workflow } : {}),
                 ...(branch ? { branch } : {}),
                 ...(event ? { event } : {}),
-                ...(commit ? { head_sha: commit } : {}),
             }
             )) {
                 for (const run of runs.data) {
+                    if (commit && run.head_sha != commit) {
+                        continue
+                    }
                     if (runNumber && run.run_number != runNumber) {
                         continue
                     }
@@ -148,9 +158,15 @@ async function main() {
                             }
                         }
                     }
+
                     runID = run.id
                     core.info(`==> (found) Run ID: ${runID}`)
                     core.info(`==> (found) Run date: ${run.created_at}`)
+
+                    if (!workflow) {
+                        workflow = await getWorkflow(client, owner, repo, runID)
+                        core.info(`==> (found) Workflow: ${workflow}`)
+                    }
                     break
                 }
                 if (runID) {
