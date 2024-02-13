@@ -222,7 +222,7 @@ async function main() {
         }
 
         core.setOutput("found_artifact", true)
-        
+
         for (const artifact of artifacts) {
             core.info(`==> Artifact: ${artifact.id}`)
 
@@ -277,7 +277,7 @@ async function main() {
 
     function setExitMessage(ifNoArtifactFound, message) {
         core.setOutput("found_artifact", false)
-        
+
         switch (ifNoArtifactFound) {
             case "fail":
                 core.setFailed(message)

@@ -78,7 +78,7 @@ inputs:
     required: false
     description: |
       Choose how to exit the action if no artifact is found
-      
+
       fail, warn or ignore
     default: fail
 outputs:
