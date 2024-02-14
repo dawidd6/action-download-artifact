@@ -19,7 +19,7 @@ inputs:
     description: |
       Wanted status or conclusion to search for in recent runs
 
-      https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
+      https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow
     required: false
     default: success
   repo:
