@@ -15,11 +15,18 @@ inputs:
 
       If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
     required: false
+  workflow_search:
+    description: |
+      Most recent workflow matching all other criteria will be looked up instead of using the current workflow
+
+      https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
+    required: false
+    default: false
   workflow_conclusion:
     description: |
       Wanted status or conclusion to search for in recent runs
 
-      https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#list-workflow-runs
+      https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow
     required: false
     default: success
   repo:
@@ -78,7 +85,7 @@ inputs:
     required: false
     description: |
       Choose how to exit the action if no artifact is found
-      
+
       fail, warn or ignore
     default: fail
 outputs:
