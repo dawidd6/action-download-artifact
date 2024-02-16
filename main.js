@@ -121,12 +121,10 @@ async function main() {
                 ...(workflow ? { workflow_id: workflow } : {}),
                 ...(branch ? { branch } : {}),
                 ...(event ? { event } : {}),
+                ...(commit ? { head_sha: commit } : {}),
             }
             )) {
                 for (const run of runs.data) {
-                    if (commit && run.head_sha != commit) {
-                        continue
-                    }
                     if (runNumber && run.run_number != runNumber) {
                         continue
                     }
