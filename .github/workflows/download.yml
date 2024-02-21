@@ -37,6 +37,7 @@ jobs:
         with:
           name: artifact
           path: artifact
+          workflow_search: true
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
   download-branch:
