@@ -253,7 +253,7 @@ const { data: app } = await requestWithAuth(
       String
     </td>
     <td>
-      Any supported <a href="https://developer.github.com/v3/#http-verbs">http verb</a>, case insensitive. <em>Defaults to <code>Get</code></em>.
+      Any supported <a href="https://developer.github.com/v3/#http-verbs">http verb</a>, case-insensitive. <em>Defaults to <code>Get</code></em>.
     </td>
   </tr>
   <tr>
@@ -322,7 +322,7 @@ const { data: app } = await requestWithAuth(
       Function
     </td>
     <td>
-     Function with the signature <code>hook(request, endpointOptions)</code>, where <code>endpointOptions</code> are the parsed options as returned by <a href="https://github.com/octokit/endpoint.js#endpointmergeroute-options-or-endpointmergeoptions"><code>endpoint.merge()</code></a>, and <code>request</code> is <a href="https://github.com/octokit/request.js#request"><code>request()</code></a>. This option works great in conjuction with <a href="https://github.com/gr2m/before-after-hook">before-after-hook</a>.
+     Function with the signature <code>hook(request, endpointOptions)</code>, where <code>endpointOptions</code> are the parsed options as returned by <a href="https://github.com/octokit/endpoint.js#endpointmergeroute-options-or-endpointmergeoptions"><code>endpoint.merge()</code></a>, and <code>request</code> is <a href="https://github.com/octokit/request.js#request"><code>request()</code></a>. This option works great in conjunction with <a href="https://github.com/gr2m/before-after-hook">before-after-hook</a>.
     </td>
   </tr>
   <tr>
