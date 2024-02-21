@@ -38,7 +38,7 @@ async function main() {
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         let workflow = core.getInput("workflow")
-        let workflowSearch = core.getInput("workflow_search")
+        let workflowSearch = core.getBooleanInput("workflow_search")
         let workflowConclusion = core.getInput("workflow_conclusion")
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
