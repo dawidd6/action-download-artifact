@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/index.ts"],"names":[],"mappings":"AAAA,uCAAuC;AACvC,kCAAkC;AAElC,OAAO,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC","sourcesContent":["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT license.\n\nexport { AbortError } from \"./AbortError\";\nexport { AbortSignalLike } from \"./AbortSignalLike\";\n"]}
