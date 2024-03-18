@@ -253,7 +253,7 @@ async function main() {
                     archive_format: "zip",
                 })
             } catch (error) {
-                if (error.message === "Artifact has expired") {
+                if (error.message.startsWith("Artifact has expired")) {
                     return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
                 } else {
                     throw new Error(error.message)
