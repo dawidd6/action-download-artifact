@@ -1,5 +1,8 @@
 # ChangeLog
 
+## 2024-04-19 Version 2.1.5
+* [[`a23221d367408`](https://github.com/rhalff/dot-object/commit/a23221d367408)] - Add LICENSE property to package.json (Fixed by denniskim #54)
+* 
 ## 2020-09-10 Version 2.1.4
 * [[`94b9eb8a2d`](https://github.com/rhalff/dot-object/commit/94b9eb8a2d)] - Fix parsing of array paths for non standard separators (Fixed by boidolr #58)
 

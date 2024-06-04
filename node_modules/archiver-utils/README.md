@@ -1,5 +1,4 @@
-# Archiver Utils [![Build Status](https://travis-ci.org/archiverjs/archiver-utils.svg?branch=master)](https://travis-ci.org/archiverjs/archiver-utils) [![Build status](https://ci.appveyor.com/api/projects/status/7254ojgmlglhqbed/branch/master?svg=true)](https://ci.appveyor.com/project/ctalkington/archiver-utils/branch/master)
-
+# Archiver Utils
 
 ## Things of Interest
 - [Changelog](https://github.com/archiverjs/archiver-utils/releases)
