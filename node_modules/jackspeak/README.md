@@ -110,6 +110,12 @@ Options:
   programs do, so you can stop parsing and pass the positionals
   to the subcommand to parse.
 
+- `stopAtPositionalTest` Conditional `stopAtPositional`. Provide
+  a function that takes a positional argument string and returns
+  boolean. If it returns `true`, then parsing will stop. Useful
+  when _some_ subcommands should parse the rest of the command
+  line options, and others should not.
+
 ### `Jack.heading(text: string, level?: 1 | 2 | 3 | 4 | 5 | 6)`
 
 Define a short string heading, used in the `usage()` output.

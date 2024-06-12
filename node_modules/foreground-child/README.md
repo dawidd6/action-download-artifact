@@ -88,3 +88,41 @@ status code rather than reporting the signal properly. This
 module tries to do the right thing, but on Windows systems, you
 may see that incorrect result. There is as far as I'm aware no
 workaround for this.
+
+## util: `foreground-child/proxy-signals`
+
+If you just want to proxy the signals to a child process that the
+main process receives, you can use the `proxy-signals` export
+from this package.
+
+```js
+import { proxySignals } from 'foreground-child/proxy-signals'
+
+const childProcess = spawn('command', ['some', 'args'])
+proxySignals(childProcess)
+```
+
+Now, any fatal signal received by the current process will be
+proxied to the child process.
+
+It doesn't go in the other direction; ie, signals sent to the
+child process will not affect the parent. For that, listen to the
+child `exit` or `close` events, and handle them appropriately.
+
+## util: `foreground-child/watchdog`
+
+If you are spawning a child process, and want to ensure that it
+isn't left dangling if the parent process exits, you can use the
+watchdog utility exported by this module.
+
+```js
+import { watchdog } from 'foreground-child/watchdog'
+
+const childProcess = spawn('command', ['some', 'args'])
+const watchdogProcess = watchdog(childProcess)
+
+// watchdogProcess is a reference to the process monitoring the
+// parent and child. There's usually no reason to do anything
+// with it, as it's silent and will terminate
+// automatically when it's no longer needed.
+```
