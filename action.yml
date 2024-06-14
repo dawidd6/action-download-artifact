@@ -84,5 +84,5 @@ outputs:
   artifacts:
     description: JSON array with details about found artifacts
 runs:
-  using: node16
+  using: node20
   main: main.js
