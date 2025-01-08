@@ -78,5 +78,5 @@ Let's suppose you have a workflow with a job that uploads an artifact using the 
     if_no_artifact_found: fail
     
     # Optional: Include forks when searching for artifacts. Default is false.
-    allow_forks: true
+    allow_forks: false
 ```
