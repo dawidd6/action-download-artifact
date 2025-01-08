@@ -5,35 +5,39 @@ on:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   upload:
     runs-on: ubuntu-latest
+
     steps:
       - name: Dump
         run: |
           mkdir artifact
           echo $GITHUB_SHA > artifact/sha
-      - name: Upload
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: artifact
+
   upload-multiple:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        artifact: [artifact1, artifact2]
+        sha: [sha1, sha2]
     steps:
       - name: Dump
         run: |
-          mkdir artifact1 artifact2
-          echo $GITHUB_SHA > artifact1/sha1
-          echo $GITHUB_SHA > artifact2/sha2
-      - name: Upload first
+          mkdir ${{ matrix.artifact }}
+          echo $GITHUB_SHA > ${{ matrix.artifact }}/${{ matrix.sha }}
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifact1
-          path: artifact1
-      - name: Upload second
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifact2
-          path: artifact2
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
