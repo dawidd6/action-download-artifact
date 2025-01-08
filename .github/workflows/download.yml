@@ -5,235 +5,57 @@ on:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   wait:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Wait
         run: sleep 60
-  download-latest:
-    runs-on: ubuntu-latest
+
+  download:
+    runs-on: ubuntu-24.04
     needs: wait
+    strategy:
+      matrix:
+        type: [latest, search-workflow, branch, pr, commit, multiple, regexp, empty-conclusion, skip-unpack, dry-run-exists, dry-run-not-exists, with-check-artifacts, with-search-artifacts, regexp-with-search-artifacts]
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+      
       - name: Download
         uses: ./
         with:
           workflow: upload.yml
           name: artifact
           path: artifact
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-search-workflow:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          name: artifact
-          path: artifact
-          workflow_search: true
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-branch:
-    runs-on: ubuntu-latest
-    needs: wait
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          branch: master
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-pr:
-    runs-on: ubuntu-latest
-    needs: wait
-    if: github.ref != 'refs/heads/master'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          pr: ${{github.event.pull_request.number}}
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-commit:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          commit: ${{ github.event.workflow_run.head_sha }}
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-multiple:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
+          type: ${{ matrix.type }}
+          branch: ${{ matrix.type == 'branch' && 'master' || '' }}
+          pr: ${{ matrix.type == 'pr' && github.event.pull_request.number || '' }}
+          commit: ${{ matrix.type == 'commit' && github.event.workflow_run.head_sha || '' }}
+          workflow_conclusion: ${{ matrix.type == 'empty-conclusion' && '' || null }}
+          skip_unpack: ${{ matrix.type == 'skip-unpack' && 'true' || null }}
+          dry_run: ${{ matrix.type == 'dry-run-exists' && 'true' || matrix.type == 'dry-run-not-exists' && 'true' || null }}
+          search_artifacts: ${{ matrix.type == 'with-search-artifacts' || matrix.type == 'regexp-with-search-artifacts' && 'true' || null }}
+          name_is_regexp: ${{ matrix.type == 'regexp' || matrix.type == 'regexp-with-search-artifacts' && 'true' || null }}
+          check_artifacts: ${{ matrix.type == 'with-check-artifacts' && 'true' || null }}
+
       - name: Test
         run: |
-          cat artifact/sha | grep $GITHUB_SHA
-          cat artifact1/sha1 | grep $GITHUB_SHA
-          cat artifact2/sha2 | grep $GITHUB_SHA
-  download-regexp:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact.
-          name_is_regexp: true
-      - name: Test
-        run: |
-          cat artifact1/sha1 | grep $GITHUB_SHA
-          cat artifact2/sha2 | grep $GITHUB_SHA
-          ! test -d artifact/artifact
-          ! test -f artifact.zip
-  download-empty-conclusion:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          workflow_conclusion:
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-skip-unpack:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          skip_unpack: true
-      - name: Test
-        run: |
-          test -d artifact
-          test -f artifact/artifact.zip
-          ! test -d artifact/artifact
-          ! test -f artifact.zip
-          unzip -l artifact/artifact.zip
-  download-dry-run-exists:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        id: download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          dry_run: true
-      - name: Test
-        run: test ${{ steps.download.outputs.dry_run }} == true
-  download-dry-run-not-exists:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        id: download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: not-artifact
-          path: artifact
-          dry_run: true
-      - name: Test
-        run: test ${{ steps.download.outputs.dry_run }} == false
-  download-with-check-artifacts:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          check_artifacts: true
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-with-search-artifacts:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact
-          path: artifact
-          search_artifacts: true
-      - name: Test
-        run: cat artifact/sha | grep $GITHUB_SHA
-  download-regexp-with-search-artifacts:
-    runs-on: ubuntu-latest
-    needs: wait
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download
-        uses: ./
-        with:
-          workflow: upload.yml
-          name: artifact.
-          name_is_regexp: true
-          path: artifact
-          search_artifacts: true
-      - name: Test
-        run: |
-          cat artifact/artifact1/sha1 | grep $GITHUB_SHA
-          cat artifact/artifact2/sha2 | grep $GITHUB_SHA
-          ! test -d artifact/artifact/artifact
-          ! test -f artifact/artifact.zip
+          if [[ "${{ matrix.type }}" == "multiple" ]]; then
+            cat artifact/sha | grep $GITHUB_SHA
+            cat artifact1/sha1 | grep $GITHUB_SHA
+            cat artifact2/sha2 | grep $GITHUB_SHA
+          elif [[ "${{ matrix.type }}" == "regexp" || "${{ matrix.type }}" == "regexp-with-search-artifacts" ]]; then
+            cat artifact/artifact1/sha1 | grep $GITHUB_SHA
+            cat artifact/artifact2/sha2 | grep $GITHUB_SHA
+            ! test -d artifact/artifact/artifact
+            ! test -f artifact/artifact.zip
+          elif [[ "${{ matrix.type }}" == "dry-run-exists" ]]; then
+            test ${{ steps.download.outputs.dry_run }} == true
+          elif [[ "${{ matrix.type }}" == "dry-run-not-exists" ]]; then
+            test ${{ steps.download.outputs.dry_run }} == false
+          else
+            cat artifact/sha | grep $GITHUB_SHA
+          fi

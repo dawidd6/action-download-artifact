@@ -1,26 +1,10 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "04:00"
-  pull-request-branch-name:
-    separator: "-"
-  open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: filesize
-    versions:
-    - 6.2.6
-    - 6.3.0
-  - dependency-name: adm-zip
-    versions:
-    - 0.5.3
-- package-ecosystem: github-actions
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "04:00"
-  pull-request-branch-name:
-    separator: "-"
-  open-pull-requests-limit: 10
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"

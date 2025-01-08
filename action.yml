@@ -1,103 +1,130 @@
 name: Download workflow artifact
-description: Download and extract an artifact associated with given workflow and commit or other criteria
+description: Download and extract an artifact associated with a given workflow and commit or other criteria
 author: dawidd6
 branding:
   icon: download
   color: blue
+
 inputs:
   github_token:
     description: GitHub token
     required: false
     default: ${{ github.token }}
+
   workflow:
     description: |
       Workflow name.
 
-      If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
+      If not specified, will be inferred from `run_id` (if `run_id` is specified), or will default to the current workflow.
     required: false
+
   workflow_search:
     description: |
-      Most recent workflow matching all other criteria will be looked up instead of using the current workflow
+      Look up the most recent workflow matching all other criteria instead of using the current workflow.
 
-      https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
+      [GitHub Workflow Runs API](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     required: false
     default: false
+
   workflow_conclusion:
     description: |
-      Wanted status or conclusion to search for in recent runs
+      The status or conclusion to search for in recent runs.
 
-      https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow
+      [GitHub Workflow Runs API](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     required: false
     default: success
+
   repo:
-    description: Repository name with owner (like actions/checkout)
+    description: Repository name with owner (e.g., `actions/checkout`)
     required: false
     default: ${{ github.repository }}
+
   pr:
     description: Pull request number
     required: false
+
   commit:
     description: Commit hash
     required: false
+
   branch:
     description: Branch name
     required: false
+
   event:
     description: Event type
     required: false
+
   run_id:
-    description: Workflow run id
+    description: Workflow run ID
     required: false
+
   run_number:
     description: Workflow run number
     required: false
+
   name:
-    description: Artifact name (download all artifacts if not specified)
+    description: Artifact name (will download all artifacts if not specified)
     required: false
+
   name_is_regexp:
     description: Treat artifact name as a regular expression and download only artifacts with matching names
     required: false
     default: false
+
   path:
-    description: Where to unpack the artifact
+    description: Directory to unpack the artifact
     required: false
     default: "./"
-  allow_forks:
-    description: Allow forks
-    required: false
-    default: false
-  check_artifacts:
-    description: Check workflow run whether it has an artifact
-    required: false
-    default: false
-  search_artifacts:
-    description: Search workflow runs for artifact with specified name
-    required: false
-    default: false
-  skip_unpack:
-    description: Choose to skip unpacking the downloaded artifact(s)
-    required: false
-    default: false
-  dry_run:
-    description: Check the existence of artifact(s) without downloading
-    required: false
-  if_no_artifact_found:
-    required: false
-    description: |
-      Choose how to exit the action if no artifact is found
 
-      fail, warn or ignore
+  allow_forks:
+    description: Allow forks to be considered in searches
+    required: false
+    default: false
+
+  check_artifacts:
+    description: Check if the workflow run has an artifact
+    required: false
+    default: false
+
+  search_artifacts:
+    description: Search workflow runs for an artifact with the specified name
+    required: false
+    default: false
+
+  skip_unpack:
+    description: Skip unpacking the downloaded artifact(s)
+    required: false
+    default: false
+
+  dry_run:
+    description: Check for the existence of artifact(s) without downloading them
+    required: false
+
+  if_no_artifact_found:
+    description: |
+      Choose how to exit the action if no artifact is found:
+
+      - `fail` (default)
+      - `warn`
+      - `ignore`
+    required: false
     default: fail
+
 outputs:
   error_message:
-    description: The error message, if an error occurs
+    description: The error message if an error occurs
+
   # TODO: dry_run should be merged with found_artifact output
   dry_run:
-    description: Boolean output which is true if the dry run was successful and false otherwise
+    description: Boolean output indicating if the dry run was successful (true) or not (false)
+
   found_artifact:
-    description: Boolean output which is true if the artifact was found and false otherwise
+    description: Boolean output indicating if the artifact was found (true) or not (false)
+
   artifacts:
     description: JSON array with details about found artifacts
+
 runs:
   using: node20
   main: main.js

@@ -2,10 +2,10 @@
   "name": "action-download-artifact",
   "main": "main.js",
   "dependencies": {
-    "@actions/artifact": "^2.1.11",
+    "@actions/artifact": "^2.2.0",
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
     "adm-zip": "^0.5.16",
-    "filesize": "^9.0.11"
+    "filesize": "^10.1.6"
   }
 }
