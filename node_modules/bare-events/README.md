@@ -8,7 +8,7 @@ npm install bare-events
 
 ## Usage
 
-``` js
+```js
 const EventEmitter = require('bare-events')
 
 const e = new EventEmitter()
