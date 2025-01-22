@@ -78,6 +78,9 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, include forks when searching for artifacts
     # default false
     allow_forks: true
+    # Optional, choose to unpack the downloaded artifact(s) using `unzip` system utility
+    # default false
+    use_unzip: false
 ```
 
 ## Troubleshooting
