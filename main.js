@@ -270,15 +270,15 @@ async function main() {
 
             const dir = name && !nameIsRegExp ? path : pathname.join(path, artifact.name)
 
+            console.log(dir)
+
             fs.mkdirSync(dir, { recursive: true })
 
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
             if (useUnzip) {
                 const zipPath = `${pathname.join(dir, artifact.name)}.zip`
                 fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
-                exec.exec("pwd")
-                exec.exec("ls -lh")
-                exec.exec(`ls -lh ${dir}`)
+                exec.exec(`ls -lh ${zipPath}`)
                 exec.exec("unzip", [zipPath, "-d", dir])
                 fs.rmSync(zipPath)
             } else {
