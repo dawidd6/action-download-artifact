@@ -170,10 +170,7 @@ jobs:
           use_unzip: true
       - name: Test
         run: |
-          ls -lh
-          ls -lh artifact
           test -d artifact
-          test -f artifact/artifact.zip
           ! test -d artifact/artifact
           ! test -f artifact.zip
           ! test -f artifact/artifact.zip
