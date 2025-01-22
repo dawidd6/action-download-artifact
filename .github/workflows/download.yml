@@ -174,7 +174,7 @@ jobs:
           test -f artifact/artifact.zip
           ! test -d artifact/artifact
           ! test -f artifact.zip
-          unzip -l artifact/artifact.zip
+          ! test -f artifact/artifact.zip
           cat artifact/sha | grep $GITHUB_SHA
   download-dry-run-exists:
     runs-on: ubuntu-latest
