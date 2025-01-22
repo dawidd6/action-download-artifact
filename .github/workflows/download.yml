@@ -155,6 +155,26 @@ jobs:
           ! test -d artifact/artifact
           ! test -f artifact.zip
           unzip -l artifact/artifact.zip
+  download-use-unzip:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download
+        uses: ./
+        with:
+          workflow: upload.yml
+          name: artifact
+          path: artifact
+          use_unzip: true
+      - name: Test
+        run: |
+          test -d artifact
+          ! test -d artifact/artifact
+          ! test -f artifact.zip
+          ! test -f artifact/artifact.zip
+          cat artifact/sha | grep $GITHUB_SHA
   download-dry-run-exists:
     runs-on: ubuntu-latest
     needs: wait

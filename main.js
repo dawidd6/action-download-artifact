@@ -1,4 +1,5 @@
 const core = require('@actions/core')
+const exec = require('@actions/exec')
 const github = require('@actions/github')
 const artifact = require('@actions/artifact')
 const AdmZip = require('adm-zip')
@@ -37,6 +38,7 @@ async function main() {
         const nameIsRegExp = core.getBooleanInput("name_is_regexp")
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
+        const useUnzip = core.getBooleanInput("use_unzip")
         let workflow = core.getInput("workflow")
         let workflowSearch = core.getBooleanInput("workflow_search")
         let workflowConclusion = core.getInput("workflow_conclusion")
@@ -270,17 +272,22 @@ async function main() {
 
             fs.mkdirSync(dir, { recursive: true })
 
-            const adm = new AdmZip(Buffer.from(zip.data))
-
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
-            adm.getEntries().forEach((entry) => {
-                const action = entry.isDirectory ? "creating" : "inflating"
-                const filepath = pathname.join(dir, entry.entryName)
+            if (useUnzip) {
+                const zipPath = `${pathname.join(dir, artifact.name)}.zip`
+                fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
+                await exec.exec("unzip", [zipPath, "-d", dir])
+                fs.rmSync(zipPath)
+            } else {
+                const adm = new AdmZip(Buffer.from(zip.data))
+                adm.getEntries().forEach((entry) => {
+                    const action = entry.isDirectory ? "creating" : "inflating"
+                    const filepath = pathname.join(dir, entry.entryName)
 
-                core.info(`  ${action}: ${filepath}`)
-            })
-
-            adm.extractAllTo(dir, true)
+                    core.info(`  ${action}: ${filepath}`)
+                })
+                adm.extractAllTo(dir, true)
+            }
             core.endGroup()
         }
     } catch (error) {
