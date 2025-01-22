@@ -277,6 +277,7 @@ async function main() {
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
             if (useUnzip) {
                 exec.exec("unzip", [zipPath, "-d", dir])
+                fs.rmSync(zipPath)
             } else {
                 const adm = new AdmZip(Buffer.from(zip.data))
                 adm.getEntries().forEach((entry) => {
