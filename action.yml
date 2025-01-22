@@ -88,6 +88,10 @@ inputs:
 
       fail, warn or ignore
     default: fail
+  use_unzip:
+    description: Use system provided `unzip` utility instead of JS library for unpacking
+    required: false
+    default: false
 outputs:
   error_message:
     description: The error message, if an error occurs
