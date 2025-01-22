@@ -264,7 +264,7 @@ async function main() {
 
             const zipPath = `${pathname.join(path, artifact.name)}.zip`
 
-            if (skipUnpack || useUnzip) {
+            if (skipUnpack) {
                 fs.mkdirSync(path, { recursive: true })
                 fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
                 continue
@@ -276,6 +276,8 @@ async function main() {
 
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
             if (useUnzip) {
+                fs.mkdirSync(path, { recursive: true })
+                fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
                 exec.exec("unzip", [zipPath, "-d", dir])
                 fs.rmSync(zipPath)
             } else {
