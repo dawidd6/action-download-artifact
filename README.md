@@ -13,7 +13,7 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
 ```yaml
 - name: Download artifact
   id: download-artifact
-  uses: dawidd6/action-download-artifact@v7
+  uses: dawidd6/action-download-artifact@v8
   with:
     # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
     # Required, if the artifact is from a different repo
