@@ -262,11 +262,9 @@ async function main() {
                 }
             }
 
-            const zipPath = `${pathname.join(path, artifact.name)}.zip`
-
             if (skipUnpack) {
                 fs.mkdirSync(path, { recursive: true })
-                fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
+                fs.writeFileSync(`${pathname.join(path, artifact.name)}.zip`, Buffer.from(zip.data), 'binary')
                 continue
             }
 
@@ -276,8 +274,11 @@ async function main() {
 
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
             if (useUnzip) {
-                fs.mkdirSync(path, { recursive: true })
+                const zipPath = `${pathname.join(dir, artifact.name)}.zip`
                 fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
+                exec.exec("pwd")
+                exec.exec("ls -lh")
+                exec.exec(`ls -lh ${dir}`)
                 exec.exec("unzip", [zipPath, "-d", dir])
                 fs.rmSync(zipPath)
             } else {
