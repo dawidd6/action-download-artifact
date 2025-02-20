@@ -39,6 +39,7 @@ async function main() {
         const skipUnpack = core.getBooleanInput("skip_unpack")
         const ifNoArtifactFound = core.getInput("if_no_artifact_found")
         const useUnzip = core.getBooleanInput("use_unzip")
+        const mergeMultiple = core.getBooleanInput("merge_multiple")
         let workflow = core.getInput("workflow")
         let workflowSearch = core.getBooleanInput("workflow_search")
         let workflowConclusion = core.getInput("workflow_conclusion")
@@ -268,7 +269,7 @@ async function main() {
                 continue
             }
 
-            const dir = name && !nameIsRegExp ? path : pathname.join(path, artifact.name)
+            const dir = name && (!nameIsRegExp || mergeMultiple) ? path : pathname.join(path, artifact.name)
 
             fs.mkdirSync(dir, { recursive: true })
 

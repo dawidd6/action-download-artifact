@@ -92,6 +92,10 @@ inputs:
     description: Use system provided `unzip` utility instead of JS library for unpacking
     required: false
     default: false
+  merge_multiple:
+    description: If multiple artifacts are found with `name_is_regexp` set to `true`, merge them into one directory
+    required: false
+    default: false
 outputs:
   error_message:
     description: The error message, if an error occurs
