@@ -46,6 +46,7 @@ async function main() {
         let pr = core.getInput("pr")
         let commit = core.getInput("commit")
         let branch = core.getInput("branch")
+        let ref = core.getInput("ref")
         let event = core.getInput("event")
         let runID = core.getInput("run_id")
         let runNumber = core.getInput("run_number")
@@ -74,6 +75,7 @@ async function main() {
                 "pr": pr,
                 "commit": commit,
                 "branch": branch,
+                "ref": ref,
                 "run_id": runID
             }
         ]
@@ -94,6 +96,21 @@ async function main() {
             })
             commit = pull.data.head.sha
             //branch = pull.data.head.ref
+        }
+
+        if (ref) {
+            // Try to determine if the ref is a branch or a commit
+            core.info(`==> Ref: ${ref}`)
+            try {
+                const response = await client.rest.repos.getBranch({
+                    owner: owner,
+                    repo: repo,
+                    branch: ref,
+                })
+                branch = ref
+            } catch (error) {
+                commit = ref
+            }
         }
 
         if (commit) {

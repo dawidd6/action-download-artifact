@@ -42,6 +42,9 @@ inputs:
   branch:
     description: Branch name
     required: false
+  ref:
+    description: Commit hash or branch name
+    required: false
   event:
     description: Event type
     required: false
