@@ -81,6 +81,9 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # Optional, choose to unpack the downloaded artifact(s) using `unzip` system utility
     # default false
     use_unzip: false
+    # Optional, if multiple artifacts are found with `name_is_regexp` set to `true`, merge them into one directory
+    # default false
+    merge_multiple: false
 ```
 
 ## Troubleshooting
