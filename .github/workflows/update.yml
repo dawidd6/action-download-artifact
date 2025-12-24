@@ -1,15 +1,15 @@
-name: Install modules
+name: Update
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: install-modules
+  group: update
 
 permissions: {}
 
 jobs:
-  install-modules:
+  update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,8 +20,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run install
-        run: npm install
+      - name: Run npm
+        run: npm ci
           
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
@@ -29,5 +29,5 @@ jobs:
           token: ${{ secrets.TOKEN }}
           delete-branch: true
           branch: node_modules
-          commit-message: "node_modules: install"
-          title: "node_modules: install"
+          commit-message: "node_modules: update"
+          title: "node_modules: update"
