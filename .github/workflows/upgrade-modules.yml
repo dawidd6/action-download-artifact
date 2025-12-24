@@ -1,15 +1,15 @@
-name: Uograde modules
+name: Upgrade modules
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: upgrade
+  group: upgrade-modules
 
 permissions: {}
 
 jobs:
-  upgrade:
+  upgrade-modules:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
