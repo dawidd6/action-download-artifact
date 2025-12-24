@@ -22,7 +22,7 @@ Examples can be found in the `samples` folder.
 
 ## Next steps
 
-You can build and run the tests locally by executing `rushx test`. Explore the `test` folder to see advanced usage and behavior of the public classes.
+You can build and run the tests locally by executing `npm run test`. Explore the `test` folder to see advanced usage and behavior of the public classes.
 
 ## Troubleshooting
 
@@ -33,5 +33,3 @@ If you run into issues while using this library, please feel free to [file an is
 If you'd like to contribute to this library, please read the [contributing guide](https://github.com/Azure/azure-sdk-for-js/blob/main/CONTRIBUTING.md) to learn more about how to build and test the code.
 
 [@azure/opentelemetry-instrumentation-azure-sdk]: https://www.npmjs.com/package/@azure/opentelemetry-instrumentation-azure-sdk
-
-![Impressions](https://azure-sdk-impressions.azurewebsites.net/api/impressions/azure-sdk-for-js%2Fsdk%2Fcore%2Fcore-tracing%2FREADME.png)
