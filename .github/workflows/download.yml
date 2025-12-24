@@ -6,6 +6,9 @@ on:
       - master
   pull_request:
 
+concurrency:
+  group: test
+
 jobs:
   wait:
     runs-on: ubuntu-latest
