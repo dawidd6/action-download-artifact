@@ -1,15 +1,15 @@
-name: Update
+name: NPM Updates
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: update
+  group: npm-updates
 
 permissions: {}
 
 jobs:
-  update:
+  npm-updates:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,7 +21,7 @@ jobs:
           node-version: '20'
 
       - name: Run npm
-        run: npm ci
+        run: npm ci --ignore-scripts
           
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
