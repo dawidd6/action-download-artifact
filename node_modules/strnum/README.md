@@ -95,3 +95,9 @@ leadingZeros: true, //when number with leading zeros like 08 should be parsed. 0
 eNotation: true,    //when number with eNotation or number parsed in eNotation should be considered
 skipLike: /regex/   //when string should not be parsed when it matches the specified regular expression
 ```
+
+
+# Try out our other work
+
+WishIn - You need it if negative thoughts take over all the time <br>
+<a href="https://play.google.com/store/apps/details?id=com.solothought.wishin"> <img src="https://solothought.com/products/assets/images/wishin/YouTubeThumbnail.png" width="500px"/> </a>
