@@ -24,7 +24,7 @@ jobs:
         run: npm ci --ignore-scripts
           
       - name: Create PR
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.TOKEN }}
           delete-branch: true
