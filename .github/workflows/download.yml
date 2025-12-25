@@ -87,7 +87,7 @@ jobs:
           workflow: upload.yml
           name: artifact
           path: artifact
-          commit: ${{ github.sha }}
+          commit: ${{github.event.pull_request.head.sha || github.sha}}
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
   download-ref-branch:
@@ -118,7 +118,7 @@ jobs:
           workflow: upload.yml
           name: artifact
           path: artifact
-          ref: ${{ github.sha }}
+          ref: ${{github.event.pull_request.head.sha || github.sha}}
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
   download-multiple:
