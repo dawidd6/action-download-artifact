@@ -3,31 +3,8 @@ name: NPM Updates
 on:
   workflow_dispatch:
 
-concurrency:
-  group: npm-updates
-
-permissions: {}
-
 jobs:
   npm-updates:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-          
-      - name: Setup node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-
-      - name: Run npm
-        run: npm install --ignore-scripts
-          
-      - name: Create PR
-        uses: peter-evans/create-pull-request@v8
-        with:
-          token: ${{ secrets.TOKEN }}
-          delete-branch: true
-          branch: node_modules
-          commit-message: "node_modules: update"
-          title: "node_modules: update"
+    uses: dawidd6/reusable-workflows/.github/workflows/npm-updates.yml@master
+    secrets:
+      personal_access_token: ${{secrets.TOKEN}}
