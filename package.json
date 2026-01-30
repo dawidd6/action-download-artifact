@@ -4,7 +4,7 @@
   "dependencies": {
     "@actions/artifact": "^6.0.0",
     "@actions/core": "^3.0.0",
-    "@actions/github": "^8.0.0",
+    "@actions/github": "^9.0.0",
     "adm-zip": "^0.5.16",
     "filesize": "^11.0.13"
   }
