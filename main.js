@@ -1,11 +1,11 @@
-const core = require('@actions/core')
-const exec = require('@actions/exec')
-const github = require('@actions/github')
-const artifact = require('@actions/artifact')
-const AdmZip = require('adm-zip')
-const filesize = require('filesize')
-const pathname = require('path')
-const fs = require('fs')
+import core from '@actions/core'
+import exec from '@actions/exec'
+import github from '@actions/github'
+import artifact from '@actions/artifact'
+import AdmZip from 'adm-zip'
+import { filesize } from 'filesize'
+import pathname from 'node:path'
+import fs from 'node:fs'
 
 async function downloadAction(name, path) {
     const artifactClient = artifact.create()
@@ -213,7 +213,7 @@ async function main() {
 
         // One artifact if 'name' input is specified, one or more if `name` is a regular expression, all otherwise.
         if (name) {
-            filtered = artifacts.filter((artifact) => {
+            const filtered = artifacts.filter((artifact) => {
                 if (nameIsRegExp) {
                     return artifact.name.match(name) !== null
                 }
@@ -241,7 +241,7 @@ async function main() {
                 core.setOutput("found_artifact", true)
                 core.info('==> (found) Artifacts')
                 for (const artifact of artifacts) {
-                    const size = filesize.filesize(artifact.size_in_bytes, { base: 10 })
+                    const size = filesize(artifact.size_in_bytes, { base: 10 })
                     core.info(`\t==> Artifact:`)
                     core.info(`\t==> ID: ${artifact.id}`)
                     core.info(`\t==> Name: ${artifact.name}`)
@@ -260,7 +260,7 @@ async function main() {
         for (const artifact of artifacts) {
             core.info(`==> Artifact: ${artifact.id}`)
 
-            const size = filesize.filesize(artifact.size_in_bytes, { base: 10 })
+            const size = filesize(artifact.size_in_bytes, { base: 10 })
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
