@@ -4,8 +4,8 @@ import github from '@actions/github'
 import artifact from '@actions/artifact'
 import AdmZip from 'adm-zip'
 import { filesize } from 'filesize'
-import pathname from 'path'
-import fs from 'fs'
+import pathname from 'node:path'
+import fs from 'node:fs'
 
 async function downloadAction(name, path) {
     const artifactClient = artifact.create()
