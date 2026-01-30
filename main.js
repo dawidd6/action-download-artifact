@@ -1,11 +1,11 @@
-const core = require('@actions/core')
-const exec = require('@actions/exec')
-const github = require('@actions/github')
-const artifact = require('@actions/artifact')
-const AdmZip = require('adm-zip')
-const filesize = require('filesize')
-const pathname = require('path')
-const fs = require('fs')
+import core from '@actions/core'
+import exec from '@actions/exec'
+import github from '@actions/github'
+import artifact from '@actions/artifact'
+import AdmZip from 'adm-zip'
+import { filesize } from 'filesize'
+import pathname from 'path'
+import fs from 'fs'
 
 async function downloadAction(name, path) {
     const artifactClient = artifact.create()

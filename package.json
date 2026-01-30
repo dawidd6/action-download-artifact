@@ -1,5 +1,6 @@
 {
   "name": "action-download-artifact",
+  "type": "module",
   "main": "main.js",
   "dependencies": {
     "@actions/artifact": "^6.0.0",
