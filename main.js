@@ -213,7 +213,7 @@ async function main() {
 
         // One artifact if 'name' input is specified, one or more if `name` is a regular expression, all otherwise.
         if (name) {
-            filtered = artifacts.filter((artifact) => {
+            const filtered = artifacts.filter((artifact) => {
                 if (nameIsRegExp) {
                     return artifact.name.match(name) !== null
                 }
