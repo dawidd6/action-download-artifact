@@ -13,7 +13,7 @@ npm install fast-xml-builder
 ## Usage
 
 ```javascript
-import { XMLBuilder } from 'fast-xml-builder';
+import XMLBuilder from 'fast-xml-builder';
 
 const builder = new XMLBuilder();
 const xml = builder.build({ name: 'value' });
