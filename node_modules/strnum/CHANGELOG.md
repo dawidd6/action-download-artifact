@@ -1,6 +1,9 @@
 
-**2.1.1 / 2025-05-15**
-- remove unnecessary check to remove lint error
+**2.2.1 / 2026-03-19**
+- fix false positive for eNotation when no leading zeros
+
+**2.2.0 / 2026-02-28**
+- support infinity
 
 **2.1.0 / 2025-05-01**
 - fix e-notation 

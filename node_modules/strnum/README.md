@@ -94,6 +94,7 @@ hex: true,          //when hexadecimal string should be parsed
 leadingZeros: true, //when number with leading zeros like 08 should be parsed. 0.0 is not impacted
 eNotation: true,    //when number with eNotation or number parsed in eNotation should be considered
 skipLike: /regex/   //when string should not be parsed when it matches the specified regular expression
+infinity: "original", // "null", "infinity" (Infinity type), "string" ("Infinity" (the string literal))
 ```
 
 
