@@ -45,7 +45,7 @@ expand('ppp{,config,oe{,conf}}')
 ## API
 
 ```js
-import { expand } from '@isaacs/brace-expansion'
+import { expand } from 'brace-expansion'
 ```
 
 ### const expanded = expand(str, [options])
