@@ -229,6 +229,8 @@ async function main() {
             artifacts = filtered
         }
 
+        artifacts.sort((a, b) => a.created_at.localeCompare(b.created_at))
+
         core.setOutput("artifacts", artifacts)
 
         if (dryRun) {
