@@ -1,0 +1,54 @@
+{
+  "name": "@nodable/entities",
+  "version": "2.1.0",
+  "description": "Entity parser for XML, HTML, External entites with security and NCR control",
+  "main": "./src/index.js",
+  "type": "module",
+  "sideEffects": false,
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
+    "lint": "eslint src/ test/"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nodable/val-parsers.git"
+  },
+  "keywords": [
+    "fast",
+    "xml",
+    "html",
+    "entity",
+    "encode",
+    "decode",
+    "ncr",
+    "security",
+    "performance"
+  ],
+  "author": "Amit Gupta (https://solothought.com)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/nodable"
+    }
+  ],
+  "jest": {
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/*_spec.[jt]s?(x)"
+    ]
+  }
+}

@@ -1,4 +1,8 @@
 
+**2.2.2 / 2026-03-23**
+- fix for space string
+
+
 **2.2.1 / 2026-03-19**
 - fix false positive for eNotation when no leading zeros
 
