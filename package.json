@@ -6,7 +6,7 @@
     "@actions/artifact": "^6.2.1",
     "@actions/core": "^3.0.1",
     "@actions/github": "^9.1.1",
-    "adm-zip": "^0.5.17",
+    "adm-zip": "^0.5.18",
     "filesize": "^11.0.19"
   }
 }
