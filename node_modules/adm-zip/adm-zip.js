@@ -47,6 +47,18 @@ module.exports = function (/**String*/ input, /** object */ options) {
     // instanciate utils filesystem
     const filetools = new Utils(opts);
 
+    // Restore the archived permissions on extracted directories. This has to run
+    // after a directory's contents are written: applying a restrictive mode
+    // (e.g. 0o500) up front would stop us writing the files it contains. Applying
+    // the deepest paths first keeps parent directories traversable while their
+    // children are updated (issue #530).
+    const applyDirAttributes = (dirEntries) => {
+        dirEntries
+            .filter((d) => d.attr)
+            .sort((a, b) => b.path.length - a.path.length)
+            .forEach((d) => filetools.fs.chmodSync(d.path, d.attr));
+    };
+
     if (typeof opts.decoder !== "object" || typeof opts.decoder.encode !== "function" || typeof opts.decoder.decode !== "function") {
         opts.decoder = Utils.decoder;
     }
@@ -201,6 +213,7 @@ module.exports = function (/**String*/ input, /** object */ options) {
          * Remove the entry from the file or the entry and all it's nested directories and files if the given entry is a directory
          *
          * @param {ZipEntry|string} entry
+         * @param {boolean} withsubfolders
          * @returns {void}
          */
         deleteFile: function (entry, withsubfolders = true) {
@@ -485,7 +498,7 @@ module.exports = function (/**String*/ input, /** object */ options) {
         addLocalFolderAsync2: function (options, callback) {
             const self = this;
             options = typeof options === "object" ? options : { localPath: options };
-            localPath = pth.resolve(fixPath(options.localPath));
+            const localPath = pth.resolve(fixPath(options.localPath));
             let { zipPath, filter, namefix } = options;
 
             if (filter instanceof RegExp) {
@@ -504,7 +517,7 @@ module.exports = function (/**String*/ input, /** object */ options) {
             zipPath = zipPath ? fixPath(zipPath) : "";
 
             // Check Namefix function
-            if (namefix == "latin1") {
+            if (namefix === "latin1") {
                 namefix = (str) =>
                     str
                         .normalize("NFD")
@@ -680,7 +693,7 @@ module.exports = function (/**String*/ input, /** object */ options) {
 
             var entryName = canonical(item.entryName);
 
-            var target = sanitize(targetPath, outFileName && !item.isDirectory ? outFileName : maintainEntryPath ? entryName : pth.basename(entryName));
+            var target = sanitize(targetPath, outFileName && !item.isDirectory ? canonical(outFileName) : maintainEntryPath ? entryName : pth.basename(entryName));
 
             if (item.isDirectory) {
                 var children = _zip.getEntryChildren(item);
@@ -690,8 +703,12 @@ module.exports = function (/**String*/ input, /** object */ options) {
                     if (!content) {
                         throw Utils.Errors.CANT_EXTRACT_FILE();
                     }
-                    var name = canonical(child.entryName);
-                    var childName = sanitize(targetPath, maintainEntryPath ? name : pth.basename(name));
+                    // When not maintaining the full entry path, keep each child's path
+                    // relative to the extracted directory (drop the directory's own
+                    // prefix) instead of flattening every file to its basename, which
+                    // collapsed subdirectories together (issue #306).
+                    var name = canonical(maintainEntryPath ? child.entryName : child.entryName.substring(item.entryName.length));
+                    var childName = sanitize(targetPath, name);
                     // The reverse operation for attr depend on method addFile()
                     const fileAttr = keepOriginalPermission ? child.header.fileAttr : undefined;
                     filetools.writeFileTo(childName, content, overwrite, fileAttr);
@@ -721,12 +738,14 @@ module.exports = function (/**String*/ input, /** object */ options) {
                 return false;
             }
 
-            for (var entry in _zip.entries) {
+            for (var entry of _zip.entries) {
                 try {
                     if (entry.isDirectory) {
                         continue;
                     }
-                    var content = _zip.entries[entry].getData(pass);
+                    // was `_zip.entries[entry]` (indexing the array with an entry
+                    // object -> undefined -> threw -> test() always returned false)
+                    var content = entry.getData(pass);
                     if (!content) {
                         return false;
                     }
@@ -753,10 +772,13 @@ module.exports = function (/**String*/ input, /** object */ options) {
             overwrite = get_Bool(false, overwrite);
             if (!_zip) throw Utils.Errors.NO_ZIP();
 
+            const dirEntries = [];
             _zip.entries.forEach(function (entry) {
                 var entryName = sanitize(targetPath, canonical(entry.entryName));
                 if (entry.isDirectory) {
                     filetools.makeDir(entryName);
+                    // defer restoring the directory permission until its files are written
+                    if (keepOriginalPermission) dirEntries.push({ path: entryName, attr: entry.header.fileAttr });
                     return;
                 }
                 var content = entry.getData(pass);
@@ -767,11 +789,15 @@ module.exports = function (/**String*/ input, /** object */ options) {
                 const fileAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
                 filetools.writeFileTo(entryName, content, overwrite, fileAttr);
                 try {
+                    // best-effort: an invalid date in the archive or a filesystem that
+                    // rejects utimes must not fail extraction of already-written content (issue #379)
                     filetools.fs.utimesSync(entryName, entry.header.time, entry.header.time);
                 } catch (err) {
-                    throw Utils.Errors.CANT_EXTRACT_FILE();
+                    /* ignore timestamp failures */
                 }
             });
+
+            applyDirAttributes(dirEntries);
         },
 
         /**
@@ -822,19 +848,40 @@ module.exports = function (/**String*/ input, /** object */ options) {
 
             // Create directory entries first synchronously
             // this prevents race condition and assures folders are there before writing files
+            const deferredDirAttr = [];
             for (const entry of dirEntries) {
                 const dirPath = getPath(entry);
                 // The reverse operation for attr depend on method addFile()
                 const dirAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
                 try {
                     filetools.makeDir(dirPath);
-                    if (dirAttr) filetools.fs.chmodSync(dirPath, dirAttr);
-                    // in unix timestamp will change if files are later added to folder, but still
-                    filetools.fs.utimesSync(dirPath, entry.header.time, entry.header.time);
                 } catch (er) {
                     callback(getError("Unable to create folder", dirPath));
+                    continue;
+                }
+                // defer restoring the directory permission until its files are written:
+                // a restrictive mode applied now would block writing them
+                if (dirAttr) deferredDirAttr.push({ path: dirPath, attr: dirAttr });
+                try {
+                    // in unix timestamp will change if files are later added to folder, but still.
+                    // best-effort: a utimes failure must not abort extraction (issue #379)
+                    filetools.fs.utimesSync(dirPath, entry.header.time, entry.header.time);
+                } catch (er) {
+                    /* ignore timestamp failures */
                 }
             }
+
+            // restore directory permissions once every file has been extracted
+            const done = (err) => {
+                if (!err) {
+                    try {
+                        applyDirAttributes(deferredDirAttr);
+                    } catch (er) {
+                        return callback(getError("Unable to set folder permissions", er.path || ""));
+                    }
+                }
+                callback(err);
+            };
 
             fileEntries.reverse().reduce(function (next, entry) {
                 return function (err) {
@@ -853,21 +900,19 @@ module.exports = function (/**String*/ input, /** object */ options) {
                                 const fileAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
                                 filetools.writeFileToAsync(filePath, content, overwrite, fileAttr, function (succ) {
                                     if (!succ) {
-                                        next(getError("Unable to write file", filePath));
+                                        return next(getError("Unable to write file", filePath));
                                     }
-                                    filetools.fs.utimes(filePath, entry.header.time, entry.header.time, function (err_2) {
-                                        if (err_2) {
-                                            next(getError("Unable to set times", filePath));
-                                        } else {
-                                            next();
-                                        }
+                                    filetools.fs.utimes(filePath, entry.header.time, entry.header.time, function () {
+                                        // best-effort: a utimes failure must not abort extraction
+                                        // of already-written content (issue #379)
+                                        next();
                                     });
                                 });
                             }
                         });
                     }
                 };
-            }, callback)();
+            }, done)();
         },
 
         /**
