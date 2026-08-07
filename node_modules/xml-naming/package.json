@@ -1,0 +1,54 @@
+{
+  "name": "xml-naming",
+  "version": "0.1.0",
+  "description": "Validates XML name productions — Name, NCName, QName, NMToken, NMTokens — for XML 1.0 and 1.1",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "jasmine specs/*spec.js"
+  },
+  "keywords": [
+    "xml",
+    "xml-name",
+    "ncname",
+    "qname",
+    "nmtoken",
+    "xml-validation",
+    "xml-namespace",
+    "name-validator",
+    "xml-1.0",
+    "xml-1.1"
+  ],
+  "author": "Amit Gupta (https://solothought.com)",
+  "license": "MIT",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/NaturalIntelligence"
+    }
+  ],
+  "devDependencies": {
+    "jasmine": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NaturalIntelligence/xml-naming"
+  },
+  "bugs": {
+    "url": "https://github.com/NaturalIntelligence/xml-naming/issues"
+  }
+}

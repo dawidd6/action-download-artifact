@@ -107,39 +107,51 @@ Utils.prototype.writeFileToAsync = function (/*String*/ path, /*Buffer*/ content
         if (exist && !overwrite) return callback(false);
 
         self.fs.stat(path, function (err, stat) {
-            if (exist && stat.isDirectory()) {
+            if (exist && stat && stat.isDirectory()) {
                 return callback(false);
             }
 
             var folder = pth.dirname(path);
             self.fs.exists(folder, function (exists) {
-                if (!exists) self.makeDir(folder);
+                if (!exists) {
+                    // makeDir is synchronous and can throw (e.g. EACCES); report failure
+                    // rather than letting it escape this callback as an uncaught exception
+                    try {
+                        self.makeDir(folder);
+                    } catch (e) {
+                        return callback(false);
+                    }
+                }
+
+                // write the content to an open descriptor, then apply the attributes
+                const writeToFd = function (fd) {
+                    self.fs.write(fd, content, 0, content.length, 0, function (writeErr) {
+                        self.fs.close(fd, function () {
+                            // surface write failures instead of silently reporting success (issue #402)
+                            if (writeErr) return callback(false);
+                            self.fs.chmod(path, attr || 0o666, function () {
+                                callback(true);
+                            });
+                        });
+                    });
+                };
 
                 self.fs.open(path, "w", 0o666, function (err, fd) {
                     if (err) {
+                        // the target may exist but be read-only: make it writable and retry once
                         self.fs.chmod(path, 0o666, function () {
-                            self.fs.open(path, "w", 0o666, function (err, fd) {
-                                self.fs.write(fd, content, 0, content.length, 0, function () {
-                                    self.fs.close(fd, function () {
-                                        self.fs.chmod(path, attr || 0o666, function () {
-                                            callback(true);
-                                        });
-                                    });
-                                });
+                            self.fs.open(path, "w", 0o666, function (retryErr, fd) {
+                                // Previously the retry error was ignored and an undefined fd was
+                                // passed to fs.write, throwing an uncaught ERR_INVALID_ARG_TYPE that
+                                // crashed the process (issues #470, #459, #402). Report failure instead.
+                                if (retryErr || !fd) return callback(false);
+                                writeToFd(fd);
                             });
                         });
                     } else if (fd) {
-                        self.fs.write(fd, content, 0, content.length, 0, function () {
-                            self.fs.close(fd, function () {
-                                self.fs.chmod(path, attr || 0o666, function () {
-                                    callback(true);
-                                });
-                            });
-                        });
+                        writeToFd(fd);
                     } else {
-                        self.fs.chmod(path, attr || 0o666, function () {
-                            callback(true);
-                        });
+                        callback(false);
                     }
                 });
             });
@@ -150,7 +162,7 @@ Utils.prototype.writeFileToAsync = function (/*String*/ path, /*Buffer*/ content
 Utils.prototype.findFiles = function (/*String*/ path) {
     const self = this;
 
-    function findSync(/*String*/ dir, /*RegExp*/ pattern, /*Boolean*/ recursive) {
+    function findSync(/*String*/ dir, /*RegExp*/ pattern, /*Boolean*/ recursive, /*Set*/ visited) {
         if (typeof pattern === "boolean") {
             recursive = pattern;
             pattern = undefined;
@@ -164,12 +176,22 @@ Utils.prototype.findFiles = function (/*String*/ path) {
                 files.push(pth.normalize(path) + (stat.isDirectory() ? self.sep : ""));
             }
 
-            if (stat.isDirectory() && recursive) files = files.concat(findSync(path, pattern, recursive));
+            if (stat.isDirectory() && recursive) {
+                // Descend by resolved real path and skip directories we have already
+                // visited. This stops a symlink that points back to an ancestor from
+                // recursing forever until the path fails with ELOOP / ENAMETOOLONG
+                // (issue #541).
+                const realDir = self.fs.realpathSync(path);
+                if (!visited.has(realDir)) {
+                    visited.add(realDir);
+                    files = files.concat(findSync(path, pattern, recursive, visited));
+                }
+            }
         });
         return files;
     }
 
-    return findSync(path, undefined, true);
+    return findSync(path, undefined, true, new Set([self.fs.realpathSync(path)]));
 };
 
 /**
@@ -187,29 +209,54 @@ Utils.prototype.findFiles = function (/*String*/ path) {
  */
 Utils.prototype.findFilesAsync = function (dir, cb) {
     const self = this;
-    let results = [];
-    self.fs.readdir(dir, function (err, list) {
-        if (err) return cb(err);
-        let list_length = list.length;
-        if (!list_length) return cb(null, results);
-        list.forEach(function (file) {
-            file = pth.join(dir, file);
-            self.fs.stat(file, function (err, stat) {
-                if (err) return cb(err);
-                if (stat) {
-                    results.push(pth.normalize(file) + (stat.isDirectory() ? self.sep : ""));
-                    if (stat.isDirectory()) {
-                        self.findFilesAsync(file, function (err, res) {
-                            if (err) return cb(err);
-                            results = results.concat(res);
-                            if (!--list_length) cb(null, results);
-                        });
-                    } else {
-                        if (!--list_length) cb(null, results);
+    const results = [];
+    let finished = false;
+    const finish = function (err) {
+        if (finished) return;
+        finished = true;
+        cb(err, err ? undefined : results);
+    };
+
+    // Descend by resolved real path and skip directories already visited, so a
+    // symlink pointing back to an ancestor cannot recurse forever (issue #541).
+    const walk = function (dir, visited, done) {
+        self.fs.readdir(dir, function (err, list) {
+            if (err) return done(err);
+            let pending = list.length;
+            if (!pending) return done();
+            list.forEach(function (name) {
+                const file = pth.join(dir, name);
+                self.fs.stat(file, function (err, stat) {
+                    if (err) return done(err);
+                    if (!stat) {
+                        if (!--pending) done();
+                        return;
                     }
-                }
+                    results.push(pth.normalize(file) + (stat.isDirectory() ? self.sep : ""));
+                    if (!stat.isDirectory()) {
+                        if (!--pending) done();
+                        return;
+                    }
+                    self.fs.realpath(file, function (err, realDir) {
+                        if (err) return done(err);
+                        if (visited.has(realDir)) {
+                            if (!--pending) done();
+                            return;
+                        }
+                        visited.add(realDir);
+                        walk(file, visited, function (err) {
+                            if (err) return done(err);
+                            if (!--pending) done();
+                        });
+                    });
+                });
             });
         });
+    };
+
+    self.fs.realpath(dir, function (err, realDir) {
+        if (err) return finish(err);
+        walk(dir, new Set([realDir]), finish);
     });
 };
 
@@ -290,13 +337,13 @@ Utils.findLast = function (arr, callback) {
     return void 0;
 };
 
-// make abolute paths taking prefix as root folder
+// make absolute paths taking prefix as root folder
 Utils.sanitize = function (/*string*/ prefix, /*string*/ name) {
     prefix = pth.resolve(pth.normalize(prefix));
     var parts = name.split("/");
     for (var i = 0, l = parts.length; i < l; i++) {
         var path = pth.normalize(pth.join(prefix, parts.slice(i, l).join(pth.sep)));
-        if (path.indexOf(prefix) === 0) {
+        if (path === prefix || path.startsWith(prefix + pth.sep)) {
             return path;
         }
     }
@@ -319,6 +366,13 @@ Utils.readBigUInt64LE = function (/*Buffer*/ buffer, /*int*/ index) {
     const lo = buffer.readUInt32LE(index);
     const hi = buffer.readUInt32LE(index + 4);
     return hi * 0x100000000 + lo;
+};
+
+Utils.writeBigUInt64LE = function (/*Buffer*/ buffer, /*Number*/ value, /*int*/ index) {
+    const lo = value >>> 0;
+    const hi = Math.floor(value / 0x100000000) >>> 0;
+    buffer.writeUInt32LE(lo, index);
+    buffer.writeUInt32LE(hi, index + 4);
 };
 
 Utils.fromDOS2Date = function (val) {

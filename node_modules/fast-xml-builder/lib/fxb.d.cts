@@ -1,7 +1,50 @@
 // const { Expression } = require('path-expression-matcher');
 
-type Matcher = unknown;
+//type Matcher = unknown;
 type Expression = unknown;
+
+/**
+ * A lightweight, live read-only view of a Matcher instance.
+ *
+ * Returned by `Matcher.readOnly()`. The same instance is reused across every
+ * callback invocation — no allocation overhead per call. Reads directly from
+ * the parent Matcher's internal state so it always reflects the current parser
+ * position with no copying or freezing.
+ */
+class MatcherView {
+  readonly separator: string;
+
+  /** Check if current path matches an Expression. */
+  matches(expression: Expression): boolean;
+
+  /** Get current tag name, or `undefined` if path is empty. */
+  getCurrentTag(): string | undefined;
+
+  /** Get current namespace, or `undefined` if not present. */
+  getCurrentNamespace(): string | undefined;
+
+  /** Get attribute value of the current node. */
+  getAttrValue(attrName: string): any;
+
+  /** Check if the current node has a given attribute. */
+  hasAttr(attrName: string): boolean;
+
+  /** Sibling position of the current node (child index in parent). */
+  getPosition(): number;
+
+  /** Occurrence counter of the current tag name at this level. */
+  getCounter(): number;
+
+  /** Number of nodes in the current path. */
+  getDepth(): number;
+
+  /** Current path as a string (e.g. `"root.users.user"`). */
+  toString(separator?: string, includeNamespace?: boolean): string;
+
+  /** Current path as an array of tag names. */
+  toArray(): string[];
+}
+
 
 type XmlBuilderOptions = {
   /**
@@ -164,6 +207,53 @@ type XmlBuilderOptions = {
    * Defaults to `100`
    */
   maxNestedTags?: number;
+
+  /**
+   * Validate or sanitize tag and attribute names before they are written to XML output.
+   *
+   * The context object provides:
+   * - `isAttribute` — `true` when the name being resolved is an attribute name,
+   *   `false` when it is a tag name.
+   * - `matcher` — the current path matcher (readonly). Can be used to inspect the
+   *   current element path, e.g. via `.toString()` or `.getDepth()`.
+   *
+   * Return the (possibly transformed) name to use in the output.
+   * Throw an error inside the function to reject an invalid name entirely.
+   *
+   * When set to `false` (default) all names are written as-is, preserving
+   * backward-compatible behaviour.
+   *
+   * @example
+   * // Auto-fix invalid names using xml-naming
+   * import { sanitize } from 'xml-naming';
+   * { sanitizeName: (name) => sanitize(name, 'qName') }
+   *
+   * @example
+   * // Reject invalid names
+   * import { qName } from 'xml-naming';
+   * { sanitizeName: (name) => { if (!qName(name)) throw new Error(`Invalid XML name: "${name}"`); return name; } }
+   *
+   * Defaults to `false`
+   */
+  sanitizeName?: false | ((name: string, context: SanitizeNameContext) => string);
+};
+
+/**
+ * Context object passed as the second argument to {@link XmlBuilderOptions.sanitizeName}.
+ */
+type SanitizeNameContext = {
+  /**
+   * `true` when the name being resolved is an XML attribute name;
+   * `false` when it is an XML element (tag) name.
+   */
+  isAttribute: boolean;
+
+  /**
+   * The current path matcher at the point where the name is being resolved.
+   * Readonly from the callback's perspective — do not call mutating methods.
+   * Use `.toString()` to get the current jPath string, `.getDepth()` for nesting depth.
+   */
+  matcher: MatcherView;
 };
 
 interface XMLBuilder {

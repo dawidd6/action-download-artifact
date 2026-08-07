@@ -29,48 +29,23 @@ module.exports = function (/** object */ options, /*Buffer*/ input) {
     }
 
     function crc32OK(data) {
-        // if bit 3 (0x08) of the general-purpose flags field is set, then the CRC-32 and file sizes are not known when the local header is written
-        if (!_centralHeader.flags_desc && !_centralHeader.localHeader.flags_desc) {
-            if (Utils.crc32(data) !== _centralHeader.localHeader.crc) {
-                return false;
-            }
-        } else {
-            const descriptor = {};
-            const dataEndOffset = _centralHeader.realDataOffset + _centralHeader.compressedSize;
-            // no descriptor after compressed data, instead new local header
-            if (input.readUInt32LE(dataEndOffset) == Constants.LOCSIG || input.readUInt32LE(dataEndOffset) == Constants.CENSIG) {
-                throw Utils.Errors.DESCRIPTOR_NOT_EXIST();
-            }
+        // When bit 3 (0x08) of the general-purpose flags is set, the crc-32 and
+        // sizes were unknown when the local file header was written, so that
+        // header carries placeholder zeros and the real values are repeated in a
+        // data descriptor after the compressed data. adm-zip always parses the
+        // central directory, whose header holds the authoritative crc-32 and
+        // sizes, so we validate the payload against that value.
+        //
+        // Earlier versions instead located and parsed the trailing descriptor and
+        // threw when it was absent or in an unexpected shape. Many valid archives
+        // set the descriptor flag but write the real crc/sizes into the local and
+        // central headers without emitting a descriptor (or write one we did not
+        // recognise), so that strict handling rejected readable zips
+        // (issues #533, #548, #554). Trusting the central-directory crc keeps the
+        // integrity check while accepting those archives.
+        const expectedCrc = _centralHeader.flags_desc || _centralHeader.localHeader.flags_desc ? _centralHeader.crc : _centralHeader.localHeader.crc;
 
-            // get decriptor data
-            if (input.readUInt32LE(dataEndOffset) == Constants.EXTSIG) {
-                // descriptor with signature
-                descriptor.crc = input.readUInt32LE(dataEndOffset + Constants.EXTCRC);
-                descriptor.compressedSize = input.readUInt32LE(dataEndOffset + Constants.EXTSIZ);
-                descriptor.size = input.readUInt32LE(dataEndOffset + Constants.EXTLEN);
-            } else if (input.readUInt16LE(dataEndOffset + 12) === 0x4b50) {
-                // descriptor without signature (we check is new header starting where we expect)
-                descriptor.crc = input.readUInt32LE(dataEndOffset + Constants.EXTCRC - 4);
-                descriptor.compressedSize = input.readUInt32LE(dataEndOffset + Constants.EXTSIZ - 4);
-                descriptor.size = input.readUInt32LE(dataEndOffset + Constants.EXTLEN - 4);
-            } else {
-                throw Utils.Errors.DESCRIPTOR_UNKNOWN();
-            }
-
-            // check data integrity
-            if (descriptor.compressedSize !== _centralHeader.compressedSize || descriptor.size !== _centralHeader.size || descriptor.crc !== _centralHeader.crc) {
-                throw Utils.Errors.DESCRIPTOR_FAULTY();
-            }
-            if (Utils.crc32(data) !== descriptor.crc) {
-                return false;
-            }
-
-            // @TODO: zip64 bit descriptor fields
-            // if bit 3 is set and any value in local header "zip64 Extended information" extra field are set 0 (place holder)
-            // then 64-bit descriptor format is used instead of 32-bit
-            // central header - "zip64 Extended information" extra field should store real values and not place holders
-        }
-        return true;
+        return Utils.crc32(data) === expectedCrc;
     }
 
     function decompress(/*Boolean*/ async, /*Function*/ callback, /*String, Buffer*/ pass) {
@@ -100,10 +75,16 @@ module.exports = function (/** object */ options, /*Buffer*/ input) {
             compressedData = Methods.ZipCrypto.decrypt(compressedData, _centralHeader, pass);
         }
 
-        var data = Buffer.alloc(_centralHeader.size);
+        var data;
 
         switch (_centralHeader.method) {
             case Utils.Constants.STORED:
+                // STORED entries are not compressed, so the uncompressed output is
+                // exactly the bytes present in the archive. Allocate from the real
+                // data length rather than the attacker-declared central-directory
+                // size, otherwise a tiny archive can declare a huge size and force a
+                // multi-gigabyte allocation before any validation (CVE-2026-39244).
+                data = Buffer.alloc(compressedData.length);
                 compressedData.copy(data);
                 if (!crc32OK(data)) {
                     if (async && callback) callback(data, Utils.Errors.BAD_CRC()); //si added error
@@ -114,17 +95,19 @@ module.exports = function (/** object */ options, /*Buffer*/ input) {
                     return data;
                 }
             case Utils.Constants.DEFLATED:
+                // Do not pre-allocate the declared uncompressed size. The inflater
+                // grows its output buffer as zlib emits data and caps the total at
+                // the declared size (maxOutputLength), so a bogus size can no longer
+                // trigger an eager allocation before the data is read (CVE-2026-39244).
                 var inflater = new Methods.Inflater(compressedData, _centralHeader.size);
                 if (!async) {
-                    const result = inflater.inflate(data);
-                    result.copy(data, 0);
+                    data = inflater.inflate();
                     if (!crc32OK(data)) {
                         throw Utils.Errors.BAD_CRC(`"${decoder.decode(_entryName)}"`);
                     }
                     return data;
                 } else {
                     inflater.inflateAsync(function (result) {
-                        result.copy(result, 0);
                         if (callback) {
                             if (!crc32OK(result)) {
                                 callback(result, Utils.Errors.BAD_CRC()); //si added error
@@ -280,10 +263,12 @@ module.exports = function (/** object */ options, /*Buffer*/ input) {
         },
 
         get name() {
-            var n = decoder.decode(_entryName);
+            const n = decoder.decode(_entryName);
+            // For directories the name is the last path segment; drop the trailing
+            // separator first so "a/b/c/" yields "c" and not "" (issue #466).
             return _isDirectory
                 ? n
-                      .substr(n.length - 1)
+                      .replace(/[/\\]$/, "")
                       .split("/")
                       .pop()
                 : n.split("/").pop();
