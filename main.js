@@ -257,7 +257,8 @@ async function main() {
             return setExitMessage(ifNoArtifactFound, "no artifacts found")
         }
 
-        core.setOutput("found_artifact", true)
+        let downloadedArtifact = false
+        const expiredArtifacts = []
 
         for (const artifact of artifacts) {
             core.info(`==> Artifact: ${artifact.id}`)
@@ -276,7 +277,11 @@ async function main() {
                 })
             } catch (error) {
                 if (error.message.startsWith("Artifact has expired")) {
-                    return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
+                    if (ifNoArtifactFound === "fail") {
+                        return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
+                    }
+                    expiredArtifacts.push(artifact.name)
+                    continue
                 } else {
                     throw new Error(error.message)
                 }
@@ -285,6 +290,7 @@ async function main() {
             if (skipUnpack) {
                 fs.mkdirSync(path, { recursive: true })
                 fs.writeFileSync(`${pathname.join(path, artifact.name)}.zip`, Buffer.from(zip.data), 'binary')
+                downloadedArtifact = true
                 continue
             }
 
@@ -309,7 +315,24 @@ async function main() {
                 adm.extractAllTo(dir, true)
             }
             core.endGroup()
+            downloadedArtifact = true
         }
+
+        if (!downloadedArtifact) {
+            return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
+        }
+
+        if (expiredArtifacts.length > 0) {
+            const label = expiredArtifacts.length === 1 ? "artifact" : "artifacts"
+            const message = `skipped expired ${label}: ${expiredArtifacts.join(", ")}`
+            if (ifNoArtifactFound === "warn") {
+                core.warning(message)
+            } else {
+                core.info(message)
+            }
+        }
+
+        core.setOutput("found_artifact", true)
     } catch (error) {
         core.setOutput("found_artifact", false)
         core.setOutput("error_message", error.message)
