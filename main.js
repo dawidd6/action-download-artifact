@@ -71,7 +71,6 @@ async function main() {
                 pull_number: pr,
             })
             commit = pull.data.head.sha
-            //branch = pull.data.head.ref
         }
 
         if (ref) {
@@ -135,20 +134,12 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
+                        const artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
                             owner: owner,
                             repo: repo,
                             run_id: run.id,
                         })
-                        if (!artifacts || artifacts.length == 0) {
-                            continue
-                        }
-                        if (searchArtifacts) {
-                            const artifact = artifacts.find(matchesName)
-                            if (!artifact) {
-                                continue
-                            }
-                        }
+                        if (artifacts.length === 0 || (searchArtifacts && !artifacts.some(matchesName))) continue
                     }
 
                     runID = run.id
@@ -337,13 +328,9 @@ async function main() {
         }
 
         if (expiredArtifacts.length > 0) {
-            const label = expiredArtifacts.length === 1 ? "artifact" : "artifacts"
-            const message = `skipped expired ${label}: ${expiredArtifacts.join(", ")}`
-            if (ifNoArtifactFound === "warn") {
-                core.warning(message)
-            } else {
-                core.info(message)
-            }
+            const message = `skipped expired artifact${expiredArtifacts.length === 1 ? "" : "s"}: ${expiredArtifacts.join(", ")}`
+            if (ifNoArtifactFound === "warn") core.warning(message)
+            else core.info(message)
         }
 
         core.setOutput("found_artifact", true)
