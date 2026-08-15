@@ -199,29 +199,23 @@ async function main() {
         core.setOutput("artifacts", artifacts)
 
         if (dryRun) {
-            if (artifacts.length == 0) {
-                core.setOutput("dry_run", false)
-                core.setOutput("found_artifact", false)
-                return
-            } else {
-                core.setOutput("dry_run", true)
-                core.setOutput("found_artifact", true)
-                core.info('==> (found) Artifacts')
-                for (const artifact of artifacts) {
-                    core.info(`\t==> Artifact:`)
-                    core.info(`\t==> ID: ${artifact.id}`)
-                    core.info(`\t==> Name: ${artifact.name}`)
-                    core.info(`\t==> Size: ${artifact.size_in_bytes} bytes`)
-                }
-                return
+            const found = artifacts.length > 0
+            core.setOutput("found_artifact", found)
+            if (!found) return
+            core.info('==> (found) Artifacts')
+            for (const artifact of artifacts) {
+                core.info(`\t==> Artifact:`)
+                core.info(`\t==> ID: ${artifact.id}`)
+                core.info(`\t==> Name: ${artifact.name}`)
+                core.info(`\t==> Size: ${artifact.size_in_bytes} bytes`)
             }
+            return
         }
 
         if (artifacts.length == 0) {
             return setExitMessage(ifNoArtifactFound, "no artifacts found")
         }
 
-        let downloadedArtifact = false
         const expiredArtifacts = []
 
         for (const artifact of artifacts) {
@@ -280,7 +274,6 @@ async function main() {
                     }
                     fs.rmSync(zipPath)
                 }
-                downloadedArtifact = true
                 continue
             }
 
@@ -314,7 +307,6 @@ async function main() {
                 throw error
             }
 
-            downloadedArtifact = true
             if (skipUnpack) {
                 try {
                     fs.renameSync(zipPath, `${pathname.join(path, artifact.name)}.zip`)
@@ -330,14 +322,7 @@ async function main() {
                     if (useUnzip) {
                         await exec.exec("unzip", [zipPath, "-d", dir])
                     } else {
-                        const adm = new AdmZip(zipPath)
-                        adm.getEntries().forEach((entry) => {
-                            const action = entry.isDirectory ? "creating" : "inflating"
-                            const filepath = pathname.join(dir, entry.entryName)
-
-                            core.info(`  ${action}: ${filepath}`)
-                        })
-                        adm.extractAllTo(dir, true)
+                        new AdmZip(zipPath).extractAllTo(dir, true)
                     }
                 } finally {
                     core.endGroup()
@@ -347,7 +332,7 @@ async function main() {
             }
         }
 
-        if (!downloadedArtifact) {
+        if (expiredArtifacts.length === artifacts.length) {
             return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
         }
 
@@ -370,19 +355,9 @@ async function main() {
 
     function setExitMessage(ifNoArtifactFound, message) {
         core.setOutput("found_artifact", false)
-
-        switch (ifNoArtifactFound) {
-            case "fail":
-                core.setFailed(message)
-                break
-            case "warn":
-                core.warning(message)
-                break
-            case "ignore":
-            default:
-                core.info(message)
-                break
-        }
+        if (ifNoArtifactFound === "fail") return core.setFailed(message)
+        if (ifNoArtifactFound === "warn") return core.warning(message)
+        core.info(message)
     }
 }
 

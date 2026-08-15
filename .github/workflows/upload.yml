@@ -18,10 +18,7 @@ jobs:
       - name: Dump
         run: |
           mkdir artifact artifact1 artifact2
-          echo $GITHUB_SHA > raw-artifact
-          echo $GITHUB_SHA > artifact/sha
-          echo $GITHUB_SHA > artifact1/sha1
-          echo $GITHUB_SHA > artifact2/sha2
+          printf '%s\n' "$GITHUB_SHA" | tee raw-artifact artifact/sha artifact1/sha1 artifact2/sha2 > /dev/null
       - name: Upload
         uses: actions/upload-artifact@v7
         with:

@@ -242,7 +242,7 @@ jobs:
           path: artifact
           dry_run: true
       - name: Test
-        run: test ${{ steps.download.outputs.dry_run }} == true
+        run: test ${{ steps.download.outputs.found_artifact }} == true
   download-dry-run-not-exists:
     runs-on: ubuntu-latest
     needs: wait
@@ -258,7 +258,7 @@ jobs:
           path: artifact
           dry_run: true
       - name: Test
-        run: test ${{ steps.download.outputs.dry_run }} == false
+        run: test ${{ steps.download.outputs.found_artifact }} == false
   download-with-check-artifacts:
     runs-on: ubuntu-latest
     needs: wait

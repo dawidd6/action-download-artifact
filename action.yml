@@ -79,9 +79,6 @@ inputs:
 outputs:
   error_message:
     description: The error message, if an error occurs
-  # TODO: dry_run should be merged with found_artifact output
-  dry_run:
-    description: Boolean output which is true if the dry run was successful and false otherwise
   found_artifact:
     description: Boolean output which is true if the artifact was found and false otherwise
   artifacts:
