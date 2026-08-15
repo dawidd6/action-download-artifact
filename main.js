@@ -1,11 +1,14 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as github from '@actions/github'
+import { defaults as githubDefaults } from '@actions/github/lib/utils'
 import * as artifact from '@actions/artifact'
 import AdmZip from 'adm-zip'
 import { filesize } from 'filesize'
+import { randomUUID } from 'node:crypto'
 import pathname from 'node:path'
 import fs from 'node:fs'
+import { pipeline } from 'node:stream/promises'
 
 async function main() {
     try {
@@ -306,53 +309,67 @@ async function main() {
                 continue
             }
 
-            let zip
+            fs.mkdirSync(dir, { recursive: true })
+            const zipPath = pathname.join(dir, `.artifact-${randomUUID()}.zip`)
+
             try {
-                zip = await client.rest.actions.downloadArtifact({
+                await client.request("GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}", {
                     owner: owner,
                     repo: repo,
                     artifact_id: artifact.id,
                     archive_format: "zip",
+                    request: {
+                        fetch: async (url, options) => {
+                            const response = await githubDefaults.request.fetch(url, { ...options, redirect: "follow" })
+                            if (!response.ok) return response
+                            await pipeline(response.body, fs.createWriteStream(zipPath))
+                            return new Response(null, { status: 200, headers: response.headers })
+                        },
+                    },
                 })
             } catch (error) {
-                if (error.message.startsWith("Artifact has expired")) {
+                fs.rmSync(zipPath, { force: true })
+                if (error.message?.startsWith("Artifact has expired")) {
                     if (ifNoArtifactFound === "fail") {
                         return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
                     }
                     expiredArtifacts.push(artifact.name)
                     continue
-                } else {
-                    throw new Error(error.message)
                 }
+                throw error
             }
 
+            downloadedArtifact = true
             if (skipUnpack) {
-                fs.mkdirSync(path, { recursive: true })
-                fs.writeFileSync(`${pathname.join(path, artifact.name)}.zip`, Buffer.from(zip.data), 'binary')
-                downloadedArtifact = true
+                try {
+                    fs.renameSync(zipPath, `${pathname.join(path, artifact.name)}.zip`)
+                } finally {
+                    fs.rmSync(zipPath, { force: true })
+                }
                 continue
             }
 
-            fs.mkdirSync(dir, { recursive: true })
+            try {
+                core.startGroup(`==> Extracting: ${artifact.name}.zip`)
+                try {
+                    if (useUnzip) {
+                        await exec.exec("unzip", [zipPath, "-d", dir])
+                    } else {
+                        const adm = new AdmZip(zipPath)
+                        adm.getEntries().forEach((entry) => {
+                            const action = entry.isDirectory ? "creating" : "inflating"
+                            const filepath = pathname.join(dir, entry.entryName)
 
-            core.startGroup(`==> Extracting: ${artifact.name}.zip`)
-            if (useUnzip) {
-                const zipPath = `${pathname.join(dir, artifact.name)}.zip`
-                fs.writeFileSync(zipPath, Buffer.from(zip.data), 'binary')
-                await exec.exec("unzip", [zipPath, "-d", dir])
-                fs.rmSync(zipPath)
-            } else {
-                const adm = new AdmZip(Buffer.from(zip.data))
-                adm.getEntries().forEach((entry) => {
-                    const action = entry.isDirectory ? "creating" : "inflating"
-                    const filepath = pathname.join(dir, entry.entryName)
-
-                    core.info(`  ${action}: ${filepath}`)
-                })
-                adm.extractAllTo(dir, true)
+                            core.info(`  ${action}: ${filepath}`)
+                        })
+                        adm.extractAllTo(dir, true)
+                    }
+                } finally {
+                    core.endGroup()
+                }
+            } finally {
+                fs.rmSync(zipPath, { force: true })
             }
-            core.endGroup()
-            downloadedArtifact = true
         }
 
         if (!downloadedArtifact) {
