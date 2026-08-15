@@ -9,6 +9,8 @@ on:
 concurrency:
   group: upload
 
+permissions: {}
+
 jobs:
   upload:
     runs-on: ubuntu-latest
