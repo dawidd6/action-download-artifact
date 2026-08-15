@@ -17,9 +17,11 @@ jobs:
     steps:
       - name: Dump
         run: |
-          mkdir artifact
-          echo $GITHUB_SHA > artifact/sha
+          mkdir artifact artifact1 artifact2
           echo $GITHUB_SHA > raw-artifact
+          echo $GITHUB_SHA > artifact/sha
+          echo $GITHUB_SHA > artifact1/sha1
+          echo $GITHUB_SHA > artifact2/sha2
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
@@ -30,14 +32,6 @@ jobs:
         with:
           path: raw-artifact
           archive: false
-  upload-multiple:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump
-        run: |
-          mkdir artifact1 artifact2
-          echo $GITHUB_SHA > artifact1/sha1
-          echo $GITHUB_SHA > artifact2/sha2
       - name: Upload first
         uses: actions/upload-artifact@v7
         with:

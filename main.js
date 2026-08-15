@@ -4,7 +4,6 @@ import * as github from '@actions/github'
 import { defaults as githubDefaults } from '@actions/github/lib/utils'
 import * as artifact from '@actions/artifact'
 import AdmZip from 'adm-zip'
-import { filesize } from 'filesize'
 import { randomUUID } from 'node:crypto'
 import pathname from 'node:path'
 import fs from 'node:fs'
@@ -40,6 +39,7 @@ async function main() {
         const artifactClient = new artifact.DefaultArtifactClient()
         const hostname = new URL(github.context.serverUrl).hostname.toUpperCase()
         const canStreamArtifacts = hostname === "GITHUB.COM" || hostname.endsWith(".GHE.COM") || hostname.endsWith(".LOCALHOST")
+        const matchesName = artifact => nameIsRegExp ? artifact.name.match(name) !== null : artifact.name == name
 
         core.info(`==> Repository: ${owner}/${repo}`)
         core.info(`==> Artifact name: ${name}`)
@@ -58,22 +58,10 @@ async function main() {
         }
         core.info(`==> Workflow conclusion: ${workflowConclusion}`)
 
-        const uniqueInputSets = [
-            {
-                "pr": pr,
-                "commit": commit,
-                "branch": branch,
-                "ref": ref,
-                "run_id": runID
-            }
-        ]
-        uniqueInputSets.forEach((inputSet) => {
-            const inputs = Object.values(inputSet)
-            const providedInputs = inputs.filter(input => input !== '')
-            if (providedInputs.length > 1) {
-                throw new Error(`The following inputs cannot be used together: ${Object.keys(inputSet).join(", ")}`)
-            }
-        })
+        const exclusiveInputs = { pr, commit, branch, ref, "run_id": runID }
+        if (Object.values(exclusiveInputs).filter(Boolean).length > 1) {
+            throw new Error(`The following inputs cannot be used together: ${Object.keys(exclusiveInputs).join(", ")}`)
+        }
 
         if (pr) {
             core.info(`==> PR: ${pr}`)
@@ -156,12 +144,7 @@ async function main() {
                             continue
                         }
                         if (searchArtifacts) {
-                            const artifact = artifacts.find((artifact) => {
-                                if (nameIsRegExp) {
-                                    return artifact.name.match(name) !== null
-                                }
-                                return artifact.name == name
-                            })
+                            const artifact = artifacts.find(matchesName)
                             if (!artifact) {
                                 continue
                             }
@@ -200,12 +183,7 @@ async function main() {
 
         // One artifact if 'name' input is specified, one or more if `name` is a regular expression, all otherwise.
         if (name) {
-            const filtered = artifacts.filter((artifact) => {
-                if (nameIsRegExp) {
-                    return artifact.name.match(name) !== null
-                }
-                return artifact.name == name
-            })
+            const filtered = artifacts.filter(matchesName)
             if (filtered.length == 0) {
                 core.info(`==> (not found) Artifact: ${name}`)
                 core.info('==> Found the following artifacts instead:')
@@ -230,11 +208,10 @@ async function main() {
                 core.setOutput("found_artifact", true)
                 core.info('==> (found) Artifacts')
                 for (const artifact of artifacts) {
-                    const size = filesize(artifact.size_in_bytes, { base: 10 })
                     core.info(`\t==> Artifact:`)
                     core.info(`\t==> ID: ${artifact.id}`)
                     core.info(`\t==> Name: ${artifact.name}`)
-                    core.info(`\t==> Size: ${size}`)
+                    core.info(`\t==> Size: ${artifact.size_in_bytes} bytes`)
                 }
                 return
             }
@@ -250,9 +227,7 @@ async function main() {
         for (const artifact of artifacts) {
             core.info(`==> Artifact: ${artifact.id}`)
 
-            const size = filesize(artifact.size_in_bytes, { base: 10 })
-
-            core.info(`==> Downloading: ${artifact.name} (${size})`)
+            core.info(`==> Downloading: ${artifact.name} (${artifact.size_in_bytes} bytes)`)
 
             if (artifact.expired) {
                 if (ifNoArtifactFound === "fail") {

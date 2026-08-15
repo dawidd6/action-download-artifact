@@ -7,85 +7,64 @@ branding:
 inputs:
   github_token:
     description: GitHub token
-    required: false
     default: ${{ github.token }}
   workflow:
     description: |
       Workflow name.
 
       If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
-    required: false
   workflow_search:
     description: |
       Most recent workflow matching all other criteria will be looked up instead of using the current workflow
 
       https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
-    required: false
     default: false
   workflow_conclusion:
     description: |
       Wanted status or conclusion to search for in recent runs
 
       https://docs.github.com/de/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow
-    required: false
     default: success
   repo:
     description: Repository name with owner (like actions/checkout)
-    required: false
     default: ${{ github.repository }}
   pr:
     description: Pull request number
-    required: false
   commit:
     description: Commit hash
-    required: false
   branch:
     description: Branch name
-    required: false
   ref:
     description: Commit hash, branch or tag name
-    required: false
   event:
     description: Event type
-    required: false
   run_id:
     description: Workflow run id
-    required: false
   run_number:
     description: Workflow run number
-    required: false
   name:
     description: Artifact name (download all artifacts if not specified)
-    required: false
   name_is_regexp:
     description: Treat artifact name as a regular expression and download only artifacts with matching names
-    required: false
     default: false
   path:
     description: Where to unpack the artifact
-    required: false
     default: "./"
   allow_forks:
     description: Allow forks
-    required: false
     default: false
   check_artifacts:
     description: Check workflow run whether it has an artifact
-    required: false
     default: false
   search_artifacts:
     description: Search workflow runs for artifact with specified name
-    required: false
     default: false
   skip_unpack:
     description: Choose to skip unpacking the downloaded artifact(s)
-    required: false
     default: false
   dry_run:
     description: Check the existence of artifact(s) without downloading
-    required: false
   if_no_artifact_found:
-    required: false
     description: |
       Choose how to exit the action if no artifact is found
 
@@ -93,11 +72,9 @@ inputs:
     default: fail
   use_unzip:
     description: Use system provided `unzip` utility instead of JS library for unpacking
-    required: false
     default: false
   merge_multiple:
     description: If multiple artifacts are found with `name_is_regexp` set to `true`, merge them into one directory
-    required: false
     default: false
 outputs:
   error_message:
