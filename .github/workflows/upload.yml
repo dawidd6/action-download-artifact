@@ -17,11 +17,17 @@ jobs:
         run: |
           mkdir artifact
           echo $GITHUB_SHA > artifact/sha
+          echo $GITHUB_SHA > raw-artifact
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
           name: artifact
           path: artifact
+      - name: Upload raw
+        uses: actions/upload-artifact@v7
+        with:
+          path: raw-artifact
+          archive: false
   upload-multiple:
     runs-on: ubuntu-latest
     steps:

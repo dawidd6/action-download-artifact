@@ -7,28 +7,6 @@ import { filesize } from 'filesize'
 import pathname from 'node:path'
 import fs from 'node:fs'
 
-async function downloadAction(name, path) {
-    const artifactClient = artifact.create()
-    const downloadOptions = {
-        createArtifactFolder: false
-    }
-    const downloadResponse = await artifactClient.downloadArtifact(
-        name,
-        path,
-        downloadOptions
-    )
-    core.setOutput("found_artifact", true)
-}
-
-async function getWorkflow(client, owner, repo, runID) {
-    const run = await client.rest.actions.getWorkflowRun({
-        owner: owner,
-        repo: repo,
-        run_id: runID || github.context.runId,
-    })
-    return run.data.workflow_id
-}
-
 async function main() {
     try {
         const token = core.getInput("github_token", { required: true })
@@ -56,13 +34,20 @@ async function main() {
         let dryRun = core.getInput("dry_run")
 
         const client = github.getOctokit(token)
+        const artifactClient = new artifact.DefaultArtifactClient()
+        const hostname = new URL(github.context.serverUrl).hostname.toUpperCase()
+        const canStreamArtifacts = hostname === "GITHUB.COM" || hostname.endsWith(".GHE.COM") || hostname.endsWith(".LOCALHOST")
 
         core.info(`==> Repository: ${owner}/${repo}`)
         core.info(`==> Artifact name: ${name}`)
         core.info(`==> Local path: ${path}`)
 
         if (!workflow && !workflowSearch) {
-            workflow = await getWorkflow(client, owner, repo, runID)
+            workflow = (await client.rest.actions.getWorkflowRun({
+                owner: owner,
+                repo: repo,
+                run_id: runID || github.context.runId,
+            })).data.workflow_id
         }
 
         if (workflow) {
@@ -102,14 +87,19 @@ async function main() {
             // Try to determine if the ref is a branch or a commit
             core.info(`==> Ref: ${ref}`)
             try {
-                const response = await client.rest.repos.getBranch({
+                await client.rest.repos.getBranch({
                     owner: owner,
                     repo: repo,
                     branch: ref,
                 })
                 branch = ref
             } catch (error) {
-                commit = ref
+                const response = await client.rest.repos.getCommit({
+                    owner: owner,
+                    repo: repo,
+                    ref: ref,
+                })
+                commit = response.data.sha
             }
         }
 
@@ -142,13 +132,11 @@ async function main() {
                 ...(branch ? { branch } : {}),
                 ...(event ? { event } : {}),
                 ...(commit ? { head_sha: commit } : {}),
+                ...(workflowConclusion ? { status: workflowConclusion } : {}),
             }
             )) {
                 for (const run of runs.data) {
                     if (runNumber && run.run_number != runNumber) {
-                        continue
-                    }
-                    if (workflowConclusion && (workflowConclusion != run.conclusion && workflowConclusion != run.status)) {
                         continue
                     }
                     if (!allowForks && run.head_repository.full_name !== `${owner}/${repo}`) {
@@ -182,7 +170,7 @@ async function main() {
                     core.info(`==> (found) Run date: ${run.created_at}`)
 
                     if (!workflow) {
-                        workflow = await getWorkflow(client, owner, repo, runID)
+                        workflow = run.workflow_id
                         core.info(`==> (found) Workflow: ${workflow}`)
                     }
                     break
@@ -197,12 +185,8 @@ async function main() {
             if (workflowConclusion && (workflowConclusion != 'in_progress')) {
                 return setExitMessage(ifNoArtifactFound, "no matching workflow run found with any artifacts?")
             }
-
-            try {
-                return await downloadAction(name, path)
-            } catch (error) {
-                return setExitMessage(ifNoArtifactFound, "no matching artifact in this workflow?")
-            }
+            runID = github.context.runId
+            core.info(`==> (current) Run ID: ${runID}`)
         }
 
         let artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
@@ -265,7 +249,62 @@ async function main() {
 
             const size = filesize(artifact.size_in_bytes, { base: 10 })
 
-            core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
+            core.info(`==> Downloading: ${artifact.name} (${size})`)
+
+            if (artifact.expired) {
+                if (ifNoArtifactFound === "fail") {
+                    return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
+                }
+                expiredArtifacts.push(artifact.name)
+                continue
+            }
+
+            const dir = skipUnpack || (name && (!nameIsRegExp || mergeMultiple))
+                ? path
+                : pathname.join(path, artifact.name)
+
+            if (canStreamArtifacts) {
+                let response
+                try {
+                    response = await artifactClient.downloadArtifact(artifact.id, {
+                        path: dir,
+                        skipDecompress: skipUnpack || useUnzip,
+                        ...(artifact.digest ? { expectedHash: artifact.digest } : {}),
+                        findBy: {
+                            token: token,
+                            workflowRunId: Number(runID),
+                            repositoryOwner: owner,
+                            repositoryName: repo,
+                        },
+                    })
+                } catch (error) {
+                    if (error.message.includes("Artifact has expired")) {
+                        if (ifNoArtifactFound === "fail") {
+                            return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
+                        }
+                        expiredArtifacts.push(artifact.name)
+                        continue
+                    }
+                    throw error
+                }
+
+                if (response.digestMismatch) {
+                    throw new Error(`artifact digest mismatch: ${artifact.name}`)
+                }
+
+                const zipPath = pathname.join(dir, `${artifact.name}.zip`)
+                if (useUnzip && !skipUnpack && fs.existsSync(zipPath)) {
+                    core.startGroup(`==> Extracting: ${artifact.name}.zip`)
+                    try {
+                        await exec.exec("unzip", [zipPath, "-d", dir])
+                    } finally {
+                        core.endGroup()
+                    }
+                    fs.rmSync(zipPath)
+                }
+                downloadedArtifact = true
+                continue
+            }
 
             let zip
             try {
@@ -293,8 +332,6 @@ async function main() {
                 downloadedArtifact = true
                 continue
             }
-
-            const dir = name && (!nameIsRegExp || mergeMultiple) ? path : pathname.join(path, artifact.name)
 
             fs.mkdirSync(dir, { recursive: true })
 

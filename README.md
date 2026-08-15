@@ -2,7 +2,7 @@
 
 An action that downloads and extracts uploaded artifacts associated with a given workflow and commit or other criteria.
 
-Let's suppose you have a workflow with a job in it that at the end uploads an artifact using `actions/upload-artifact` action and you want to download this artifact in another workflow that is run after the first one. Official `actions/download-artifact` does not allow this. That's why I decided to create this action. By knowing only the workflow name and commit SHA or other details, you can download the previously uploaded artifact from different workflow associated with that commit or other criteria and use it.
+Official [`actions/download-artifact`](https://github.com/actions/download-artifact#download-artifacts-from-other-workflow-runs-or-repositories) can download from another workflow run when its exact run ID is known. This action can also find a run by workflow, commit, branch, tag, pull request or other criteria and download its artifacts.
 
 ## Usage
 
@@ -88,6 +88,10 @@ Let's suppose you have a workflow with a job in it that at the end uploads an ar
     # default false
     merge_multiple: false
 ```
+
+### API usage
+
+Workflow, branch, event, commit/ref and conclusion filters are sent to GitHub's API. `run_number`, fork filtering, `check_artifacts` and `search_artifacts` are evaluated by this action; artifact checks may require an additional paginated API request for every candidate workflow run.
 
 ## Troubleshooting
 
