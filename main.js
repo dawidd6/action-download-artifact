@@ -122,11 +122,13 @@ async function main() {
                 ...(branch ? { branch } : {}),
                 ...(event ? { event } : {}),
                 ...(commit ? { head_sha: commit } : {}),
-                ...(workflowConclusion ? { status: workflowConclusion } : {}),
             }
             )) {
                 for (const run of runs.data) {
                     if (runNumber && run.run_number != runNumber) {
+                        continue
+                    }
+                    if (workflowConclusion && workflowConclusion != run.conclusion && workflowConclusion != run.status) {
                         continue
                     }
                     if (!allowForks && run.head_repository.full_name !== `${owner}/${repo}`) {

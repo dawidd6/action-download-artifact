@@ -93,7 +93,7 @@ On GitHub Enterprise Server, use `use_unzip: true` for large artifacts so extrac
 
 ### API usage
 
-Workflow, branch, event, commit/ref and conclusion filters are sent to GitHub's API. `run_number`, fork filtering, `check_artifacts` and `search_artifacts` are evaluated by this action; artifact checks may require an additional paginated API request for every candidate workflow run.
+Workflow, branch, event and commit/ref filters are sent to GitHub's API. `workflow_conclusion`, `run_number`, fork filtering, `check_artifacts` and `search_artifacts` are evaluated by this action; artifact checks may require an additional paginated API request for every candidate workflow run.
 
 ## Troubleshooting
 
