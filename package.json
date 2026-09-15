@@ -5,6 +5,6 @@
     "@actions/artifact": "^6.2.1",
     "@actions/core": "^3.0.1",
     "@actions/github": "^9.1.1",
-    "adm-zip": "^0.6.0"
+    "adm-zip": "^0.6.1"
   }
 }
