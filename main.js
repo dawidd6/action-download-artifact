@@ -33,7 +33,7 @@ async function main() {
         let checkArtifacts = core.getBooleanInput("check_artifacts")
         let searchArtifacts = core.getBooleanInput("search_artifacts")
         const allowForks = core.getBooleanInput("allow_forks")
-        let dryRun = core.getInput("dry_run")
+        let dryRun = core.getBooleanInput("dry_run")
 
         const client = github.getOctokit(token)
         const artifactClient = new artifact.DefaultArtifactClient()
@@ -114,17 +114,18 @@ async function main() {
 
         if (!runID) {
             const runGetter = workflow ? client.rest.actions.listWorkflowRuns : client.rest.actions.listWorkflowRunsForRepo
-            // Note that the runs are returned in most recent first order.
             for await (const runs of client.paginate.iterator(runGetter, {
                 owner: owner,
                 repo: repo,
+                per_page: 100,
                 ...(workflow ? { workflow_id: workflow } : {}),
                 ...(branch ? { branch } : {}),
                 ...(event ? { event } : {}),
                 ...(commit ? { head_sha: commit } : {}),
             }
             )) {
-                for (const run of runs.data) {
+                // Do not rely on the API returning runs in most recent first order, it sometimes does not.
+                for (const run of runs.data.sort((a, b) => b.id - a.id)) {
                     if (runNumber && run.run_number != runNumber) {
                         continue
                     }
@@ -136,11 +137,11 @@ async function main() {
                         continue
                     }
                     if (checkArtifacts || searchArtifacts) {
-                        const artifacts = await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
+                        const artifacts = (await client.paginate(client.rest.actions.listWorkflowRunArtifacts, {
                             owner: owner,
                             repo: repo,
                             run_id: run.id,
-                        })
+                        })).filter(artifact => !artifact.expired)
                         if (artifacts.length === 0 || (searchArtifacts && !artifacts.some(matchesName))) continue
                     }
 

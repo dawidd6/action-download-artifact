@@ -64,6 +64,7 @@ inputs:
     default: false
   dry_run:
     description: Check the existence of artifact(s) without downloading
+    default: false
   if_no_artifact_found:
     description: |
       Choose how to exit the action if no artifact is found
