@@ -124,12 +124,14 @@ async function main() {
                 ...(commit ? { head_sha: commit } : {}),
             }
             )) {
+                core.debug(`==> Fetched page of ${runs.data.length} runs: ${runs.data.map(run => run.id).join(", ")}`)
                 // Do not rely on the API returning runs in most recent first order, it sometimes does not.
                 for (const run of runs.data.sort((a, b) => b.id - a.id)) {
                     if (runNumber && run.run_number != runNumber) {
                         continue
                     }
                     if (workflowConclusion && workflowConclusion != run.conclusion && workflowConclusion != run.status) {
+                        core.debug(`==> Skipping run ${run.id} (${run.created_at}): status ${run.status}, conclusion ${run.conclusion}`)
                         continue
                     }
                     if (!allowForks && run.head_repository.full_name !== `${owner}/${repo}`) {
@@ -142,7 +144,10 @@ async function main() {
                             repo: repo,
                             run_id: run.id,
                         })).filter(artifact => !artifact.expired)
-                        if (artifacts.length === 0 || (searchArtifacts && !artifacts.some(matchesName))) continue
+                        if (artifacts.length === 0 || (searchArtifacts && !artifacts.some(matchesName))) {
+                            core.debug(`==> Skipping run ${run.id} (${run.created_at}): artifacts [${artifacts.map(artifact => artifact.name).join(", ")}]`)
+                            continue
+                        }
                     }
 
                     runID = run.id
