@@ -114,6 +114,21 @@ async function main() {
 
         if (!runID) {
             const runGetter = workflow ? client.rest.actions.listWorkflowRuns : client.rest.actions.listWorkflowRunsForRepo
+            // Filtered queries are served by a search index that intermittently returns a random subset of runs,
+            // so merge in the latest unfiltered runs, matched locally. Only helps if the newest match is among them.
+            let latestRuns = []
+            if (branch || event || commit) {
+                latestRuns = (await runGetter({
+                    owner: owner,
+                    repo: repo,
+                    per_page: 100,
+                    ...(workflow ? { workflow_id: workflow } : {}),
+                })).data.workflow_runs.filter(run =>
+                    (!branch || run.head_branch === branch) &&
+                    (!event || run.event === event) &&
+                    (!commit || run.head_sha === commit)
+                )
+            }
             for await (const runs of client.paginate.iterator(runGetter, {
                 owner: owner,
                 repo: repo,
@@ -125,8 +140,13 @@ async function main() {
             }
             )) {
                 core.debug(`==> Fetched page of ${runs.data.length} runs: ${runs.data.map(run => run.id).join(", ")}`)
+                const missingRuns = latestRuns.filter(run => !runs.data.some(r => r.id === run.id))
+                if (missingRuns.length) {
+                    core.debug(`==> Merging runs missing from filtered page: ${missingRuns.map(run => run.id).join(", ")}`)
+                }
+                latestRuns = []
                 // Do not rely on the API returning runs in most recent first order, it sometimes does not.
-                for (const run of runs.data.sort((a, b) => b.id - a.id)) {
+                for (const run of [...runs.data, ...missingRuns].sort((a, b) => b.id - a.id)) {
                     if (runNumber && run.run_number != runNumber) {
                         continue
                     }
