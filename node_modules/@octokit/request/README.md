@@ -404,7 +404,7 @@ All other options except `options.request.*` will be passed depending on the `me
   </tr>
 </table>
 
-If an error occurs, the promise is rejected with an `error` object containing 3 keys to help with debugging:
+If an error occurs, which includes an unsuccessful status code, the promise is rejected with an `error` object containing 3 keys to help with debugging:
 
 - `error.status` The http response status code
 - `error.request` The request options such as `method`, `url` and `data`

@@ -1,0 +1,61 @@
+{
+  "name": "content-type",
+  "version": "3.1.1",
+  "description": "Create and parse HTTP Content-Type header",
+  "keywords": [
+    "content-type",
+    "http",
+    "req",
+    "res",
+    "rfc7231",
+    "rfc9110"
+  ],
+  "repository": "jshttp/content-type",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/express"
+  },
+  "license": "MIT",
+  "author": "Douglas Christopher Wilson <doug@somethingdoug.com>",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "bench": "vitest bench",
+    "build": "ts-scripts build",
+    "format": "ts-scripts format",
+    "prepare": "ts-scripts install && npm run build",
+    "size": "size-limit",
+    "specs": "ts-scripts specs",
+    "test": "ts-scripts test && npm run size"
+  },
+  "devDependencies": {
+    "@borderless/ts-scripts": "^0.15.0",
+    "@size-limit/preset-small-lib": "^13.0.3",
+    "@vitest/coverage-v8": "^4.1.11",
+    "size-limit": "^13.0.3",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "1.15 kB"
+    }
+  ],
+  "ts-scripts": {
+    "dist": [
+      "dist"
+    ],
+    "project": [
+      "tsconfig.build.json"
+    ]
+  }
+}
