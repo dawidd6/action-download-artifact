@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/formData.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type { FormDataMap } from \"./interfaces.js\";\n\n/**\n * If the request body is a native FormData, convert it to our FormDataMap\n * representation and clear the body. Node.js's HTTP stack doesn't handle\n * FormData natively, so the pipeline must serialize it later.\n *\n * @internal\n */\nexport function convertBodyToFormDataMap(body: unknown): FormDataMap | undefined {\n  if (typeof FormData !== \"undefined\" && body instanceof FormData) {\n    const formDataMap: FormDataMap = {};\n    for (const [key, value] of body.entries()) {\n      const existing = formDataMap[key];\n      if (Array.isArray(existing)) {\n        existing.push(value);\n      } else {\n        formDataMap[key] = existing !== undefined ? [existing, value] : [value];\n      }\n    }\n    return formDataMap;\n  }\n  return undefined;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAYO,SAAS,yBAAyB,MAAwC;AAC/E,MAAI,OAAO,aAAa,eAAe,gBAAgB,UAAU;AAC/D,UAAM,cAA2B,CAAC;AAClC,eAAW,CAAC,KAAK,KAAK,KAAK,KAAK,QAAQ,GAAG;AACzC,YAAM,WAAW,YAAY,GAAG;AAChC,UAAI,MAAM,QAAQ,QAAQ,GAAG;AAC3B,iBAAS,KAAK,KAAK;AAAA,MACrB,OAAO;AACL,oBAAY,GAAG,IAAI,aAAa,SAAY,CAAC,UAAU,KAAK,IAAI,CAAC,KAAK;AAAA,MACxE;AAAA,IACF;AACA,WAAO;AAAA,EACT;AACA,SAAO;AACT;",
+  "names": []
+}

@@ -1,0 +1,1 @@
+{"version":3,"sources":["ipc/compression/validators.ts"],"names":[],"mappings":"AAiBA,OAAO,KAAK,EAAE,KAAK,EAAE,MAAM,eAAe,CAAC;AAC3C,OAAO,EAAE,eAAe,EAAE,MAAM,8BAA8B,CAAC;AAE/D,MAAM,WAAW,oBAAoB;IACjC,kBAAkB,CAAC,KAAK,EAAE,KAAK,GAAG,OAAO,CAAC;CAC7C;AAkED,eAAO,MAAM,qBAAqB,EAAE,MAAM,CAAC,eAAe,EAAE,oBAAoB,CAG/E,CAAC","file":"validators.d.ts","sourceRoot":"../../src"}
