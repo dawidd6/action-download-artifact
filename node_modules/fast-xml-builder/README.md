@@ -1,6 +1,9 @@
 # fast-xml-builder
 Build XML from JSON
 
+[![fast-xml-builder downloads](https://img.shields.io/npm/dw/fast-xml-builder.svg)](https://npm-compare.com/fast-xml-builder) 
+[![fast-xml-builder version](https://img.shields.io/npm/v/fast-xml-builder.svg)](https://www.npmjs.com/package/fast-xml-builder)
+[![fast-xml-builder license](https://img.shields.io/npm/l/fast-xml-builder.svg)](https://github.com/NaturalIntelligence/fast-xml-builder)
 
 XML Builder was part of [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser) for years. But considering that any bug in the parser may false-alarm users who are only using the builder, we have decided to split it into a separate package.
 

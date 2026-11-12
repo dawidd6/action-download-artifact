@@ -1,0 +1,42 @@
+{
+  "name": "anynum",
+  "version": "1.0.1",
+  "description": "Normalize all Unicode decimal digits (Devanagari, Arabic, Thai, etc.) to ASCII numerals. Zero dependencies, performance-first.",
+  "type": "module",
+  "main": "./anynum.js",
+  "files": [
+    "anynum.js",
+    "digitTable.js",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "jasmine tests/anynum.test.js",
+    "bench": "node test/bench.js"
+  },
+  "keywords": [
+    "unicode",
+    "digits",
+    "normalize",
+    "devanagari",
+    "arabic",
+    "hindi",
+    "japanese",
+    "indic",
+    "asian",
+    "math",
+    "numerals",
+    "strnum"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NaturalIntelligence/anynum"
+  },
+  "author": "Amit Gupta (https://solothought.work/)",
+  "license": "MIT",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/NaturalIntelligence"
+    }
+  ]
+}

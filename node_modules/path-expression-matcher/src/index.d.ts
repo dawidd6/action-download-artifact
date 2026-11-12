@@ -186,6 +186,42 @@ export interface MatcherSnapshot {
    * Copy of sibling tracking maps
    */
   siblingStacks: Map<string, number>[];
+
+  /**
+   * Copy of the kept-attrs stack (see {@link PushOptions.keep})
+   */
+  keptAttrs: KeptAttrEntry[];
+}
+
+/**
+ * A single entry in the matcher's kept-attrs stack — an attribute value
+ * explicitly retained at push time via `{ keep: [...] }` so it remains
+ * reachable from descendants after the owning node is no longer current.
+ */
+export interface KeptAttrEntry {
+  /** Path depth (1-based) of the node that declared this kept attribute */
+  depth: number;
+  /** Attribute name */
+  name: string;
+  /** Attribute value at push time */
+  value: any;
+}
+
+/**
+ * Options for {@link Matcher#push}
+ */
+export interface PushOptions {
+  /**
+   * Names of attributes (from `attrValues`) to retain for ancestor lookup
+   * (`getAnyParentAttr` / `hasAnyParentAttr`) even after this node is no
+   * longer the current node.
+   *
+   * Use sparingly — this is for attributes you know you'll need much deeper
+   * in the tree (e.g. `xml:space`, a SOAP envelope's `version`), not a
+   * general substitute for `getAttrValue()`. Cost is proportional to
+   * `keep.length`, independent of path depth.
+   */
+  keep?: string[];
 }
 
 /**
@@ -227,6 +263,16 @@ export class MatcherView {
   getCurrentNamespace(): string | undefined;
   getAttrValue(attrName: string): any;
   hasAttr(attrName: string): boolean;
+  /**
+   * Get the value of a "kept" attribute from the nearest ancestor (or current
+   * node) that declared it via `push(tag, attrs, ns, { keep: [...] })`.
+   */
+  getAnyParentAttr(attrName: string): any;
+  /**
+   * Check whether any ancestor (or the current node) kept the given
+   * attribute via `push(tag, attrs, ns, { keep: [...] })`.
+   */
+  hasAnyParentAttr(attrName: string): boolean;
   getPosition(): number;
   getCounter(): number;
   /** @deprecated Use getPosition() or getCounter() instead */
@@ -285,15 +331,23 @@ export class Matcher {
    * @param tagName - Name of the tag
    * @param attrValues - Attribute key-value pairs for current node (optional)
    * @param namespace - Namespace for the tag (optional)
+   * @param options - Push options, e.g. `{ keep: ['version'] }` to retain
+   *   specific attributes for ancestor lookup after this node stops being current
    *
    * @example
    * ```typescript
    * matcher.push("user", { id: "123", type: "admin" });
    * matcher.push("user", { id: "456" }, "ns");
    * matcher.push("container", null);
+   * matcher.push("Body", { version: "1.1" }, "soap", { keep: ["version"] });
    * ```
    */
-  push(tagName: string, attrValues?: Record<string, any> | null, namespace?: string | null): void;
+  push(
+    tagName: string,
+    attrValues?: Record<string, any> | null,
+    namespace?: string | null,
+    options?: PushOptions | null
+  ): void;
 
   /**
    * Pop the last tag from the path.
@@ -329,6 +383,18 @@ export class Matcher {
   getCurrentNamespace(): string | undefined;
   getAttrValue(attrName: string): any;
   hasAttr(attrName: string): boolean;
+  /**
+   * Get the value of a "kept" attribute from the nearest ancestor (or current
+   * node) that declared it via `push(tag, attrs, ns, { keep: [...] })`.
+   * Cost is proportional to the number of currently-kept attributes, not
+   * path depth.
+   */
+  getAnyParentAttr(attrName: string): any;
+  /**
+   * Check whether any ancestor (or the current node) kept the given
+   * attribute via `push(tag, attrs, ns, { keep: [...] })`.
+   */
+  hasAnyParentAttr(attrName: string): boolean;
   getPosition(): number;
   getCounter(): number;
   /** @deprecated Use getPosition() or getCounter() instead */
