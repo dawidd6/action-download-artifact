@@ -1,5 +1,7 @@
-// EntityDecoder.js
-import { trie1, trie2, trie3 } from './entityTries.js';
+// EntityEncoder.js
+import { buildTries } from './entityTries.js';
+// NOTE: no static import of ALL_ENTITIES / entities.js here — that import
+// was the actual tree-shaking leak (see constructor comment below).
 
 // Replacement strings indexed by char code — direct array access, no hashing
 const XML_UNSAFE_REPLACEMENT = new Array(128);
@@ -26,6 +28,42 @@ export default class EntityEncoder {
     this.encodeAllNamed = options.encodeAllNamed !== false;
     this.maxReplacements = options.maxReplacements || 0;
     this.replacementsCount = 0;
+
+    // Tries are only built when named-entity encoding is actually requested,
+    // and only from what the caller explicitly hands in. There is no
+    // built-in default entity set imported here — that static import was
+    // exactly what pinned the entire ALL_ENTITIES data (all categories) into
+    // every consumer's bundle regardless of what they actually used. A `||`
+    // fallback to a statically-imported default does NOT tree-shake: the
+    // import is still "used" from the bundler's point of view even if the
+    // runtime branch never executes.
+    //
+    // BREAKING CHANGE from earlier versions: `new EntityEncoder()` with no
+    // `namedEntities` and `encodeAllNamed !== false` now throws instead of
+    // silently encoding the full built-in set. Callers who want the old
+    // "encode everything" behavior must opt in explicitly:
+    //   import { ALL_ENTITIES } from '@nodable/entities';
+    //   new EntityEncoder({ namedEntities: ALL_ENTITIES });
+    if (this.encodeAllNamed) {
+      if (!options.namedEntities) {
+        throw new Error(
+          '[EntityEncoder] encodeAllNamed is true but no `namedEntities` was ' +
+          'provided. Pass a specific set (e.g. { ...COMMON_HTML, ...CURRENCY }) ' +
+          'or the full built-in set via `namedEntities: ALL_ENTITIES` imported ' +
+          'from \'@nodable/entities\'. This is required so bundlers can ' +
+          'tree-shake unused entity categories out of your build; set ' +
+          '`encodeAllNamed: false` if you don\'t need named-entity encoding at all.'
+        );
+      }
+      const tries = buildTries(options.namedEntities);
+      this.trie1 = tries.trie1;
+      this.trie2 = tries.trie2;
+      this.trie3 = tries.trie3;
+    } else {
+      this.trie1 = null;
+      this.trie2 = null;
+      this.trie3 = null;
+    }
   }
 
   encode(str) {
@@ -38,6 +76,9 @@ export default class EntityEncoder {
     // Hoist to locals — avoids `this` property lookup inside the hot loop
     const encodeXmlSafe = this.encodeXmlSafe;
     const encodeAllNamed = this.encodeAllNamed;
+    const trie1 = this.trie1;
+    const trie2 = this.trie2;
+    const trie3 = this.trie3;
 
     const len = str.length;
 
@@ -84,32 +125,34 @@ export default class EntityEncoder {
       let matchedEntity = null;
       let advance = 1;
 
-      // Try 3-char match first (longest wins)
-      const mid3 = trie3.get(c0);
-      if (mid3 !== undefined) {
-        const c1 = str.charCodeAt(i + 1);
-        const inner3 = mid3.get(c1);
-        if (inner3 !== undefined) {
-          const c2 = str.charCodeAt(i + 2);
-          const candidate = inner3.get(c2);
-          if (candidate !== undefined) { matchedEntity = candidate; advance = 3; }
-        }
-      }
-
-      // Try 2-char match
-      if (matchedEntity === null) {
-        const inner2 = trie2.get(c0);
-        if (inner2 !== undefined) {
+      if (encodeAllNamed) {
+        // Try 3-char match first (longest wins)
+        const mid3 = trie3.get(c0);
+        if (mid3 !== undefined) {
           const c1 = str.charCodeAt(i + 1);
-          const candidate = inner2.get(c1);
-          if (candidate !== undefined) { matchedEntity = candidate; advance = 2; }
+          const inner3 = mid3.get(c1);
+          if (inner3 !== undefined) {
+            const c2 = str.charCodeAt(i + 2);
+            const candidate = inner3.get(c2);
+            if (candidate !== undefined) { matchedEntity = candidate; advance = 3; }
+          }
         }
-      }
 
-      // Try 1-char match
-      if (matchedEntity === null && encodeAllNamed) {
-        const candidate = trie1.get(c0);
-        if (candidate !== undefined) { matchedEntity = candidate; }
+        // Try 2-char match
+        if (matchedEntity === null) {
+          const inner2 = trie2.get(c0);
+          if (inner2 !== undefined) {
+            const c1 = str.charCodeAt(i + 1);
+            const candidate = inner2.get(c1);
+            if (candidate !== undefined) { matchedEntity = candidate; advance = 2; }
+          }
+        }
+
+        // Try 1-char match
+        if (matchedEntity === null) {
+          const candidate = trie1.get(c0);
+          if (candidate !== undefined) { matchedEntity = candidate; }
+        }
       }
 
       if (matchedEntity !== null) {
@@ -153,18 +196,20 @@ export default class EntityEncoder {
       let matchedEntity = null;
       let advance = 1;
 
-      if (i + 1 < len) {
-        const inner2 = trie2.get(c0);
-        if (inner2 !== undefined) {
-          const c1 = str.charCodeAt(i + 1);
-          const candidate = inner2.get(c1);
-          if (candidate !== undefined) { matchedEntity = candidate; advance = 2; }
+      if (encodeAllNamed) {
+        if (i + 1 < len) {
+          const inner2 = trie2.get(c0);
+          if (inner2 !== undefined) {
+            const c1 = str.charCodeAt(i + 1);
+            const candidate = inner2.get(c1);
+            if (candidate !== undefined) { matchedEntity = candidate; advance = 2; }
+          }
         }
-      }
 
-      if (matchedEntity === null && encodeAllNamed) {
-        const candidate = trie1.get(c0);
-        if (candidate !== undefined) { matchedEntity = candidate; }
+        if (matchedEntity === null) {
+          const candidate = trie1.get(c0);
+          if (candidate !== undefined) { matchedEntity = candidate; }
+        }
       }
 
       if (matchedEntity !== null) {

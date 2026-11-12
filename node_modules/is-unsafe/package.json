@@ -1,0 +1,56 @@
+{
+  "name": "is-unsafe",
+  "version": "2.0.3",
+  "description": "Zero-dependency, DOM-free, pure predicate for detecting unsafe strings across HTML, XML, SVG, SQL, SHELL, and REGEX contexts",
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.cjs"
+    }
+  },
+  "types": "./src/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "test": "jasmine **/*.spec.js",
+    "test:watch": "nodemon --exec 'npm test' --watch src --watch specs"
+  },
+  "keywords": [
+    "xss",
+    "sql-injection",
+    "security",
+    "safe",
+    "predicate",
+    "sanitizer",
+    "xml",
+    "svg",
+    "html",
+    "shell-injection",
+    "redos",
+    "unsafe",
+    "validator",
+    "log",
+    "nosql"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NaturalIntelligence/is-unsafe"
+  },
+  "author": "Amit Gupta (https://solothought.com/)",
+  "license": "MIT",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/NaturalIntelligence"
+    }
+  ],
+  "devDependencies": {
+    "jasmine": "^6.3.0"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ]
+}

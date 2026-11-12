@@ -23,7 +23,8 @@
 
 import Expression from './Expression.js';
 import Matcher from './Matcher.js';
+import { MatcherView } from './Matcher.js';
 import ExpressionSet from './ExpressionSet.js';
 
-export { Expression, Matcher, ExpressionSet };
-export default { Expression, Matcher, ExpressionSet };
+export { Expression, Matcher, MatcherView, ExpressionSet };
+export default { Expression, Matcher, MatcherView, ExpressionSet };
