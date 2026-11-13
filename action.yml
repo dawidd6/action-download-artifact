@@ -86,4 +86,4 @@ outputs:
     description: JSON array with details about found artifacts
 runs:
   using: node24
-  main: main.js
+  main: dist/index.js
