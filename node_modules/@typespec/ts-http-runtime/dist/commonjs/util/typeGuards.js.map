@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/util/typeGuards.ts"],
-  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type { NodeReadableStream, WebReadableStream } from \"#platform/types\";\nimport { isNodeReadableStream, isWebReadableStream } from \"#platform/typeGuards\";\n\nexport { isNodeReadableStream, isWebReadableStream };\n\nexport function isBinaryBody(\n  body: unknown,\n): body is\n  | Uint8Array\n  | NodeReadableStream\n  | WebReadableStream<Uint8Array>\n  | (() => NodeReadableStream)\n  | (() => WebReadableStream<Uint8Array>)\n  | Blob {\n  return (\n    body !== undefined &&\n    (body instanceof Uint8Array ||\n      isReadableStream(body) ||\n      typeof body === \"function\" ||\n      body instanceof Blob)\n  );\n}\n\nexport function isReadableStream(x: unknown): x is WebReadableStream | NodeReadableStream {\n  return isNodeReadableStream(x) || isWebReadableStream(x);\n}\n\nexport function isBlob(x: unknown): x is Blob {\n  return x instanceof Blob;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,wBAA0D;AAInD,SAAS,aACd,MAOO;AACP,SACE,SAAS,WACR,gBAAgB,cACf,iBAAiB,IAAI,KACrB,OAAO,SAAS,cAChB,gBAAgB;AAEtB;AAEO,SAAS,iBAAiB,GAAyD;AACxF,aAAO,wCAAqB,CAAC,SAAK,uCAAoB,CAAC;AACzD;AAEO,SAAS,OAAO,GAAuB;AAC5C,SAAO,aAAa;AACtB;",
-  "names": []
-}

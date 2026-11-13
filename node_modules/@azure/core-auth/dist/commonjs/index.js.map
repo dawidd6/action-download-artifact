@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/index.ts"],
-  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\nexport type { HttpMethods } from \"@azure/core-util\";\nexport { AzureKeyCredential } from \"./azureKeyCredential.js\";\nexport { isKeyCredential } from \"./keyCredential.js\";\nexport type { KeyCredential } from \"./keyCredential.js\";\nexport { AzureNamedKeyCredential, isNamedKeyCredential } from \"./azureNamedKeyCredential.js\";\nexport type { NamedKeyCredential } from \"./azureNamedKeyCredential.js\";\nexport { AzureSASCredential, isSASCredential } from \"./azureSASCredential.js\";\nexport type { SASCredential } from \"./azureSASCredential.js\";\n\nexport { isTokenCredential } from \"./tokenCredential.js\";\nexport type { TokenCredential, GetTokenOptions, AccessToken } from \"./tokenCredential.js\";\n\nexport type { TracingContext } from \"./tracing.js\";\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,gCAAmC;AACnC,2BAAgC;AAEhC,qCAA8D;AAE9D,gCAAoD;AAGpD,6BAAkC;",
-  "names": []
-}

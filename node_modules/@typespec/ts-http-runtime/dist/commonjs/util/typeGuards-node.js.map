@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/util/typeGuards-node.ts"],
-  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport { Readable } from \"stream\";\n\n/**\n * Checks if the given value is a Node.js readable stream.\n *\n * @internal\n */\nexport function isNodeReadableStream(x: unknown): x is NodeJS.ReadableStream {\n  return x instanceof Readable;\n}\n\n/**\n * Checks if the given value is a web ReadableStream.\n *\n * @internal\n */\nexport function isWebReadableStream(x: unknown): x is ReadableStream {\n  return x instanceof ReadableStream;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAAyB;AAOlB,SAAS,qBAAqB,GAAwC;AAC3E,SAAO,aAAa;AACtB;AAOO,SAAS,oBAAoB,GAAiC;AACnE,SAAO,aAAa;AACtB;",
-  "names": []
-}
