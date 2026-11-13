@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/util/uuidUtils.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\ninterface Crypto {\n  randomUUID(): string;\n}\n\ndeclare const globalThis: {\n  crypto: Crypto;\n};\n\n/**\n * Generated Universally Unique Identifier\n *\n * @returns RFC4122 v4 UUID.\n */\nexport function randomUUID(): string {\n  return globalThis.crypto.randomUUID();\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAgBO,SAAS,aAAqB;AACnC,SAAO,WAAW,OAAO,WAAW;AACtC;",
+  "names": []
+}

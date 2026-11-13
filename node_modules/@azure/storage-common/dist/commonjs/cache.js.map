@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/cache.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type { HttpClient } from \"@azure/core-rest-pipeline\";\nimport { createDefaultHttpClient } from \"@azure/core-rest-pipeline\";\n\nlet _defaultHttpClient: HttpClient;\n\nexport function getCachedDefaultHttpClient(): HttpClient {\n  if (!_defaultHttpClient) {\n    _defaultHttpClient = createDefaultHttpClient();\n  }\n  return _defaultHttpClient;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,gCAAwC;AAExC,IAAI;AAEG,SAAS,6BAAyC;AACvD,MAAI,CAAC,oBAAoB;AACvB,6BAAqB,mDAAwB;AAAA,EAC/C;AACA,SAAO;AACT;",
+  "names": []
+}

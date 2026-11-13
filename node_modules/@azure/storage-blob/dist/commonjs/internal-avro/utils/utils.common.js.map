@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/internal-avro/utils/utils.common.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nexport interface KeyValuePair<T> {\n  key: string;\n  value: T;\n}\n\nexport function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {\n  if (a === b) return true;\n\n  if (a == null || b == null) return false;\n  if (a.length !== b.length) return false;\n\n  for (let i = 0; i < a.length; ++i) {\n    if (a[i] !== b[i]) return false;\n  }\n  return true;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQO,SAAS,YAAY,GAAe,GAAwB;AACjE,MAAI,MAAM,EAAG,QAAO;AAEpB,MAAI,KAAK,QAAQ,KAAK,KAAM,QAAO;AACnC,MAAI,EAAE,WAAW,EAAE,OAAQ,QAAO;AAElC,WAAS,IAAI,GAAG,IAAI,EAAE,QAAQ,EAAE,GAAG;AACjC,QAAI,EAAE,CAAC,MAAM,EAAE,CAAC,EAAG,QAAO;AAAA,EAC5B;AACA,SAAO;AACT;",
+  "names": []
+}

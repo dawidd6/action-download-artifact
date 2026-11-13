@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/util/createFile.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type { CreateFileOptions } from \"./file.js\";\nimport { createRawFile } from \"./file.js\";\n\n/**\n * Create an object that implements the File interface. This object is intended to be\n * passed into RequestBodyType.formData, and is not guaranteed to work as expected in\n * other situations.\n *\n * Use this function to create a File object for use in RequestBodyType.formData in environments\n * where the global File object is unavailable.\n *\n * @param content - the content of the file as a Uint8Array in memory.\n * @param name - the name of the file.\n * @param options - optional metadata about the file, e.g. file name, file size, MIME type.\n */\nexport function createFile(\n  content: Uint8Array,\n  name: string,\n  options: CreateFileOptions = {},\n): File {\n  return createRawFile(content, name, options);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAA8B;AAcvB,SAAS,WACd,SACA,MACA,UAA6B,CAAC,GACxB;AACN,aAAO,2BAAc,SAAS,MAAM,OAAO;AAC7C;",
+  "names": []
+}

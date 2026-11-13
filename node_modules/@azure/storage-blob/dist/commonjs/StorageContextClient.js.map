@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/StorageContextClient.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type { OperationArguments, OperationSpec } from \"@azure/core-client\";\nimport { StorageClient } from \"./generated/src/index.js\";\n\n/**\n * @internal\n */\nexport class StorageContextClient extends StorageClient {\n  async sendOperationRequest<T>(\n    operationArguments: OperationArguments,\n    operationSpec: OperationSpec,\n  ): Promise<T> {\n    const operationSpecToSend = { ...operationSpec };\n\n    if (\n      operationSpecToSend.path === \"/{containerName}\" ||\n      operationSpecToSend.path === \"/{containerName}/{blob}\"\n    ) {\n      operationSpecToSend.path = \"\";\n    }\n    return super.sendOperationRequest(operationArguments, operationSpecToSend);\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,iBAA8B;AAKvB,MAAM,6BAA6B,yBAAc;AAAA,EACtD,MAAM,qBACJ,oBACA,eACY;AACZ,UAAM,sBAAsB,EAAE,GAAG,cAAc;AAE/C,QACE,oBAAoB,SAAS,sBAC7B,oBAAoB,SAAS,2BAC7B;AACA,0BAAoB,OAAO;AAAA,IAC7B;AACA,WAAO,MAAM,qBAAqB,oBAAoB,mBAAmB;AAAA,EAC3E;AACF;",
+  "names": []
+}

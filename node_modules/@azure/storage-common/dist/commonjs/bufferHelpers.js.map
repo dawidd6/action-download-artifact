@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/bufferHelpers.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type { NodeBuffer } from \"@azure/core-rest-pipeline\";\n\n/**\n * Checks whether a value is a Node.js Buffer.\n */\nexport function isBuffer(value: unknown): value is NodeBuffer {\n  return Buffer.isBuffer(value);\n}\n\n/**\n * Allocates a new zero-filled Buffer of the given size.\n */\nexport function allocBuffer(size: number): NodeBuffer {\n  return Buffer.alloc(size);\n}\n\n/**\n * Creates a Buffer from an ArrayBuffer, with optional offset and length.\n */\nexport function bufferFromArrayBuffer(\n  ab: ArrayBuffer,\n  byteOffset?: number,\n  length?: number,\n): NodeBuffer {\n  return Buffer.from(ab, byteOffset, length);\n}\n\n/**\n * Returns the byte length of a buffer.\n */\nexport function getBufferLength(buffer: NodeBuffer): number {\n  return buffer.length;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAQO,SAAS,SAAS,OAAqC;AAC5D,SAAO,OAAO,SAAS,KAAK;AAC9B;AAKO,SAAS,YAAY,MAA0B;AACpD,SAAO,OAAO,MAAM,IAAI;AAC1B;AAKO,SAAS,sBACd,IACA,YACA,QACY;AACZ,SAAO,OAAO,KAAK,IAAI,YAAY,MAAM;AAC3C;AAKO,SAAS,gBAAgB,QAA4B;AAC1D,SAAO,OAAO;AAChB;",
+  "names": []
+}

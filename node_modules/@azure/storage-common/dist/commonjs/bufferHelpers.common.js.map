@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/bufferHelpers.common.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n/**\n * Creates a Blob from the given data.\n * Uses an indirect constructor reference to work around React Native's restrictive\n * Blob type definitions (which only accept string | Blob, not ArrayBuffer).\n */\nexport function createBlobFromData(data: Blob | ArrayBuffer | ArrayBufferView): Blob {\n  if (data instanceof Blob) {\n    return data;\n  }\n  // Use indirect constructor to bypass restrictive type definitions in some environments\n  const BlobCtor = Blob as { new (parts: unknown[]): Blob };\n  if (data instanceof ArrayBuffer) {\n    return new BlobCtor([data]);\n  } else {\n    const ab = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);\n    return new BlobCtor([ab]);\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQO,SAAS,mBAAmB,MAAkD;AACnF,MAAI,gBAAgB,MAAM;AACxB,WAAO;AAAA,EACT;AAEA,QAAM,WAAW;AACjB,MAAI,gBAAgB,aAAa;AAC/B,WAAO,IAAI,SAAS,CAAC,IAAI,CAAC;AAAA,EAC5B,OAAO;AACL,UAAM,KAAK,KAAK,OAAO,MAAM,KAAK,YAAY,KAAK,aAAa,KAAK,UAAU;AAC/E,WAAO,IAAI,SAAS,CAAC,EAAE,CAAC;AAAA,EAC1B;AACF;",
+  "names": []
+}

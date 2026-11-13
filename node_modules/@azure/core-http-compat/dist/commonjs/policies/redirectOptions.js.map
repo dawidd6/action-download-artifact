@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/policies/redirectOptions.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n/**\n * Options for how redirect responses are handled.\n */\nexport interface RedirectOptions {\n  /**\n   * When true, redirect responses are followed.  Defaults to true.\n   */\n  handleRedirects?: boolean;\n\n  /**\n   * The maximum number of times the redirect URL will be tried before\n   * failing.  Defaults to 20.\n   */\n  maxRetries?: number;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

@@ -1,0 +1,250 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+function isQueryParameterWithOptions(x) {
+    if (typeof x !== "object" || x === null || !Object.hasOwn(x, "value")) {
+        return false;
+    }
+    const value = x.value;
+    return typeof value?.toString === "function";
+}
+/**
+ * Builds the request url, filling in query and path parameters
+ * @param endpoint - base url which can be a template url
+ * @param routePath - path to append to the endpoint
+ * @param pathParameters - values of the path parameters
+ * @param options - request parameters including query parameters
+ * @returns a full url with path and query parameters
+ */
+export function buildRequestUrl(endpoint, routePath, pathParameters, options = {}) {
+    if (routePath.startsWith("https://") || routePath.startsWith("http://")) {
+        return routePath;
+    }
+    endpoint = buildBaseUrl(endpoint, options);
+    // the route could be
+    //   1. a path: "container123/blob456"
+    //   2. a component string from template which starts with "?" and may contain more "?" after template is expanded,
+    //      e.g., "?restype=container&comp=blobs?where=key177196556777405927%3D%27val1177196556777407626%27"
+    const updatedRoutePath = buildRoutePath(routePath, pathParameters, options);
+    const requestUrl = appendQueryParams(appendPath(endpoint, updatedRoutePath), options);
+    const url = new URL(requestUrl);
+    return url.toString();
+}
+function appendPath(endpoint, pathToAppend) {
+    const endpointSearchStart = endpoint.indexOf("?");
+    const pathSearchStart = pathToAppend.indexOf("?");
+    const endpointParts = endpointSearchStart !== -1
+        ? [endpoint.substring(0, endpointSearchStart), endpoint.substring(endpointSearchStart + 1)]
+        : [endpoint, ""];
+    const pathParts = pathSearchStart !== -1
+        ? [pathToAppend.substring(0, pathSearchStart), pathToAppend.substring(pathSearchStart + 1)]
+        : [pathToAppend, ""];
+    const combinedSearch = [endpointParts[1], pathParts[1].replaceAll("?", "&")]
+        .filter(Boolean)
+        .join("&");
+    // Replace consecutive forward slashes with a single forward slash, but only for the part right after the host in the endpoint.
+    // This is to maintain compatibility with old behavior for cases where the endpoint has been provided with extra forward slashes,
+    // while still allowing for intentional consecutive forward slashes in the path to be preserved.
+    const baseEndpoint = endpointParts[0].replace(/(^[^:]+:\/\/[^/]+)\/\/+/, "$1/");
+    const basePathToAppend = pathParts[0];
+    let combinedUrl = baseEndpoint;
+    if (!baseEndpoint.endsWith("/") && !basePathToAppend.startsWith("/") && basePathToAppend !== "") {
+        combinedUrl += `/${basePathToAppend}`;
+    }
+    else if (baseEndpoint.endsWith("/") && basePathToAppend.startsWith("/")) {
+        combinedUrl += basePathToAppend.substring(1);
+    }
+    else {
+        combinedUrl += basePathToAppend;
+    }
+    if (combinedSearch) {
+        combinedUrl += `?${combinedSearch}`;
+    }
+    return combinedUrl;
+}
+function getQueryParamValue(key, allowReserved, style, param) {
+    let separator;
+    if (style === "pipeDelimited") {
+        separator = "|";
+    }
+    else if (style === "spaceDelimited") {
+        separator = "%20";
+    }
+    else {
+        separator = ",";
+    }
+    let paramValues;
+    if (Array.isArray(param)) {
+        paramValues = param;
+    }
+    else if (typeof param === "object" && param.toString === Object.prototype.toString) {
+        // If the parameter is an object without a custom toString implementation (e.g. a Date),
+        // then we should deconstruct the object into an array [key1, value1, key2, value2, ...].
+        paramValues = Object.entries(param).flat();
+    }
+    else {
+        paramValues = [param];
+    }
+    const value = paramValues
+        .map((p) => {
+        if (p === null || p === undefined) {
+            return "";
+        }
+        if (!p.toString || typeof p.toString !== "function") {
+            throw new Error(`Query parameters must be able to be represented as string, ${key} can't`);
+        }
+        const rawValue = p.toISOString !== undefined ? p.toISOString() : p.toString();
+        return allowReserved ? rawValue : encodeURIComponent(rawValue);
+    })
+        .join(separator);
+    return `${allowReserved ? key : encodeURIComponent(key)}=${value}`;
+}
+/**
+ * Parses a query string into a map of key/value pairs without decoding the values.
+ * This avoids the issue where `URL.searchParams` would decode values, potentially
+ * corrupting already-encoded values such as SAS signatures.
+ */
+function simpleParseQueryParams(queryString) {
+    const result = new Map();
+    if (!queryString || queryString[0] !== "?") {
+        return result;
+    }
+    // remove the leading ?
+    queryString = queryString.slice(1);
+    const pairs = queryString.split("&");
+    for (const pair of pairs) {
+        const eqIndex = pair.indexOf("=");
+        const name = eqIndex === -1 ? pair : pair.substring(0, eqIndex);
+        const value = eqIndex === -1 ? "" : pair.substring(eqIndex + 1);
+        const existingValue = result.get(name);
+        if (existingValue !== undefined) {
+            if (Array.isArray(existingValue)) {
+                existingValue.push(value);
+            }
+            else {
+                result.set(name, [existingValue, value]);
+            }
+        }
+        else {
+            result.set(name, value);
+        }
+    }
+    return result;
+}
+/** @internal */
+export function appendQueryParams(url, options = {}) {
+    if (!options.queryParameters) {
+        return url;
+    }
+    const parsedUrl = new URL(url);
+    const queryParams = options.queryParameters;
+    // Parse existing query params from the URL manually to avoid re-encoding issues
+    const existingParams = simpleParseQueryParams(parsedUrl.search);
+    const newParamStrings = [];
+    for (const key of Object.keys(queryParams)) {
+        const param = queryParams[key];
+        if (param === undefined || param === null) {
+            continue;
+        }
+        const hasMetadata = isQueryParameterWithOptions(param);
+        const rawValue = hasMetadata ? param.value : param;
+        const explode = hasMetadata ? (param.explode ?? false) : false;
+        const style = hasMetadata && param.style ? param.style : "form";
+        if (explode) {
+            if (Array.isArray(rawValue)) {
+                for (const item of rawValue) {
+                    newParamStrings.push(getQueryParamValue(key, options.skipUrlEncoding ?? false, style, item));
+                }
+            }
+            else if (rawValue !== null && typeof rawValue === "object") {
+                // For object explode, the name of the query parameter is ignored and we use the object key instead
+                for (const [actualKey, value] of Object.entries(rawValue)) {
+                    newParamStrings.push(getQueryParamValue(actualKey, options.skipUrlEncoding ?? false, style, value));
+                }
+            }
+            else {
+                // Explode doesn't really make sense for primitives
+                throw new Error("explode can only be set to true for objects and arrays");
+            }
+        }
+        else {
+            newParamStrings.push(getQueryParamValue(key, options.skipUrlEncoding ?? false, style, rawValue));
+        }
+    }
+    // Merge new params into existing params, deduplicating values for the same key
+    for (const paramString of newParamStrings) {
+        const eqIndex = paramString.indexOf("=");
+        const name = paramString.substring(0, eqIndex);
+        const value = paramString.substring(eqIndex + 1);
+        const existingValue = existingParams.get(name);
+        if (existingValue !== undefined) {
+            if (Array.isArray(existingValue)) {
+                if (!existingValue.includes(value)) {
+                    existingValue.push(value);
+                }
+            }
+            else if (existingValue !== value) {
+                existingParams.set(name, [existingValue, value]);
+            }
+            // if existingValue === value (single string match), no change needed
+        }
+        else {
+            existingParams.set(name, value);
+        }
+    }
+    // Reconstruct the search string manually to avoid URL re-encoding
+    const searchPieces = [];
+    for (const [name, value] of existingParams) {
+        if (Array.isArray(value)) {
+            for (const subValue of value) {
+                searchPieces.push(`${name}=${subValue}`);
+            }
+        }
+        else {
+            searchPieces.push(`${name}=${value}`);
+        }
+    }
+    parsedUrl.search = searchPieces.length ? `?${searchPieces.join("&")}` : "";
+    return parsedUrl.toString();
+}
+export function buildBaseUrl(endpoint, options) {
+    if (!options.pathParameters) {
+        return endpoint;
+    }
+    const pathParams = options.pathParameters;
+    for (const [key, param] of Object.entries(pathParams)) {
+        if (param === undefined || param === null) {
+            throw new Error(`Path parameters ${key} must not be undefined or null`);
+        }
+        if (!param.toString || typeof param.toString !== "function") {
+            throw new Error(`Path parameters must be able to be represented as string, ${key} can't`);
+        }
+        let value = param.toISOString !== undefined ? param.toISOString() : String(param);
+        if (!options.skipUrlEncoding) {
+            value = encodeURIComponent(param);
+        }
+        endpoint = replaceAll(endpoint, `{${key}}`, value) ?? "";
+    }
+    return endpoint;
+}
+function buildRoutePath(routePath, pathParameters, options = {}) {
+    for (const pathParam of pathParameters) {
+        const allowReserved = typeof pathParam === "object" && (pathParam.allowReserved ?? false);
+        let value = typeof pathParam === "object" ? pathParam.value : pathParam;
+        if (!options.skipUrlEncoding && !allowReserved) {
+            value = encodeURIComponent(value);
+        }
+        routePath = routePath.replace(/\{[\w-]+\}/, String(value));
+    }
+    return routePath;
+}
+/**
+ * Replace all of the instances of searchValue in value with the provided replaceValue.
+ * @param value - The value to search and replace in.
+ * @param searchValue - The value to search for in the value argument.
+ * @param replaceValue - The value to replace searchValue with in the value argument.
+ * @returns The value where each instance of searchValue was replaced with replacedValue.
+ */
+export function replaceAll(value, searchValue, replaceValue) {
+    return !value || !searchValue ? value : value.split(searchValue).join(replaceValue || "");
+}
+//# sourceMappingURL=urlHelpers.js.map

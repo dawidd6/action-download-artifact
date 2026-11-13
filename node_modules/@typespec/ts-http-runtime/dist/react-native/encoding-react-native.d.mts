@@ -1,0 +1,21 @@
+declare global {
+    var TextDecoder: (new () => {
+        decode(input: Uint8Array): string;
+    }) | undefined;
+    var TextEncoder: (new () => {
+        encode(input: string): Uint8Array<ArrayBuffer>;
+    }) | undefined;
+}
+/**
+ * Decodes a Uint8Array to a UTF-8 string.
+ *
+ * @internal
+ */
+export declare function decodeUtf8(bytes: Uint8Array): string;
+/**
+ * Encodes a string to a UTF-8 Uint8Array.
+ *
+ * @internal
+ */
+export declare function encodeUtf8(value: string): Uint8Array<ArrayBuffer>;
+//# sourceMappingURL=encoding-react-native.d.mts.map

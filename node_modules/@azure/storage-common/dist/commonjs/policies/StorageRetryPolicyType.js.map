@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/policies/StorageRetryPolicyType.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n/**\n * RetryPolicy types.\n */\nexport enum StorageRetryPolicyType {\n  /**\n   * Exponential retry. Retry time delay grows exponentially.\n   */\n  EXPONENTIAL,\n  /**\n   * Linear retry. Retry time delay grows linearly.\n   */\n  FIXED,\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAMO,IAAK,yBAAL,kBAAKA,4BAAL;AAIL,EAAAA,gDAAA;AAIA,EAAAA,gDAAA;AARU,SAAAA;AAAA,GAAA;",
+  "names": ["StorageRetryPolicyType"]
+}

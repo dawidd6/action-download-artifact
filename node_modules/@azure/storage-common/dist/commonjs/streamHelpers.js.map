@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/streamHelpers.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n/**\n * Signals the end of a stream by pushing null.\n * In Node.js, this is required to signal the end of a Readable stream.\n * @internal\n */\nexport function signalStreamEnd(pushData: (data: any) => any): void {\n  pushData(null);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQO,SAAS,gBAAgB,UAAoC;AAClE,WAAS,IAAI;AACf;",
+  "names": []
+}

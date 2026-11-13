@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/StorageResponseFormat.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n/**\n * Specifies the format the service should use to return list results.\n */\nexport const StorageResponseFormat = {\n  /**\n   * Default. Currently maps to {@link StorageResponseFormat.Xml}, but may be updated in future releases.\n   */\n  Auto: \"Auto\",\n  /**\n   * Use XML to return list results.\n   */\n  Xml: \"Xml\",\n  /**\n   * Use Apache Arrow to return list results.\n   */\n  Arrow: \"Arrow\",\n} as const;\n\n/**\n * Specifies the format the service should use to return list results.\n */\nexport type StorageResponseFormat =\n  (typeof StorageResponseFormat)[keyof typeof StorageResponseFormat];\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAMO,MAAM,wBAAwB;AAAA;AAAA;AAAA;AAAA,EAInC,MAAM;AAAA;AAAA;AAAA;AAAA,EAIN,KAAK;AAAA;AAAA;AAAA;AAAA,EAIL,OAAO;AACT;",
+  "names": []
+}

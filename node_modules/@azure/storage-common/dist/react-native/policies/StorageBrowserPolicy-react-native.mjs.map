@@ -1,0 +1,1 @@
+{"version":3,"file":"StorageBrowserPolicy-react-native.mjs","sourceRoot":"","sources":["../../../src/policies/StorageBrowserPolicy-react-native.mts"],"names":[],"mappings":"AAAA,uCAAuC;AACvC,kCAAkC;AAElC,cAAc,oCAAoC,CAAC","sourcesContent":["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nexport * from \"./StorageBrowserPolicy-browser.mjs\";\n"]}

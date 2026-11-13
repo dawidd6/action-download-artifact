@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/StorageBrowserPolicyFactory.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nimport type {\n  RequestPolicy,\n  RequestPolicyOptionsLike as RequestPolicyOptions,\n  RequestPolicyFactory,\n} from \"@azure/core-http-compat\";\nimport { StorageBrowserPolicy } from \"#platform/policies/StorageBrowserPolicy\";\nexport { StorageBrowserPolicy };\n\n/**\n * StorageBrowserPolicyFactory is a factory class helping generating StorageBrowserPolicy objects.\n */\nexport class StorageBrowserPolicyFactory implements RequestPolicyFactory {\n  /**\n   * Creates a StorageBrowserPolicyFactory object.\n   *\n   * @param nextPolicy -\n   * @param options -\n   */\n  public create(nextPolicy: RequestPolicy, options: RequestPolicyOptions): StorageBrowserPolicy {\n    return new StorageBrowserPolicy(nextPolicy, options);\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAQA,kCAAqC;AAM9B,MAAM,4BAA4D;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,EAOhE,OAAO,YAA2B,SAAqD;AAC5F,WAAO,IAAI,iDAAqB,YAAY,OAAO;AAAA,EACrD;AACF;",
+  "names": []
+}

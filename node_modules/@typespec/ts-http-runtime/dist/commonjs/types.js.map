@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/types.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n/**\n * Re-export of `NodeJS.ReadableStream` for use in platform-neutral code.\n *\n * @public\n */\nexport type NodeReadableStream = NodeJS.ReadableStream;\n\n/**\n * Re-export of `Buffer` for use in platform-neutral code.\n *\n * @public\n */\nexport type NodeBuffer = Buffer;\n\n/**\n * Re-export of the Web `ReadableStream` for use in platform-neutral code.\n *\n * @public\n */\nexport type WebReadableStream<R = any> = ReadableStream<R>;\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

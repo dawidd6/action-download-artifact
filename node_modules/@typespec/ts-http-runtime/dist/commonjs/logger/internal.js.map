@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/logger/internal.ts"],
+  "sourcesContent": ["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\nexport {\n  createLoggerContext,\n  type CreateLoggerContextOptions,\n  type LoggerContext,\n} from \"./logger.js\";\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAIO;",
+  "names": []
+}
